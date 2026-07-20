@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown 编辑器 · 数学 · 图表</title>
+
+    <!-- ===== 核心库 ===== -->
+    <!-- 1. Markdown 解析 -->
+    <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"></script>
+
+    <!-- 2. 代码高亮 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" id="hljs-style">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+    <!-- 3. KaTeX (数学公式) —— 核心库 + 自动渲染扩展 -->
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/katex.min.css">
+    <script src="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>          <!-- ★ 之前遗漏的 -->
+    <script src="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+
+    <!-- 4. Mermaid (图表) -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+
+    <style>
+        /* ===== CSS 变量 (浅色/深色) ===== */
+        :root {
+            --bg-primary: #f6f8fa;
+            --bg-secondary: #ffffff;
+            --bg-editor: #ffffff;
+            --bg-preview: #fafcff;
+            --bg-card: #ffffff;
+            --bg-codeblock: #0f172a;
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --border-color: #eef2f6;
+            --shadow: 0 20px 60px rgba(0, 0, 0, 0.06);
+            --hover-bg: #f1f4f9;
+            --accent: #2563eb;
+            --accent-bg: #eef2ff;
+            --scrollbar-thumb: #dce1e8;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-editor: #0d1117;
+            --bg-preview: #0d1117;
+            --bg-card: #1c2333;
+            --bg-codeblock: #1e293b;
+            --text-primary: #e6edf3;
+            --text-secondary: #b1bac4;
+            --text-muted: #586069;
+            --border-color: #30363d;
+            --shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+            --hover-bg: #252d3b;
+            --accent: #58a6ff;
+            --accent-bg: #1f2a3f;
+            --scrollbar-thumb: #30363d;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            padding: 20px;
+            transition: background 0.3s, color 0.3s;
+        }
+        .app {
+            max-width: 1500px;
+            margin: 0 auto;
+            background: var(--bg-secondary);
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--border-color);
+        }
+
+        /* ===== 顶栏 ===== */
+        .header {
+            padding: 16px 28px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            background: var(--bg-secondary);
+        }
+        .header-left { display: flex; align-items: center; gap: 14px; }
+        .header-left .icon { font-size: 26px; }
+        .header-left h1 {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .header-left .badge {
+            font-size: 11px;
+            font-weight: 600;
+            background: var(--accent-bg);
+            color: var(--accent);
+            padding: 2px 12px;
+            border-radius: 20px;
+            -webkit-text-fill-color: var(--accent);
+        }
+        .toolbar {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .toolbar button, .toolbar label {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 14px;
+            font-size: 13px;
+            font-weight: 500;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+        .toolbar button:hover, .toolbar label:hover {
+            background: var(--hover-bg);
+            border-color: var(--text-muted);
+        }
+        .toolbar button.primary {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+        .toolbar button.primary:hover { opacity: 0.85; }
+        .file-input-wrap { position: relative; }
+        .file-input-wrap input[type="file"] {
+            position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%;
+        }
+
+        /* ===== 统计栏 ===== */
+        .stats-bar {
+            padding: 8px 28px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            gap: 24px;
+            font-size: 12px;
+            color: var(--text-muted);
+            background: var(--bg-primary);
+            flex-wrap: wrap;
+        }
+        .stats-bar span { display: flex; align-items: center; gap: 4px; }
+        .stats-bar .num { font-weight: 600; color: var(--text-secondary); }
+
+        /* ===== 主体 ===== */
+        .main {
+            display: flex;
+            flex-direction: row;
+            min-height: 600px;
+            height: 70vh;
+            max-height: 900px;
+        }
+        .editor-panel, .preview-panel {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+        .editor-panel {
+            border-right: 1px solid var(--border-color);
+            background: var(--bg-editor);
+        }
+        .panel-label {
+            position: absolute;
+            top: 12px;
+            left: 18px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            pointer-events: none;
+            z-index: 2;
+            background: rgba(255,255,255,0.6);
+            padding: 0 8px;
+            backdrop-filter: blur(4px);
+            border-radius: 4px;
+        }
+        [data-theme="dark"] .panel-label { background: rgba(13,17,23,0.7); }
+        .preview-panel .panel-label { left: auto; right: 18px; }
+
+        .editor-panel textarea {
+            width: 100%;
+            height: 100%;
+            padding: 48px 20px 20px 20px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 14px;
+            line-height: 1.8;
+            border: none;
+            outline: none;
+            resize: none;
+            background: transparent;
+            color: var(--text-primary);
+            tab-size: 2;
+        }
+        .editor-panel textarea::placeholder { color: var(--text-muted); }
+
+        .preview-panel {
+            background: var(--bg-preview);
+            overflow-y: auto;
+            padding: 48px 28px 28px 28px;
+        }
+        .preview-panel .preview-content {
+            max-width: 100%;
+            word-wrap: break-word;
+        }
+
+        /* ===== 预览样式 ===== */
+        .preview-content h1, .preview-content h2, .preview-content h3,
+        .preview-content h4, .preview-content h5, .preview-content h6 {
+            margin: 1.2em 0 0.5em 0;
+            font-weight: 600;
+            line-height: 1.3;
+            color: var(--text-primary);
+        }
+        .preview-content h1 {
+            font-size: 2em;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.3em;
+        }
+        .preview-content h2 {
+            font-size: 1.6em;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.25em;
+        }
+        .preview-content p { margin: 0.8em 0; line-height: 1.7; color: var(--text-secondary); }
+        .preview-content a { color: var(--accent); text-decoration: none; }
+        .preview-content a:hover { text-decoration: underline; }
+        .preview-content ul, .preview-content ol { padding-left: 1.6em; margin: 0.6em 0; }
+        .preview-content li { margin: 0.3em 0; color: var(--text-secondary); }
+        .preview-content blockquote {
+            margin: 0.8em 0;
+            padding: 0.2em 1em 0.2em 1.2em;
+            border-left: 4px solid var(--accent);
+            background: var(--hover-bg);
+            border-radius: 0 6px 6px 0;
+            color: var(--text-secondary);
+        }
+        .preview-content code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.88em;
+            padding: 0.15em 0.4em;
+            background: var(--hover-bg);
+            border-radius: 4px;
+            color: var(--text-primary);
+        }
+        .preview-content pre {
+            background: var(--bg-codeblock);
+            border-radius: 10px;
+            padding: 16px 20px;
+            overflow-x: auto;
+            margin: 1em 0;
+        }
+        .preview-content pre code {
+            background: transparent;
+            padding: 0;
+            color: #e2e8f0;
+            font-size: 13px;
+        }
+        .preview-content pre code.hljs { background: transparent; }
+        .preview-content table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 1em 0;
+            font-size: 0.95em;
+        }
+        .preview-content table th, .preview-content table td {
+            border: 1px solid var(--border-color);
+            padding: 8px 14px;
+            text-align: left;
+            color: var(--text-secondary);
+        }
+        .preview-content table th {
+            background: var(--hover-bg);
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .preview-content hr {
+            border: none;
+            border-top: 2px solid var(--border-color);
+            margin: 1.6em 0;
+        }
+        .preview-content img { max-width: 100%; border-radius: 8px; }
+        .preview-content .mermaid {
+            background: var(--bg-card);
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin: 1em 0;
+            text-align: center;
+        }
+        .katex-error {
+            color: #ef4444;
+            background: #fee2e2;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        /* ===== 底部语法参考 ===== */
+        .reference {
+            border-top: 1px solid var(--border-color);
+            background: var(--bg-primary);
+        }
+        .reference-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 28px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-primary);
+            background: transparent;
+            border: none;
+            width: 100%;
+            font-family: inherit;
+            text-align: left;
+        }
+        .reference-toggle:hover { background: var(--hover-bg); }
+        .reference-toggle .arrow {
+            transition: transform 0.3s;
+            color: var(--text-muted);
+        }
+        .reference-toggle.open .arrow { transform: rotate(180deg); }
+        .reference-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, padding 0.3s ease;
+            padding: 0 28px;
+        }
+        .reference-body.open {
+            max-height: 2000px;
+            padding: 0 28px 28px 28px;
+        }
+        .reference-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 16px;
+            margin-top: 8px;
+        }
+        .ref-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 14px 18px;
+            border: 1px solid var(--border-color);
+        }
+        .ref-card .title {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+        .ref-card .example {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            background: var(--hover-bg);
+            padding: 2px 10px;
+            border-radius: 6px;
+            display: inline-block;
+            margin: 2px 0;
+            color: var(--text-primary);
+        }
+        .ref-card .desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+            line-height: 1.5;
+        }
+        .ref-card .example-block {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            background: var(--bg-codeblock);
+            color: #e2e8f0;
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin: 4px 0 0 0;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        /* ===== 滚动条 ===== */
+        .preview-panel::-webkit-scrollbar,
+        .editor-panel textarea::-webkit-scrollbar { width: 5px; height: 5px; }
+        .preview-panel::-webkit-scrollbar-thumb,
+        .editor-panel textarea::-webkit-scrollbar-thumb {
+            background: var(--scrollbar-thumb);
+            border-radius: 10px;
+        }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 860px) {
+            body { padding: 10px; }
+            .main { flex-direction: column; height: auto; min-height: 400px; max-height: none; }
+            .editor-panel {
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+                min-height: 300px;
+                height: 45vh;
+            }
+            .preview-panel {
+                min-height: 300px;
+                height: 45vh;
+                padding: 48px 16px 16px 16px;
+            }
+            .header { padding: 12px 16px; }
+            .toolbar button, .toolbar label { font-size: 12px; padding: 4px 10px; }
+            .stats-bar { padding: 6px 16px; gap: 12px; font-size: 11px; }
+            .reference-grid { grid-template-columns: 1fr; }
+        }
+
+        /* ===== Toast ===== */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: var(--bg-codeblock);
+            color: white;
+            padding: 10px 28px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            opacity: 0;
+            transition: all 0.4s ease;
+            pointer-events: none;
+            z-index: 999;
+        }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        .empty-hint {
+            color: var(--text-muted);
+            text-align: center;
+            padding: 40px 20px;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+        .empty-hint .big { font-size: 40px; display: block; margin-bottom: 12px; }
+    </style>
+</head>
+<body>
+
+<div class="app">
+    <!-- ===== 顶栏 ===== -->
+    <header class="header">
+        <div class="header-left">
+            <span class="icon">⚡</span>
+            <h1>进阶编辑器</h1>
+            <span class="badge">数学 · 图表</span>
+        </div>
+        <div class="toolbar">
+            <button id="loadExampleBtn" class="primary">✨ 示例</button>
+            <button id="clearBtn">🗑️ 清空</button>
+            <button id="downloadMdBtn">📥 下载 .md</button>
+            <button id="downloadHtmlBtn">📤 导出 HTML</button>
+            <label class="file-input-wrap">
+                📂 上传
+                <input type="file" id="fileInput" accept=".md,.txt,.markdown" />
+            </label>
+            <button id="themeToggleBtn" title="切换主题">🌓</button>
+        </div>
+    </header>
+
+    <!-- ===== 统计栏 ===== -->
+    <div class="stats-bar">
+        <span>📝 字符: <span class="num" id="charCount">0</span></span>
+        <span>📖 单词: <span class="num" id="wordCount">0</span></span>
+        <span>📄 行数: <span class="num" id="lineCount">0</span></span>
+        <span>💾 自动保存</span>
+    </div>
+
+    <!-- ===== 主体 ===== -->
+    <div class="main">
+        <section class="editor-panel">
+            <span class="panel-label">✏️ 编辑</span>
+            <textarea id="editor" spellcheck="false"></textarea>
+        </section>
+        <section class="preview-panel">
+            <span class="panel-label">👁️ 预览</span>
+            <div class="preview-content" id="preview">
+                <div class="empty-hint">
+                    <span class="big">📄</span>
+                    在左侧输入 Markdown<br>支持 LaTeX 公式 与 Mermaid 图表
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ===== 语法参考 ===== -->
+    <div class="reference">
+        <button class="reference-toggle open" id="referenceToggle">
+            <span>📖 Markdown 进阶语法参考</span>
+            <span class="arrow">▼</span>
+        </button>
+        <div class="reference-body open" id="referenceBody" style="max-height: 2000px;">
+            <div class="reference-grid">
+                <div class="ref-card">
+                    <div class="title">🧮 数学公式 (KaTeX)</div>
+                    <span class="example">$E = mc^2$</span><br>
+                    <span class="example">$$ \int_0^\infty e^{-x} dx $$</span>
+                    <div class="desc">行内 <code>$...$</code>，块级 <code>$$...$$</code>。</div>
+                </div>
+                <div class="ref-card">
+                    <div class="title">📊 图表 (Mermaid)</div>
+                    <div class="example-block">```mermaid\ngraph TD\nA-->B\n```</div>
+                    <div class="desc">流程图、时序图、甘特图等。</div>
+                </div>
+                <div class="ref-card">
+                    <div class="title">📋 任务列表</div>
+                    <span class="example">- [x] 已完成</span><br>
+                    <span class="example">- [ ] 待办</span>
+                </div>
+                <div class="ref-card">
+                    <div class="title">📊 表格</div>
+                    <span class="example">| 列1 | 列2 |</span><br>
+                    <span class="example">|-----|-----|</span>
+                </div>
+            </div>
+            <p style="margin-top:18px; font-size:13px; color:var(--text-muted); text-align:center;">
+                💡 支持 GFM · 自动保存至本地 · 深色模式
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- ===== Toast ===== -->
+<div class="toast" id="toast"></div>
+
+<script>
+    (function() {
+        'use strict';
+
+        // ---- DOM ----
+        const editor = document.getElementById('editor');
+        const preview = document.getElementById('preview');
+        const clearBtn = document.getElementById('clearBtn');
+        const loadExampleBtn = document.getElementById('loadExampleBtn');
+        const downloadMdBtn = document.getElementById('downloadMdBtn');
+        const downloadHtmlBtn = document.getElementById('downloadHtmlBtn');
+        const fileInput = document.getElementById('fileInput');
+        const themeToggleBtn = document.getElementById('themeToggleBtn');
+        const referenceToggle = document.getElementById('referenceToggle');
+        const referenceBody = document.getElementById('referenceBody');
+        const toastEl = document.getElementById('toast');
+        const charCount = document.getElementById('charCount');
+        const wordCount = document.getElementById('wordCount');
+        const lineCount = document.getElementById('lineCount');
+
+        // ---- 初始化 Mermaid ----
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'default',
+            securityLevel: 'loose',
+            fontFamily: 'Inter, sans-serif',
+        });
+
+        // ---- 自定义 marked 渲染器 ----
+        const renderer = new marked.Renderer();
+        renderer.code = function(code, language) {
+            if (language === 'mermaid') {
+                return `<pre class="mermaid">${code}</pre>`;
+            }
+            try {
+                let highlighted;
+                if (language && hljs.getLanguage(language)) {
+                    highlighted = hljs.highlight(code, { language, ignoreIllegals: true }).value;
+                } else {
+                    highlighted = hljs.highlightAuto(code).value;
+                }
+                const langClass = language ? `language-${language}` : '';
+                return `<pre><code class="hljs ${langClass}">${highlighted}</code></pre>`;
+            } catch (e) {
+                console.warn('代码高亮失败，降级为纯文本:', e);
+                return `<pre><code>${code}</code></pre>`;
+            }
+        };
+        marked.use({ renderer });
+
+        // ---- 统计 ----
+        function getStats(text) {
+            const chars = text.length;
+            const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+            const lines = text.split('\n').length;
+            return { chars, words, lines };
+        }
+
+        // ---- 核心渲染 (超强错误隔离) ----
+        function render() {
+            const raw = editor.value;
+            const stats = getStats(raw);
+            charCount.textContent = stats.chars;
+            wordCount.textContent = stats.words;
+            lineCount.textContent = stats.lines;
+
+            if (!raw.trim()) {
+                preview.innerHTML = `
+                    <div class="empty-hint">
+                        <span class="big">📄</span>
+                        在左侧输入 Markdown<br>支持 LaTeX 公式 与 Mermaid 图表
+                    </div>
+                `;
+                return;
+            }
+
+            // 1. 解析 Markdown
+            let html = '';
+            try {
+                html = marked.parse(raw);
+            } catch (err) {
+                console.error('Markdown 解析错误:', err);
+                html = `<div style="color:#ef4444;padding:10px;">⚠️ Markdown 解析失败：${err.message}</div>`;
+            }
+            preview.innerHTML = html;
+
+            // 2. 渲染 KaTeX —— 现在 katex 核心库已加载
+            try {
+                if (typeof renderMathInElement === 'function' && typeof window.katex !== 'undefined') {
+                    renderMathInElement(preview, {
+                        delimiters: [
+                            { left: '$$', right: '$$', display: true },
+                            { left: '$', right: '$', display: false },
+                            { left: '\\(', right: '\\)', display: false },
+                            { left: '\\[', right: '\\]', display: true }
+                        ],
+                        throwOnError: false,
+                        errorCallback: function(msg, err) {
+                            // 记录错误，返回安全的占位符
+                            console.warn('KaTeX 公式错误:', msg, err);
+                            return `<span class="katex-error">公式渲染错误</span>`;
+                        }
+                    });
+                } else {
+                    console.warn('KaTeX 未加载，跳过公式渲染');
+                }
+            } catch (err) {
+                console.error('KaTeX 渲染异常:', err);
+                // 在预览顶部显示错误提示（但不会阻断其他内容）
+                const errorDiv = document.createElement('div');
+                errorDiv.style.cssText = 'color:#ef4444;padding:8px;background:#fee2e2;border-radius:6px;margin-bottom:12px;';
+                errorDiv.textContent = `⚠️ 公式渲染异常：${err.message || err}`;
+                preview.prepend(errorDiv);
+            }
+
+            // 3. 渲染 Mermaid
+            try {
+                const mermaidNodes = preview.querySelectorAll('.mermaid');
+                if (mermaidNodes.length > 0) {
+                    mermaid.run({
+                        nodes: mermaidNodes,
+                        suppressErrors: true
+                    }).catch(err => {
+                        console.warn('Mermaid 渲染错误:', err);
+                        mermaidNodes.forEach(node => {
+                            if (!node.querySelector('.mermaid-error')) {
+                                node.innerHTML = `<div class="mermaid-error" style="color:#ef4444;">⚠️ 图表渲染失败</div>`;
+                            }
+                        });
+                    });
+                }
+            } catch (err) {
+                console.warn('Mermaid 渲染异常:', err);
+            }
+        }
+
+        // ---- 防抖 + 自动保存 ----
+        let debounceTimer = null;
+        function scheduleRender() {
+            if (debounceTimer) clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                render();
+                try { localStorage.setItem('markdown_editor_content', editor.value); } catch (_) {}
+            }, 150);
+        }
+        editor.addEventListener('input', scheduleRender);
+
+        // ---- 示例内容 (基础+进阶) ----
+        function getExampleMarkdown() {
+            return `# 📘 基础语法示例 (普通用法)
+
+        这部分展示最常见的 Markdown 语法，适合日常笔记和文档。
+
+        ## 1. 标题与段落
+
+        使用 \`#\` 号表示标题，数量 1~6 级。
+
+        ### 三级标题
+        #### 四级标题
+
+        这是普通段落。**可以加粗**，*可以斜体*，***可以粗斜体***，~~可以删除~~，也可以 \`行内代码\`。
+
+        ---
+
+        ## 2. 列表
+
+        ### 无序列表
+        - 苹果 🍎
+        - 香蕉 🍌
+        - 橙子 🍊
+
+        ### 有序列表
+        1. 第一步
+        2. 第二步
+        3. 第三步
+
+        ---
+
+        ## 3. 引用与链接
+
+        > 这是引用块，通常用于标注重点或引用他人内容。
+        >> 还可以嵌套引用。
+
+        链接示例：[点击访问 GitHub](https://github.com)
+
+        图片示例：
+        ![示例图片](https://picsum.photos/400/200?random=1)
+
+        ---
+
+        ## 4. 基础代码块
+
+        \`\`\`text
+        这是一个纯文本代码块
+        用于展示配置或日志
+        \`\`\`
+
+        ---
+
+        # 🚀 进阶语法示例 (进阶用法)
+
+        这部分展示扩展语法，包括任务列表、表格、数学公式和图表，适用于技术写作和学术笔记。
+
+        ## 5. 任务列表 (GFM)
+
+        - [x] 支持基础语法
+        - [x] 支持数学公式
+        - [ ] 支持 Mermaid 图表
+        - [ ] 导出 PDF (未来功能)
+
+        ---
+
+        ## 6. 表格
+
+        | 功能模块   | 支持情况 | 备注          |
+        |------------|----------|---------------|
+        | 基础语法   | ✅ 完整   | 标题/列表/链接 |
+        | 数学公式   | ✅ 支持   | KaTeX 渲染    |
+        | Mermaid 图表 | ✅ 支持   | 流程图/时序图 |
+        | 深色模式   | ✅ 支持   | 一键切换      |
+
+        ---
+
+        ## 7. 数学公式 (LaTeX / KaTeX)
+
+        行内公式：$E = mc^2$ 是质能方程。
+
+        块级公式（求和与积分）：
+
+        $$ \\int_0^\\infty e^{-x^2} dx = \\frac{\\sqrt{\\pi}}{2} $$
+
+        矩阵示例：
+        $$ \\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix} $$
+
+        ---
+
+        ## 8. 图表 (Mermaid)
+
+        ### 流程图
+        \`\`\`mermaid
+        graph TD
+            A[开始] --> B{判断条件}
+            B -->|是| C[执行操作]
+            B -->|否| D[结束]
+            C --> D
+        \`\`\`
+
+        ### 时序图
+        \`\`\`mermaid
+        sequenceDiagram
+            用户->>系统: 发送请求
+            系统-->>用户: 返回响应
+            用户->>系统: 确认操作
+        \`\`\`
+
+        ---
+
+        ## 9. 高级代码块 (带语法高亮)
+
+        \`\`\`js
+        const greet = (name) => {
+            console.log(\`Hello, \${name}!\`);
+        };
+        greet("Markdown 进阶用户");
+        \`\`\`
+
+        \`\`\`python
+        def greet(name):
+            print(f"Hello, {name}!")
+        greet("Markdown")
+        \`\`\`
+
+        ---
+
+        ✨ **提示**：你可以在左侧自由编辑，右侧会实时渲染。点击顶栏的“🌓”可以切换深色模式。
+        `;
+        }
+
+        // ---- 事件绑定 ----
+
+        clearBtn.addEventListener('click', function() {
+            if (editor.value.trim() && !confirm('确定清空所有内容？')) return;
+            editor.value = '';
+            render();
+            localStorage.removeItem('markdown_editor_content');
+            showToast('已清空');
+        });
+
+        loadExampleBtn.addEventListener('click', function() {
+            editor.value = getExampleMarkdown();
+            render();
+            localStorage.setItem('markdown_editor_content', editor.value);
+            showToast('✅ 示例加载完成 (基础+进阶)');
+            if (!referenceBody.classList.contains('open')) {
+                referenceToggle.click();
+            }
+        });
+
+        downloadMdBtn.addEventListener('click', function() {
+            const content = editor.value;
+            if (!content.trim()) { showToast('⚠️ 内容为空'); return; }
+            downloadFile(content, `markdown-${new Date().toISOString().slice(0,10)}.md`, 'text/markdown');
+            showToast('✅ 下载 .md 成功');
+        });
+
+        downloadHtmlBtn.addEventListener('click', function() {
+            const content = editor.value;
+            if (!content.trim()) { showToast('⚠️ 内容为空'); return; }
+            const style = document.querySelector('style').innerHTML;
+            const previewHtml = preview.innerHTML;
+            const theme = document.documentElement.getAttribute('data-theme') || 'light';
+
+            const htmlTemplate = `<!DOCTYPE html>
+        <html lang="zh-CN" data-theme="${theme}">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>导出的 Markdown 文档</title>
+            <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/katex.min.css">
+            <script src="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/katex.min.js"><\/script>
+            <script src="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"><\/script>
+            <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"><\/script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"><\/script>
+            <style>${style}</style>
+            <style>body { padding: 40px; max-width: 1000px; margin: 0 auto; background: var(--bg-primary); } .mermaid { text-align: center; }</style>
+        </head>
+        <body>
+            <div class="preview-content">${previewHtml}</div>
+            <script>
+                if (typeof renderMathInElement === 'function' && typeof window.katex !== 'undefined') {
+                    renderMathInElement(document.body, {
+                        delimiters: [
+                            {left: '$$', right: '$$', display: true},
+                            {left: '$', right: '$', display: false},
+                            {left: '\\\\(', right: '\\\\)', display: false},
+                            {left: '\\\\[', right: '\\\\]', display: true}
+                        ],
+                        throwOnError: false,
+                        errorCallback: function(msg, err) {
+                            return '<span class="katex-error">公式错误</span>';
+                        }
+                    });
+                }
+                mermaid.initialize({ startOnLoad: true, theme: 'default' });
+                mermaid.run({ nodes: document.querySelectorAll('.mermaid') });
+                document.querySelectorAll('pre code').forEach(block => hljs.highlightElement(block));
+            <\/script>
+        </body>
+        </html>`;
+            downloadFile(htmlTemplate, `export-${new Date().toISOString().slice(0,10)}.html`, 'text/html');
+            showToast('✅ 导出 HTML 成功');
+        });
+
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                editor.value = ev.target.result;
+                render();
+                localStorage.setItem('markdown_editor_content', editor.value);
+                showToast(`✅ 加载: ${file.name}`);
+                fileInput.value = '';
+            };
+            reader.onerror = function() {
+                showToast('❌ 读取失败');
+                fileInput.value = '';
+            };
+            reader.readAsText(file, 'UTF-8');
+        });
+
+        // ---- 主题切换 ----
+        themeToggleBtn.addEventListener('click', function() {
+            const html = document.documentElement;
+            const current = html.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', next);
+            const hljsStyle = document.getElementById('hljs-style');
+            if (next === 'dark') {
+                hljsStyle.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css';
+            } else {
+                hljsStyle.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css';
+            }
+            render();
+            showToast(`🌓 切换到 ${next === 'dark' ? '深色' : '浅色'} 模式`);
+        });
+
+        // ---- 折叠参考 ----
+        referenceToggle.addEventListener('click', function() {
+            const isOpen = referenceBody.classList.toggle('open');
+            referenceToggle.classList.toggle('open');
+            if (isOpen) {
+                referenceBody.style.maxHeight = referenceBody.scrollHeight + 40 + 'px';
+            } else {
+                referenceBody.style.maxHeight = '0';
+            }
+        });
+
+        // ---- Toast ----
+        let toastTimer = null;
+        function showToast(msg) {
+            toastEl.textContent = msg;
+            toastEl.classList.add('show');
+            if (toastTimer) clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => {
+                toastEl.classList.remove('show');
+            }, 2200);
+        }
+
+        function downloadFile(content, filename, mimeType) {
+            const blob = new Blob([content], { type: `${mimeType};charset=utf-8` });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // ---- 快捷键 ----
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.shiftKey && e.key === 'C') {
+                e.preventDefault();
+                clearBtn.click();
+            }
+            if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                render();
+                localStorage.setItem('markdown_editor_content', editor.value);
+                showToast('💾 已手动保存');
+            }
+        });
+
+        // ---- 初始化 ----
+        const hasSaved = (() => {
+            try {
+                const saved = localStorage.getItem('markdown_editor_content');
+                if (saved !== null) {
+                    editor.value = saved;
+                    render();
+                    return true;
+                }
+            } catch (_) {}
+            return false;
+        })();
+
+        if (!hasSaved) {
+            editor.value = getExampleMarkdown();
+            render();
+            localStorage.setItem('markdown_editor_content', editor.value);
+        }
+
+        // 默认展开参考
+        referenceBody.style.maxHeight = referenceBody.scrollHeight + 40 + 'px';
+
+        let resizeTimer;
+        window.addEventListener('resize', function() {
+            if (referenceBody.classList.contains('open')) {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(() => {
+                    referenceBody.style.maxHeight = referenceBody.scrollHeight + 40 + 'px';
+                }, 200);
+            }
+        });
+
+        console.log('✅ 编辑器已启动，KaTeX 核心库已加载。');
+    })();
+</script>
+</body>
+</html>
