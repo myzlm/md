@@ -2609,7 +2609,6 @@
                     bookFormModal.classList.remove('active');
                     await loadBooks();
                     if (currentBookId === bookId) {
-                        // 如果当前在书籍详情，刷新详情
                         await enterBook(bookId);
                     }
                 } catch (err) {
@@ -2623,7 +2622,6 @@
                     await apiCall(`/api/books/${bookId}`, { method: 'DELETE' });
                     showToast('书籍已删除', 'success');
                     if (currentBookId === bookId) {
-                        // 关闭详情视图
                         backToBookList.click();
                     }
                     await loadBooks();
@@ -2688,11 +2686,7 @@
                     currentChapterId = chapterId;
                     currentBookId = bookId;
                     showToast(`已载入章节: ${data.title}`, 'success');
-                    // 显示保存章节按钮
                     saveChapterBtn.style.display = 'inline-flex';
-                    // 在书库章节列表中该章节显示 "保存" 按钮？
-                    // 我们可以通过刷新列表，但更好的方式是通过事件重新绑定。
-                    // 简单起见，我们只显示一个全局的保存按钮。
                 } catch (err) {
                     showToast('加载章节失败: ' + err.message, 'error');
                 }
@@ -2705,7 +2699,6 @@
                     let html = '';
                     try { html = marked.parse(data.content || ''); } catch (err) { html = `<div style="color:#c0392b;">渲染失败: ${err.message}</div>`; }
                     readPreviewContent.innerHTML = html;
-                    // 渲染 KaTeX 和 Mermaid
                     try {
                         if (typeof renderMathInElement === 'function' && typeof window.katex !== 'undefined') {
                             renderMathInElement(readPreviewContent, {
@@ -2746,7 +2739,6 @@
                         body: { content }
                     });
                     showToast('章节已保存 ✅', 'success');
-                    // 刷新书库详情（如果打开）
                     if (bookModal.classList.contains('active') && currentBookId) {
                         await enterBook(currentBookId);
                     }
@@ -2760,12 +2752,10 @@
                 if (!isLoggedIn()) { showToast('请先登录使用书库', 'info');
                     loginModal.classList.add('active'); return; }
                 bookModal.classList.add('active');
-                // 重置视图
                 bookListView.style.display = 'block';
                 bookDetailView.style.display = 'none';
                 bookModalTitle.textContent = '📚 书库';
                 loadBooks();
-                // 隐藏保存章节按钮（未加载章节）
                 saveChapterBtn.style.display = 'none';
                 currentChapterId = null;
                 currentBookId = null;
@@ -2778,7 +2768,6 @@
                 if (e.target === bookModal) bookModal.classList.remove('active');
             });
 
-            // 返回书籍列表
             backToBookList.addEventListener('click', function() {
                 bookListView.style.display = 'block';
                 bookDetailView.style.display = 'none';
@@ -2786,13 +2775,11 @@
                 loadBooks();
             });
 
-            // 创建书籍
             createBookBtn.addEventListener('click', function() {
                 if (!isOwner()) { showToast('只有所有者可以创建书籍', 'error'); return; }
                 openBookForm(null);
             });
 
-            // 创建章节
             createChapterBtn.addEventListener('click', function() {
                 if (!isOwner()) { showToast('只有所有者可以创建章节', 'error'); return; }
                 if (!currentBookId) return;
@@ -2809,7 +2796,6 @@
                     bookNameInput.value = book.name;
                     bookDescInput.value = book.description || '';
                     bookVisibilityInput.value = book.visibility || 'private';
-                    // 选择分享对象
                     populateBookSharedWithSelect();
                     if (book.sharedWith && Array.isArray(book.sharedWith)) {
                         Array.from(bookSharedWith.options).forEach(opt => {
@@ -2854,30 +2840,36 @@
                 }
             });
 
-            // ---- 章节表单控制 ----
+            // ---- 章节表单控制（修复：确保 bookId 保存） ----
             function openChapterForm(bookId, chapterId) {
                 const isEdit = !!chapterId;
                 chapterFormTitle.textContent = isEdit ? '✏️ 编辑章节' : '📝 新章节';
+                
+                if (!bookId) {
+                    showToast('书籍ID缺失，请重试', 'error');
+                    return;
+                }
+                // 保存 bookId 到按钮（无论新建还是编辑）
+                saveChapterFormBtn.dataset.bookId = bookId;
+
                 if (isEdit) {
-                    // 获取章节详情
                     const book = currentBooks.find(b => b.id === bookId);
                     if (!book) { showToast('书籍不存在', 'error'); return; }
                     const chapter = book.chapters.find(c => c.id === chapterId);
                     if (!chapter) { showToast('章节不存在', 'error'); return; }
                     chapterTitleInput.value = chapter.title;
-                    // 内容需要单独请求
-                    apiCall(`/api/books/${bookId}/chapters/${chapterId}`).then(data => {
-                        chapterContentInput.value = data.content || '';
-                    }).catch(err => {
-                        showToast('获取章节内容失败: ' + err.message, 'error');
-                        chapterContentInput.value = '';
-                    });
-                    saveChapterFormBtn.dataset.bookId = bookId;
                     saveChapterFormBtn.dataset.chapterId = chapterId;
+                    apiCall(`/api/books/${bookId}/chapters/${chapterId}`)
+                        .then(data => {
+                            chapterContentInput.value = data.content || '';
+                        })
+                        .catch(err => {
+                            showToast('获取章节内容失败: ' + err.message, 'error');
+                            chapterContentInput.value = '';
+                        });
                 } else {
                     chapterTitleInput.value = '';
                     chapterContentInput.value = '';
-                    delete saveChapterFormBtn.dataset.bookId;
                     delete saveChapterFormBtn.dataset.chapterId;
                 }
                 chapterFormModal.classList.add('active');
@@ -2896,12 +2888,14 @@
             saveChapterFormBtn.addEventListener('click', function() {
                 const bookId = this.dataset.bookId;
                 const chapterId = this.dataset.chapterId;
-                if (bookId && chapterId) {
+                if (!bookId) {
+                    showToast('书籍ID缺失，请重新打开章节表单', 'error');
+                    return;
+                }
+                if (chapterId) {
                     updateChapter(bookId, chapterId);
-                } else if (bookId) {
-                    createChapter(bookId);
                 } else {
-                    showToast('书籍ID缺失', 'error');
+                    createChapter(bookId);
                 }
             });
 
