@@ -832,23 +832,6 @@
             min-width: 140px;
         }
 
-        /* 标题输入 */
-        #clipboardModal .clipboard-form input[type="text"] {
-            padding: 10px 14px;
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            font-size: 14px;
-            font-family: inherit;
-            width: 100%;
-        }
-        #clipboardModal .clipboard-form input[type="text"]:focus {
-            outline: none;
-            border-color: var(--ink-red);
-            box-shadow: 0 0 0 3px var(--accent-bg);
-        }
-
         #clipboardModal .clipboard-form textarea {
             width: 100%;
             padding: 12px 14px;
@@ -1281,9 +1264,8 @@
                 <span>已存：<strong id="quotaUsed">0</strong> / <strong id="quotaTotal">0</strong></span>
             </div>
 
-            <!-- 创建表单 -->
+            <!-- 创建表单（无标题输入） -->
             <div class="clipboard-form">
-                <input type="text" id="clipboardTitle" placeholder="标题（可选）" />
                 <textarea id="clipboardContent" placeholder="输入要保存的文本..." rows="3"></textarea>
                 <div class="row">
                     <select id="clipboardVisibility">
@@ -1329,16 +1311,20 @@
     </div>
 
     <!-- ========================================================== -->
-    <!-- ===== 编辑状态模态框（小） ===== -->
+    <!-- ===== 编辑状态模态框（可修改标题、内容、可见性、分享） ===== -->
     <!-- ========================================================== -->
     <div class="modal-overlay" id="editStatusModal">
         <div class="modal">
             <button class="close-btn" id="closeEditStatusModal">×</button>
-            <h2>✏️ 修改状态</h2>
+            <h2>✏️ 编辑墨宝</h2>
             <form onsubmit="return false">
                 <div class="input-group">
                     <label>标题</label>
                     <input type="text" id="editTitle" placeholder="标题（可选）" />
+                </div>
+                <div class="input-group">
+                    <label>内容</label>
+                    <textarea id="editContent" rows="4" placeholder="输入内容..."></textarea>
                 </div>
                 <div class="input-group">
                     <label>可见性</label>
@@ -1405,7 +1391,6 @@
             const saveToClipboardBtn = document.getElementById('saveToClipboardBtn');
             const clipboardModal = document.getElementById('clipboardModal');
             const closeClipboardModal = document.getElementById('closeClipboardModal');
-            const clipboardTitle = document.getElementById('clipboardTitle');
             const clipboardContent = document.getElementById('clipboardContent');
             const clipboardVisibility = document.getElementById('clipboardVisibility');
             const clipboardSharedWith = document.getElementById('clipboardSharedWith');
@@ -1425,6 +1410,7 @@
             const editStatusModal = document.getElementById('editStatusModal');
             const closeEditStatusModal = document.getElementById('closeEditStatusModal');
             const editTitle = document.getElementById('editTitle');
+            const editContent = document.getElementById('editContent');
             const editVisibility = document.getElementById('editVisibility');
             const editSharedWith = document.getElementById('editSharedWith');
             const editSharedGroup = document.getElementById('editSharedGroup');
@@ -1683,6 +1669,18 @@
                 URL.revokeObjectURL(url);
             }
 
+            // ---- 自动生成标题 ----
+            function generateTitle(content) {
+                const lines = content.split('\n');
+                const firstLine = lines.find(line => line.trim().length > 0);
+                if (firstLine) {
+                    const trimmed = firstLine.trim();
+                    if (trimmed.length <= 20) return trimmed;
+                    return trimmed.substring(0, 20) + '…';
+                }
+                return content.substring(0, 20) + (content.length > 20 ? '…' : '');
+            }
+
             // ==========================================================
             // ===== 用户认证 =====
             // ==========================================================
@@ -1892,7 +1890,7 @@
                 }
                 let html = '';
                 items.forEach(item => {
-                    const title = item.title || item.content.substring(0, 20) || '无标题';
+                    const title = item.title || generateTitle(item.content);
                     const sharedInfo = (item.visibility === 'shared' && item.sharedWith && item.sharedWith.length > 0) ?
                         `分享给: ${item.sharedWith.join(', ')}` :
                         '';
@@ -1916,7 +1914,7 @@
                             <div class="actions">
                                 <button class="btn-load" data-id="${item.id}">📂 载入</button>
                                 <button class="btn-preview" data-id="${item.id}">👁️ 预览</button>
-                                <button class="btn-edit-status" data-id="${item.id}">✏️ 状态</button>
+                                <button class="btn-edit-status" data-id="${item.id}">✏️ 编辑</button>
                                 <button class="btn-del" data-id="${item.id}">🗑️ 删除</button>
                             </div>
                         </div>
@@ -1934,7 +1932,7 @@
                 }
                 let html = '';
                 items.forEach(item => {
-                    const title = item.title || item.content.substring(0, 20) || '无标题';
+                    const title = item.title || generateTitle(item.content);
                     const sharedInfo = (item.visibility === 'shared' && item.sharedWith && item.sharedWith.length > 0) ?
                         `分享给: ${item.sharedWith.join(', ')}` :
                         '';
@@ -2000,12 +1998,12 @@
                     showToast('请先登录', 'error');
                     return;
                 }
-                const title = clipboardTitle.value.trim() || '';
                 const content = clipboardContent.value.trim();
                 if (!content) {
                     showToast('请输入内容', 'error');
                     return;
                 }
+                const title = generateTitle(content);
                 const visibility = clipboardVisibility.value;
                 let sharedWith = [];
                 if (visibility === 'shared') {
@@ -2018,7 +2016,6 @@
                         body: { title, content, visibility, sharedWith }
                     });
                     showToast('存墨成功 ✅', 'success');
-                    clipboardTitle.value = '';
                     clipboardContent.value = '';
                     await loadClipboards();
                 } catch (err) {
@@ -2110,7 +2107,7 @@
                 }
             }
 
-            // ---- 编辑状态 ----
+            // ---- 编辑状态（含标题、内容、可见性、分享） ----
             async function openEditStatusModal(id) {
                 if (!isLoggedIn()) return;
                 try {
@@ -2121,7 +2118,8 @@
                         return;
                     }
                     editingItemId = id;
-                    editTitle.value = item.title || '';
+                    editTitle.value = item.title || generateTitle(item.content);
+                    editContent.value = item.content;
                     editVisibility.value = item.visibility || 'private';
                     populateEditSharedWithSelect();
                     if (item.sharedWith && Array.isArray(item.sharedWith)) {
@@ -2144,7 +2142,12 @@
 
             async function saveEditStatus() {
                 if (!editingItemId) return;
-                const title = editTitle.value.trim() || '';
+                const title = editTitle.value.trim() || generateTitle(editContent.value);
+                const content = editContent.value.trim();
+                if (!content) {
+                    showToast('内容不能为空', 'error');
+                    return;
+                }
                 const visibility = editVisibility.value;
                 let sharedWith = [];
                 if (visibility === 'shared') {
@@ -2154,9 +2157,9 @@
                 try {
                     await apiCall(`/api/clipboards/${editingItemId}`, {
                         method: 'PUT',
-                        body: { title, visibility, sharedWith }
+                        body: { title, content, visibility, sharedWith }
                     });
-                    showToast('状态更新成功 ✅', 'success');
+                    showToast('更新成功 ✅', 'success');
                     editStatusModal.classList.remove('active');
                     editingItemId = null;
                     await loadClipboards();
@@ -2176,9 +2179,7 @@
                     showToast('编辑器内容为空', 'error');
                     return;
                 }
-                // 自动取标题：第一行或前20字符
-                const lines = content.split('\n');
-                let title = lines.length > 0 && lines[0].trim() ? lines[0].trim() : content.substring(0, 20);
+                const title = generateTitle(content);
                 try {
                     await apiCall('/api/clipboards', {
                         method: 'POST',
@@ -2202,7 +2203,6 @@
                 }
                 clipboardModal.classList.add('active');
                 loadClipboards();
-                clipboardTitle.value = '';
                 clipboardContent.value = '';
                 clipboardVisibility.value = 'private';
                 clipboardSharedWith.style.display = 'none';
