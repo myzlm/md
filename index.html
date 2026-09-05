@@ -1,21 +1,29 @@
 <!DOCTYPE html>
 <html lang="zh-CN" data-theme="light">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Markdown 编辑器 · 数学 · 图表 · 云剪贴板</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>墨韵 · 进阶编辑器</title>
 
     <!-- ===== 核心库 ===== -->
-    <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" id="hljs-style">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/katex.min.css">
-    <script src="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
-    <script src="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js">
+    </script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" id="hljs-style" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js">
+    </script>
+
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/katex.min.css" />
+    <script src="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/katex.min.js">
+    </script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js">
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js">
+    </script>
 
     <style>
-        /* ===== CSS 变量 (浅色/深色) ===== */
+        /* ===== CSS 变量 ===== */
         :root {
             --bg-primary: #f6f8fa;
             --bg-secondary: #ffffff;
@@ -32,7 +40,8 @@
             --accent: #2563eb;
             --accent-bg: #eef2ff;
             --scrollbar-thumb: #dce1e8;
-            --modal-overlay: rgba(0,0,0,0.5);
+            --modal-overlay: rgba(0, 0, 0, 0.45);
+            --toast-bg: #0f172a;
         }
 
         [data-theme="dark"] {
@@ -51,10 +60,16 @@
             --accent: #58a6ff;
             --accent-bg: #1f2a3f;
             --scrollbar-thumb: #30363d;
-            --modal-overlay: rgba(0,0,0,0.7);
+            --modal-overlay: rgba(0, 0, 0, 0.7);
+            --toast-bg: #1c2333;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: var(--bg-primary);
@@ -62,6 +77,7 @@
             padding: 20px;
             transition: background 0.3s, color 0.3s;
         }
+
         .app {
             max-width: 1500px;
             margin: 0 auto;
@@ -76,17 +92,26 @@
 
         /* ===== 顶栏 ===== */
         .header {
-            padding: 16px 28px;
+            padding: 14px 24px;
             border-bottom: 1px solid var(--border-color);
             display: flex;
             align-items: center;
             justify-content: space-between;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 10px;
             background: var(--bg-secondary);
         }
-        .header-left { display: flex; align-items: center; gap: 14px; }
-        .header-left .icon { font-size: 26px; }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-left .icon {
+            font-size: 24px;
+        }
+
         .header-left h1 {
             font-size: 20px;
             font-weight: 700;
@@ -95,6 +120,7 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
+
         .header-left .badge {
             font-size: 11px;
             font-weight: 600;
@@ -104,13 +130,30 @@
             border-radius: 20px;
             -webkit-text-fill-color: var(--accent);
         }
+
+        .user-area {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .user-area .greeting {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
         .toolbar {
             display: flex;
             align-items: center;
             gap: 6px;
             flex-wrap: wrap;
         }
-        .toolbar button, .toolbar label {
+
+        .toolbar button,
+        .toolbar label,
+        .user-area button {
             display: inline-flex;
             align-items: center;
             gap: 4px;
@@ -126,43 +169,58 @@
             font-family: inherit;
             white-space: nowrap;
         }
-        .toolbar button:hover, .toolbar label:hover {
+
+        .toolbar button:hover,
+        .toolbar label:hover,
+        .user-area button:hover {
             background: var(--hover-bg);
             border-color: var(--text-muted);
         }
+
         .toolbar button.primary {
             background: var(--accent);
             border-color: var(--accent);
             color: white;
         }
-        .toolbar button.primary:hover { opacity: 0.85; }
-        .file-input-wrap { position: relative; }
+
+        .toolbar button.primary:hover {
+            opacity: 0.85;
+        }
+
+        .file-input-wrap {
+            position: relative;
+        }
+
         .file-input-wrap input[type="file"] {
-            position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%;
-        }
-        /* 登录状态显示 */
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 14px;
-            color: var(--text-secondary);
-        }
-        .user-info .logout-btn {
-            background: none;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 2px 10px;
+            position: absolute;
+            inset: 0;
+            opacity: 0;
             cursor: pointer;
-            font-size: 12px;
+            width: 100%;
         }
-        .user-info .logout-btn:hover {
-            background: var(--hover-bg);
+
+        .user-area .btn-login {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+        }
+
+        .user-area .btn-login:hover {
+            opacity: 0.85;
+        }
+
+        .user-area .btn-logout {
+            color: #ef4444;
+            border-color: #fca5a5;
+        }
+
+        .user-area .btn-logout:hover {
+            background: #fef2f2;
         }
 
         /* ===== 统计栏 ===== */
         .stats-bar {
-            padding: 8px 28px;
+            padding: 8px 24px;
             border-bottom: 1px solid var(--border-color);
             display: flex;
             gap: 24px;
@@ -171,26 +229,39 @@
             background: var(--bg-primary);
             flex-wrap: wrap;
         }
-        .stats-bar span { display: flex; align-items: center; gap: 4px; }
-        .stats-bar .num { font-weight: 600; color: var(--text-secondary); }
+
+        .stats-bar span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .stats-bar .num {
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
 
         /* ===== 主体 ===== */
         .main {
             display: flex;
             flex-direction: row;
-            min-height: 600px;
-            height: 70vh;
+            min-height: 500px;
+            height: 65vh;
             max-height: 900px;
         }
-        .editor-panel, .preview-panel {
+
+        .editor-panel,
+        .preview-panel {
             flex: 1;
             position: relative;
             overflow: hidden;
         }
+
         .editor-panel {
             border-right: 1px solid var(--border-color);
             background: var(--bg-editor);
         }
+
         .panel-label {
             position: absolute;
             top: 12px;
@@ -202,13 +273,20 @@
             color: var(--text-muted);
             pointer-events: none;
             z-index: 2;
-            background: rgba(255,255,255,0.6);
+            background: rgba(255, 255, 255, 0.6);
             padding: 0 8px;
             backdrop-filter: blur(4px);
             border-radius: 4px;
         }
-        [data-theme="dark"] .panel-label { background: rgba(13,17,23,0.7); }
-        .preview-panel .panel-label { left: auto; right: 18px; }
+
+        [data-theme="dark"] .panel-label {
+            background: rgba(13, 17, 23, 0.7);
+        }
+
+        .preview-panel .panel-label {
+            left: auto;
+            right: 18px;
+        }
 
         .editor-panel textarea {
             width: 100%;
@@ -224,41 +302,73 @@
             color: var(--text-primary);
             tab-size: 2;
         }
-        .editor-panel textarea::placeholder { color: var(--text-muted); }
+
+        .editor-panel textarea::placeholder {
+            color: var(--text-muted);
+        }
 
         .preview-panel {
             background: var(--bg-preview);
             overflow-y: auto;
             padding: 48px 28px 28px 28px;
         }
+
         .preview-panel .preview-content {
             max-width: 100%;
             word-wrap: break-word;
         }
 
         /* ===== 预览样式 ===== */
-        .preview-content h1, .preview-content h2, .preview-content h3,
-        .preview-content h4, .preview-content h5, .preview-content h6 {
+        .preview-content h1,
+        .preview-content h2,
+        .preview-content h3,
+        .preview-content h4,
+        .preview-content h5,
+        .preview-content h6 {
             margin: 1.2em 0 0.5em 0;
             font-weight: 600;
             line-height: 1.3;
             color: var(--text-primary);
         }
+
         .preview-content h1 {
             font-size: 2em;
             border-bottom: 2px solid var(--border-color);
             padding-bottom: 0.3em;
         }
+
         .preview-content h2 {
             font-size: 1.6em;
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 0.25em;
         }
-        .preview-content p { margin: 0.8em 0; line-height: 1.7; color: var(--text-secondary); }
-        .preview-content a { color: var(--accent); text-decoration: none; }
-        .preview-content a:hover { text-decoration: underline; }
-        .preview-content ul, .preview-content ol { padding-left: 1.6em; margin: 0.6em 0; }
-        .preview-content li { margin: 0.3em 0; color: var(--text-secondary); }
+
+        .preview-content p {
+            margin: 0.8em 0;
+            line-height: 1.7;
+            color: var(--text-secondary);
+        }
+
+        .preview-content a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .preview-content a:hover {
+            text-decoration: underline;
+        }
+
+        .preview-content ul,
+        .preview-content ol {
+            padding-left: 1.6em;
+            margin: 0.6em 0;
+        }
+
+        .preview-content li {
+            margin: 0.3em 0;
+            color: var(--text-secondary);
+        }
+
         .preview-content blockquote {
             margin: 0.8em 0;
             padding: 0.2em 1em 0.2em 1.2em;
@@ -267,6 +377,7 @@
             border-radius: 0 6px 6px 0;
             color: var(--text-secondary);
         }
+
         .preview-content code {
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.88em;
@@ -275,6 +386,7 @@
             border-radius: 4px;
             color: var(--text-primary);
         }
+
         .preview-content pre {
             background: var(--bg-codeblock);
             border-radius: 10px;
@@ -282,36 +394,50 @@
             overflow-x: auto;
             margin: 1em 0;
         }
+
         .preview-content pre code {
             background: transparent;
             padding: 0;
             color: #e2e8f0;
             font-size: 13px;
         }
-        .preview-content pre code.hljs { background: transparent; }
+
+        .preview-content pre code.hljs {
+            background: transparent;
+        }
+
         .preview-content table {
             border-collapse: collapse;
             width: 100%;
             margin: 1em 0;
             font-size: 0.95em;
         }
-        .preview-content table th, .preview-content table td {
+
+        .preview-content table th,
+        .preview-content table td {
             border: 1px solid var(--border-color);
             padding: 8px 14px;
             text-align: left;
             color: var(--text-secondary);
         }
+
         .preview-content table th {
             background: var(--hover-bg);
             font-weight: 600;
             color: var(--text-primary);
         }
+
         .preview-content hr {
             border: none;
             border-top: 2px solid var(--border-color);
             margin: 1.6em 0;
         }
-        .preview-content img { max-width: 100%; border-radius: 8px; }
+
+        .preview-content img {
+            max-width: 100%;
+            border-radius: 8px;
+        }
+
         .preview-content .mermaid {
             background: var(--bg-card);
             padding: 16px;
@@ -320,6 +446,7 @@
             margin: 1em 0;
             text-align: center;
         }
+
         .katex-error {
             color: #ef4444;
             background: #fee2e2;
@@ -333,11 +460,12 @@
             border-top: 1px solid var(--border-color);
             background: var(--bg-primary);
         }
+
         .reference-toggle {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 14px 28px;
+            padding: 14px 24px;
             cursor: pointer;
             font-weight: 600;
             font-size: 14px;
@@ -348,34 +476,46 @@
             font-family: inherit;
             text-align: left;
         }
-        .reference-toggle:hover { background: var(--hover-bg); }
+
+        .reference-toggle:hover {
+            background: var(--hover-bg);
+        }
+
         .reference-toggle .arrow {
             transition: transform 0.3s;
             color: var(--text-muted);
         }
-        .reference-toggle.open .arrow { transform: rotate(180deg); }
+
+        .reference-toggle.open .arrow {
+            transform: rotate(180deg);
+        }
+
         .reference-body {
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.4s ease, padding 0.3s ease;
-            padding: 0 28px;
+            padding: 0 24px;
         }
+
         .reference-body.open {
             max-height: 2000px;
-            padding: 0 28px 28px 28px;
+            padding: 0 24px 24px 24px;
         }
+
         .reference-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 16px;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 14px;
             margin-top: 8px;
         }
+
         .ref-card {
             background: var(--bg-card);
             border-radius: 12px;
-            padding: 14px 18px;
+            padding: 14px 16px;
             border: 1px solid var(--border-color);
         }
+
         .ref-card .title {
             font-size: 12px;
             font-weight: 700;
@@ -383,6 +523,7 @@
             color: var(--text-muted);
             margin-bottom: 6px;
         }
+
         .ref-card .example {
             font-family: 'JetBrains Mono', monospace;
             font-size: 13px;
@@ -393,12 +534,14 @@
             margin: 2px 0;
             color: var(--text-primary);
         }
+
         .ref-card .desc {
             font-size: 13px;
             color: var(--text-secondary);
             margin-top: 4px;
             line-height: 1.5;
         }
+
         .ref-card .example-block {
             font-family: 'JetBrains Mono', monospace;
             font-size: 12px;
@@ -414,64 +557,65 @@
 
         /* ===== 滚动条 ===== */
         .preview-panel::-webkit-scrollbar,
-        .editor-panel textarea::-webkit-scrollbar { width: 5px; height: 5px; }
+        .editor-panel textarea::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+
         .preview-panel::-webkit-scrollbar-thumb,
         .editor-panel textarea::-webkit-scrollbar-thumb {
             background: var(--scrollbar-thumb);
             border-radius: 10px;
         }
 
-        /* ===== 响应式 ===== */
-        @media (max-width: 860px) {
-            body { padding: 10px; }
-            .main { flex-direction: column; height: auto; min-height: 400px; max-height: none; }
-            .editor-panel {
-                border-right: none;
-                border-bottom: 1px solid var(--border-color);
-                min-height: 300px;
-                height: 45vh;
-            }
-            .preview-panel {
-                min-height: 300px;
-                height: 45vh;
-                padding: 48px 16px 16px 16px;
-            }
-            .header { padding: 12px 16px; }
-            .toolbar button, .toolbar label { font-size: 12px; padding: 4px 10px; }
-            .stats-bar { padding: 6px 16px; gap: 12px; font-size: 11px; }
-            .reference-grid { grid-template-columns: 1fr; }
-        }
-
         /* ===== Toast ===== */
-        .toast {
+        .toast-container {
             position: fixed;
             bottom: 30px;
             left: 50%;
-            transform: translateX(-50%) translateY(80px);
-            background: var(--bg-codeblock);
-            color: white;
+            transform: translateX(-50%);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            pointer-events: none;
+        }
+
+        .toast {
+            background: var(--toast-bg);
+            color: #fff;
             padding: 10px 28px;
             border-radius: 12px;
             font-size: 14px;
             font-weight: 500;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
             opacity: 0;
-            transition: all 0.4s ease;
-            pointer-events: none;
-            z-index: 999;
-        }
-        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-        .empty-hint {
-            color: var(--text-muted);
+            transform: translateY(20px);
+            transition: all 0.35s ease;
+            pointer-events: auto;
+            max-width: 90vw;
             text-align: center;
-            padding: 40px 20px;
-            font-size: 14px;
-            line-height: 1.8;
         }
-        .empty-hint .big { font-size: 40px; display: block; margin-bottom: 12px; }
 
-        /* ===== 模态框（用于剪贴板） ===== */
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .toast.success {
+            border-left: 4px solid #22c55e;
+        }
+
+        .toast.error {
+            border-left: 4px solid #ef4444;
+        }
+
+        .toast.info {
+            border-left: 4px solid var(--accent);
+        }
+
+        /* ===== 模态框 ===== */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -480,998 +624,1289 @@
             z-index: 1000;
             justify-content: center;
             align-items: center;
+            backdrop-filter: blur(3px);
             padding: 20px;
-            overflow-y: auto;
         }
+
         .modal-overlay.active {
             display: flex;
         }
-        .modal-box {
+
+        .modal {
             background: var(--bg-secondary);
             border-radius: 20px;
-            max-width: 900px;
+            padding: 32px 28px;
+            max-width: 480px;
             width: 100%;
             max-height: 90vh;
-            padding: 28px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             overflow-y: auto;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.25);
+            border: 1px solid var(--border-color);
             position: relative;
         }
-        .modal-close {
+
+        .modal .close-btn {
             position: absolute;
-            top: 12px;
+            top: 14px;
             right: 18px;
-            font-size: 24px;
-            cursor: pointer;
             background: none;
             border: none;
+            font-size: 26px;
             color: var(--text-muted);
+            cursor: pointer;
+            transition: 0.2s;
+            line-height: 1;
         }
-        .modal-close:hover { color: var(--text-primary); }
-        .modal-title {
-            font-size: 22px;
+
+        .modal .close-btn:hover {
+            color: var(--text-primary);
+            transform: rotate(90deg);
+        }
+
+        .modal h2 {
+            font-size: 24px;
             font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+            font-family: 'Ma Shan Zheng', cursive, sans-serif;
+        }
+
+        .modal .input-group {
             margin-bottom: 16px;
         }
 
-        /* 剪贴板表单 */
-        .clip-form textarea {
+        .modal .input-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .modal .input-group input,
+        .modal .input-group select,
+        .modal .input-group textarea {
             width: 100%;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
             padding: 10px 14px;
-            font-family: inherit;
-            font-size: 14px;
-            background: var(--bg-editor);
-            color: var(--text-primary);
-            resize: vertical;
-        }
-        .clip-form select, .clip-form input {
-            padding: 6px 10px;
             border: 1px solid var(--border-color);
-            border-radius: 6px;
-            background: var(--bg-editor);
+            border-radius: 10px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: inherit;
+            transition: 0.2s;
+        }
+
+        .modal .input-group input:focus,
+        .modal .input-group select:focus,
+        .modal .input-group textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-bg);
+        }
+
+        .modal .input-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .modal .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .modal .modal-actions .btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .modal .modal-actions .btn:hover {
+            opacity: 0.85;
+        }
+
+        .modal .modal-actions .btn-secondary {
+            background: var(--hover-bg);
             color: var(--text-primary);
         }
-        .clip-form .form-row {
+
+        .modal .modal-actions .btn-secondary:hover {
+            background: var(--border-color);
+        }
+
+        .modal .hint {
+            text-align: center;
+            margin-top: 14px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* ===== 剪贴板模态框（大） ===== */
+        #clipboardModal .modal {
+            max-width: 820px;
+        }
+
+        #clipboardModal .quota-display {
+            font-size: 13px;
+            color: var(--text-secondary);
+            background: var(--bg-primary);
+            padding: 8px 14px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        #clipboardModal .quota-display .highlight {
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        #clipboardModal .clipboard-form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        #clipboardModal .clipboard-form .row {
             display: flex;
             gap: 12px;
             flex-wrap: wrap;
-            margin: 12px 0;
-            align-items: center;
-        }
-        .clip-form .form-row label {
-            font-weight: 500;
-            font-size: 14px;
-        }
-        .clip-form .form-row select, .clip-form .form-row input {
-            flex: 1;
-            min-width: 120px;
-        }
-        .clip-form button {
-            padding: 8px 20px;
-            background: var(--accent);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        .clip-form button:hover { opacity: 0.85; }
-        .clip-form button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
         }
 
-        /* 剪贴板列表 */
-        .clip-list {
-            margin-top: 24px;
+        #clipboardModal .clipboard-form .row>* {
+            flex: 1;
+            min-width: 140px;
+        }
+
+        #clipboardModal .clipboard-form textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 70px;
+        }
+
+        #clipboardModal .clipboard-form textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-bg);
+        }
+
+        #clipboardModal .clipboard-form select {
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        #clipboardModal .clipboard-form select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        #clipboardModal .clipboard-form select[multiple] {
+            min-height: 80px;
+        }
+
+        #clipboardModal .clipboard-list {
+            margin-top: 16px;
             border-top: 1px solid var(--border-color);
             padding-top: 16px;
         }
-        .clip-item {
+
+        #clipboardModal .clipboard-list .list-title {
+            font-weight: 600;
+            font-size: 15px;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+
+        #clipboardModal .clipboard-item {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid var(--border-color);
+            align-items: flex-start;
+            padding: 12px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            margin-bottom: 8px;
+            background: var(--bg-primary);
             gap: 12px;
+            flex-wrap: wrap;
         }
-        .clip-item .content {
+
+        #clipboardModal .clipboard-item .content {
             flex: 1;
+            min-width: 120px;
             word-break: break-word;
             font-size: 14px;
             color: var(--text-secondary);
+            line-height: 1.5;
         }
-        .clip-item .meta {
+
+        #clipboardModal .clipboard-item .meta {
             font-size: 12px;
             color: var(--text-muted);
             display: flex;
             gap: 12px;
             flex-wrap: wrap;
-            min-width: 140px;
-            justify-content: flex-end;
+            align-items: center;
         }
-        .clip-item .actions {
+
+        #clipboardModal .clipboard-item .meta .tag {
+            background: var(--accent-bg);
+            color: var(--accent);
+            padding: 0 8px;
+            border-radius: 12px;
+            font-size: 11px;
+        }
+
+        #clipboardModal .clipboard-item .actions {
             display: flex;
             gap: 6px;
         }
-        .clip-item .actions button {
-            background: none;
+
+        #clipboardModal .clipboard-item .actions button {
+            padding: 4px 12px;
+            font-size: 12px;
             border: 1px solid var(--border-color);
             border-radius: 6px;
-            padding: 2px 10px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
             cursor: pointer;
-            font-size: 12px;
+            transition: 0.2s;
         }
-        .clip-item .actions button:hover {
+
+        #clipboardModal .clipboard-item .actions button:hover {
             background: var(--hover-bg);
         }
-        .clip-item .actions .delete-btn { color: #ef4444; }
-        .clip-item .actions .edit-btn { color: var(--accent); }
-        .clip-item .shared-with {
-            font-size: 12px;
-            color: var(--text-muted);
+
+        #clipboardModal .clipboard-item .actions .btn-del {
+            color: #ef4444;
+            border-color: #fca5a5;
         }
-        .quota-info {
+
+        #clipboardModal .clipboard-item .actions .btn-del:hover {
+            background: #fef2f2;
+        }
+
+        #clipboardModal .clipboard-item .actions .btn-edit {
+            color: var(--accent);
+        }
+
+        #clipboardModal .clipboard-item .actions .btn-edit:hover {
+            background: var(--accent-bg);
+        }
+
+        .empty-hint {
+            color: var(--text-muted);
+            text-align: center;
+            padding: 40px 20px;
             font-size: 14px;
-            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        .empty-hint .big {
+            font-size: 40px;
+            display: block;
             margin-bottom: 12px;
-            padding: 8px 12px;
-            background: var(--bg-primary);
-            border-radius: 8px;
+        }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 860px) {
+            body {
+                padding: 10px;
+            }
+
+            .main {
+                flex-direction: column;
+                height: auto;
+                min-height: 400px;
+                max-height: none;
+            }
+
+            .editor-panel {
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+                min-height: 260px;
+                height: 40vh;
+            }
+
+            .preview-panel {
+                min-height: 260px;
+                height: 40vh;
+                padding: 48px 16px 16px 16px;
+            }
+
+            .header {
+                padding: 10px 14px;
+            }
+
+            .header-left h1 {
+                font-size: 17px;
+            }
+
+            .toolbar button,
+            .toolbar label,
+            .user-area button {
+                font-size: 12px;
+                padding: 4px 10px;
+            }
+
+            .stats-bar {
+                padding: 6px 14px;
+                gap: 12px;
+                font-size: 11px;
+            }
+
+            .reference-grid {
+                grid-template-columns: 1fr;
+            }
+
+            #clipboardModal .modal {
+                padding: 20px 16px;
+            }
+
+            #clipboardModal .clipboard-form .row {
+                flex-direction: column;
+            }
+
+            #clipboardModal .clipboard-item {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .modal {
+                padding: 24px 18px;
+                margin: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-left .badge {
+                display: none;
+            }
+
+            .user-area .greeting {
+                font-size: 12px;
+            }
+
+            .toolbar button,
+            .toolbar label,
+            .user-area button {
+                font-size: 11px;
+                padding: 3px 8px;
+            }
         }
     </style>
 </head>
+
 <body>
 
-<div class="app">
-    <!-- ===== 顶栏 ===== -->
-    <header class="header">
-        <div class="header-left">
-            <span class="icon">⚡</span>
-            <h1>进阶编辑器</h1>
-            <span class="badge">数学 · 图表</span>
+    <div class="app">
+
+        <!-- ===== 顶栏 ===== -->
+        <header class="header">
+            <div class="header-left">
+                <span class="icon">⚡</span>
+                <h1>进阶编辑器</h1>
+                <span class="badge">数学 · 图表</span>
+            </div>
+
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                <!-- 用户区域 -->
+                <div class="user-area" id="userArea">
+                    <span class="greeting" id="greetingText">未登录 · 游客</span>
+                    <button class="btn-login" id="loginBtn">登 录</button>
+                    <button style="display:none;" id="logoutBtn">登出</button>
+                </div>
+
+                <!-- 工具栏 -->
+                <div class="toolbar">
+                    <button id="clipboardBtn">📋 剪贴板</button>
+                    <button id="loadExampleBtn" class="primary">✨ 示例</button>
+                    <button id="clearBtn">🗑️ 清空</button>
+                    <button id="downloadMdBtn">📥 下载 .md</button>
+                    <button id="downloadHtmlBtn">📤 导出 HTML</button>
+                    <label class="file-input-wrap">
+                        📂 上传
+                        <input type="file" id="fileInput" accept=".md,.txt,.markdown" />
+                    </label>
+                    <button id="themeToggleBtn" title="切换主题">🌓</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- ===== 统计栏 ===== -->
+        <div class="stats-bar">
+            <span>📝 字符: <span class="num" id="charCount">0</span></span>
+            <span>📖 单词: <span class="num" id="wordCount">0</span></span>
+            <span>📄 行数: <span class="num" id="lineCount">0</span></span>
+            <span>💾 自动保存</span>
         </div>
-        <div class="toolbar">
-            <!-- 新增剪贴板按钮 -->
-            <button id="clipboardBtn" class="primary">📋 剪贴板</button>
-            <button id="loadExampleBtn" class="primary">✨ 示例</button>
-            <button id="clearBtn">🗑️ 清空</button>
-            <button id="downloadMdBtn">📥 下载 .md</button>
-            <button id="downloadHtmlBtn">📤 导出 HTML</button>
-            <label class="file-input-wrap">
-                📂 上传
-                <input type="file" id="fileInput" accept=".md,.txt,.markdown" />
-            </label>
-            <button id="themeToggleBtn" title="切换主题">🌓</button>
-            <span class="user-info" id="userInfo">
-                <span id="usernameDisplay">未登录</span>
-                <button class="logout-btn" id="logoutBtn" style="display:none;">退出</button>
-            </span>
-        </div>
-    </header>
 
-    <!-- ===== 统计栏 ===== -->
-    <div class="stats-bar">
-        <span>📝 字符: <span class="num" id="charCount">0</span></span>
-        <span>📖 单词: <span class="num" id="wordCount">0</span></span>
-        <span>📄 行数: <span class="num" id="lineCount">0</span></span>
-        <span>💾 自动保存</span>
-    </div>
-
-    <!-- ===== 主体 ===== -->
-    <div class="main">
-        <section class="editor-panel">
-            <span class="panel-label">✏️ 编辑</span>
-            <textarea id="editor" spellcheck="false"></textarea>
-        </section>
-        <section class="preview-panel">
-            <span class="panel-label">👁️ 预览</span>
-            <div class="preview-content" id="preview">
-                <div class="empty-hint">
-                    <span class="big">📄</span>
-                    在左侧输入 Markdown<br>支持 LaTeX 公式 与 Mermaid 图表
-                </div>
-            </div>
-        </section>
-    </div>
-
-    <!-- ===== 语法参考 ===== -->
-    <div class="reference">
-        <button class="reference-toggle open" id="referenceToggle">
-            <span>📖 Markdown 进阶语法参考</span>
-            <span class="arrow">▼</span>
-        </button>
-        <div class="reference-body open" id="referenceBody" style="max-height: 2000px;">
-            <div class="reference-grid">
-                <div class="ref-card">
-                    <div class="title">🧮 数学公式 (KaTeX)</div>
-                    <span class="example">$E = mc^2$</span><br>
-                    <span class="example">$$ \int_0^\infty e^{-x} dx $$</span>
-                    <div class="desc">行内 <code>$...$</code>，块级 <code>$$...$$</code>。</div>
-                </div>
-                <div class="ref-card">
-                    <div class="title">📊 图表 (Mermaid)</div>
-                    <div class="example-block">```mermaid\ngraph TD\nA-->B\n```</div>
-                    <div class="desc">流程图、时序图、甘特图等。</div>
-                </div>
-                <div class="ref-card">
-                    <div class="title">📋 任务列表</div>
-                    <span class="example">- [x] 已完成</span><br>
-                    <span class="example">- [ ] 待办</span>
-                </div>
-                <div class="ref-card">
-                    <div class="title">📊 表格</div>
-                    <span class="example">| 列1 | 列2 |</span><br>
-                    <span class="example">|-----|-----|</span>
-                </div>
-            </div>
-            <p style="margin-top:18px; font-size:13px; color:var(--text-muted); text-align:center;">
-                💡 支持 GFM · 自动保存至本地 · 深色模式
-            </p>
-        </div>
-    </div>
-</div>
-
-<!-- ===== 剪贴板模态框 ===== -->
-<div class="modal-overlay" id="clipboardModal">
-    <div class="modal-box">
-        <button class="modal-close" id="closeClipboardModal">✕</button>
-        <h2 class="modal-title">📋 云剪贴板</h2>
-        <div class="quota-info" id="quotaDisplay">加载中...</div>
-
-        <!-- 创建表单 -->
-        <form class="clip-form" id="clipForm">
-            <textarea id="clipContent" rows="3" placeholder="输入要保存的文本..." required></textarea>
-            <div class="form-row">
-                <label>可见性</label>
-                <select id="clipVisibility">
-                    <option value="public">公开</option>
-                    <option value="private" selected>私有</option>
-                    <option value="shared">指定用户</option>
-                </select>
-            </div>
-            <div class="form-row" id="sharedWithRow" style="display:none;">
-                <label>分享给</label>
-                <select id="clipSharedWith" multiple style="height:80px; flex:2;"></select>
-                <span style="font-size:12px; color:var(--text-muted);">按住 Ctrl 多选</span>
-            </div>
-            <button type="submit" id="saveClipBtn">保存</button>
-        </form>
-
-        <!-- 列表 -->
-        <div class="clip-list" id="clipList">
-            <p style="color:var(--text-muted); text-align:center; padding:20px 0;">暂无剪贴板条目</p>
-        </div>
-    </div>
-</div>
-
-<!-- ===== 登录模态框（轻量） ===== -->
-<div class="modal-overlay" id="loginModal">
-    <div class="modal-box" style="max-width:400px;">
-        <h2 class="modal-title">🔐 登录</h2>
-        <form id="loginForm">
-            <div style="margin-bottom:12px;">
-                <label>用户名</label>
-                <input type="text" id="loginUsername" style="width:100%; padding:8px; border:1px solid var(--border-color); border-radius:6px; background:var(--bg-editor); color:var(--text-primary);" required>
-            </div>
-            <div style="margin-bottom:12px;">
-                <label>密码</label>
-                <input type="password" id="loginPassword" style="width:100%; padding:8px; border:1px solid var(--border-color); border-radius:6px; background:var(--bg-editor); color:var(--text-primary);" required>
-            </div>
-            <button type="submit" style="width:100%; padding:10px; background:var(--accent); color:white; border:none; border-radius:8px; font-weight:600; cursor:pointer;">登录</button>
-            <p id="loginError" style="color:#ef4444; margin-top:8px; display:none;"></p>
-        </form>
-        <button class="modal-close" id="closeLoginModal">✕</button>
-    </div>
-</div>
-
-<!-- ===== Toast ===== -->
-<div class="toast" id="toast"></div>
-
-<script>
-    (function() {
-        'use strict';
-
-        // ---- DOM ----
-        const editor = document.getElementById('editor');
-        const preview = document.getElementById('preview');
-        const clearBtn = document.getElementById('clearBtn');
-        const loadExampleBtn = document.getElementById('loadExampleBtn');
-        const downloadMdBtn = document.getElementById('downloadMdBtn');
-        const downloadHtmlBtn = document.getElementById('downloadHtmlBtn');
-        const fileInput = document.getElementById('fileInput');
-        const themeToggleBtn = document.getElementById('themeToggleBtn');
-        const referenceToggle = document.getElementById('referenceToggle');
-        const referenceBody = document.getElementById('referenceBody');
-        const toastEl = document.getElementById('toast');
-        const charCount = document.getElementById('charCount');
-        const wordCount = document.getElementById('wordCount');
-        const lineCount = document.getElementById('lineCount');
-        const usernameDisplay = document.getElementById('usernameDisplay');
-        const logoutBtn = document.getElementById('logoutBtn');
-
-        // ---- 剪贴板相关 DOM ----
-        const clipboardBtn = document.getElementById('clipboardBtn');
-        const clipboardModal = document.getElementById('clipboardModal');
-        const closeClipboardModal = document.getElementById('closeClipboardModal');
-        const clipForm = document.getElementById('clipForm');
-        const clipContent = document.getElementById('clipContent');
-        const clipVisibility = document.getElementById('clipVisibility');
-        const clipSharedWith = document.getElementById('clipSharedWith');
-        const sharedWithRow = document.getElementById('sharedWithRow');
-        const clipList = document.getElementById('clipList');
-        const quotaDisplay = document.getElementById('quotaDisplay');
-        const saveClipBtn = document.getElementById('saveClipBtn');
-
-        // ---- 登录相关 ----
-        const loginModal = document.getElementById('loginModal');
-        const loginForm = document.getElementById('loginForm');
-        const loginUsername = document.getElementById('loginUsername');
-        const loginPassword = document.getElementById('loginPassword');
-        const loginError = document.getElementById('loginError');
-        const closeLoginModal = document.getElementById('closeLoginModal');
-
-        // ---- 状态 ----
-        let currentUser = null; // { username, role }
-        let allUsers = [];      // 所有用户名（用于分享下拉）
-
-        // ---- 初始化 Mermaid ----
-        mermaid.initialize({
-            startOnLoad: false,
-            theme: 'default',
-            securityLevel: 'loose',
-            fontFamily: 'Inter, sans-serif',
-        });
-
-        // ---- 自定义 marked 渲染器 ----
-        const renderer = new marked.Renderer();
-        renderer.code = function(code, language) {
-            if (language === 'mermaid') {
-                return `<pre class="mermaid">${code}</pre>`;
-            }
-            try {
-                let highlighted;
-                if (language && hljs.getLanguage(language)) {
-                    highlighted = hljs.highlight(code, { language, ignoreIllegals: true }).value;
-                } else {
-                    highlighted = hljs.highlightAuto(code).value;
-                }
-                const langClass = language ? `language-${language}` : '';
-                return `<pre><code class="hljs ${langClass}">${highlighted}</code></pre>`;
-            } catch (e) {
-                console.warn('代码高亮失败，降级为纯文本:', e);
-                return `<pre><code>${code}</code></pre>`;
-            }
-        };
-        marked.use({ renderer });
-
-        // ---- 统计 ----
-        function getStats(text) {
-            const chars = text.length;
-            const words = text.trim() ? text.trim().split(/\s+/).length : 0;
-            const lines = text.split('\n').length;
-            return { chars, words, lines };
-        }
-
-        // ---- 核心渲染 ----
-        function render() {
-            const raw = editor.value;
-            const stats = getStats(raw);
-            charCount.textContent = stats.chars;
-            wordCount.textContent = stats.words;
-            lineCount.textContent = stats.lines;
-
-            if (!raw.trim()) {
-                preview.innerHTML = `
+        <!-- ===== 主体 ===== -->
+        <div class="main">
+            <section class="editor-panel">
+                <span class="panel-label">✏️ 编辑</span>
+                <textarea id="editor" spellcheck="false"></textarea>
+            </section>
+            <section class="preview-panel">
+                <span class="panel-label">👁️ 预览</span>
+                <div class="preview-content" id="preview">
                     <div class="empty-hint">
                         <span class="big">📄</span>
-                        在左侧输入 Markdown<br>支持 LaTeX 公式 与 Mermaid 图表
+                        在左侧输入 Markdown<br />支持 LaTeX 公式 与 Mermaid 图表
                     </div>
-                `;
-                return;
+                </div>
+            </section>
+        </div>
+
+        <!-- ===== 语法参考 ===== -->
+        <div class="reference">
+            <button class="reference-toggle open" id="referenceToggle">
+                <span>📖 Markdown 进阶语法参考</span>
+                <span class="arrow">▼</span>
+            </button>
+            <div class="reference-body open" id="referenceBody">
+                <div class="reference-grid">
+                    <div class="ref-card">
+                        <div class="title">🧮 数学公式 (KaTeX)</div>
+                        <span class="example">$E = mc^2$</span><br />
+                        <span class="example">$$ \int_0^\infty e^{-x} dx $$</span>
+                        <div class="desc">行内 <code>$...$</code>，块级 <code>$$...$$</code>。</div>
+                    </div>
+                    <div class="ref-card">
+                        <div class="title">📊 图表 (Mermaid)</div>
+                        <div class="example-block">```mermaid\ngraph TD\nA-->B\n```</div>
+                        <div class="desc">流程图、时序图、甘特图等。</div>
+                    </div>
+                    <div class="ref-card">
+                        <div class="title">📋 任务列表</div>
+                        <span class="example">- [x] 已完成</span><br />
+                        <span class="example">- [ ] 待办</span>
+                    </div>
+                    <div class="ref-card">
+                        <div class="title">📊 表格</div>
+                        <span class="example">| 列1 | 列2 |</span><br />
+                        <span class="example">|-----|-----|</span>
+                    </div>
+                </div>
+                <p style="margin-top:18px; font-size:13px; color:var(--text-muted); text-align:center;">
+                    💡 支持 GFM · 自动保存至本地 · 深色模式
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== Toast 容器 ===== -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- ========================================================== -->
+    <!-- ===== 登录模态框 ===== -->
+    <!-- ========================================================== -->
+    <div class="modal-overlay" id="loginModal">
+        <div class="modal">
+            <button class="close-btn" id="closeLoginModal">×</button>
+            <h2>登录书斋</h2>
+            <form onsubmit="return false">
+                <div class="input-group">
+                    <label>账号</label>
+                    <input type="text" id="loginUsername" placeholder="请输入账号" autocomplete="username" />
+                </div>
+                <div class="input-group">
+                    <label>密码</label>
+                    <input type="password" id="loginPassword" placeholder="请输入密码" autocomplete="current-password" />
+                </div>
+                <div class="modal-actions">
+                    <button class="btn" id="submitLogin">登 录</button>
+                </div>
+            </form>
+            <p class="hint">游客可浏览，登录后可创建剪贴板</p>
+        </div>
+    </div>
+
+    <!-- ========================================================== -->
+    <!-- ===== 剪贴板模态框 ===== -->
+    <!-- ========================================================== -->
+    <div class="modal-overlay" id="clipboardModal">
+        <div class="modal">
+            <button class="close-btn" id="closeClipboardModal">×</button>
+            <h2>📋 云剪贴板</h2>
+
+            <!-- 配额显示 -->
+            <div class="quota-display" id="quotaDisplay">
+                <span>角色：<strong id="quotaRole">—</strong></span>
+                <span>已用：<strong id="quotaUsed">0</strong> / <strong id="quotaTotal">0</strong></span>
+            </div>
+
+            <!-- 创建表单 -->
+            <div class="clipboard-form">
+                <textarea id="clipboardContent" placeholder="输入要保存的文本..." rows="3"></textarea>
+                <div class="row">
+                    <select id="clipboardVisibility">
+                        <option value="private">🔒 私有（仅自己）</option>
+                        <option value="public">🌐 公开（所有人）</option>
+                        <option value="shared">👥 指定用户</option>
+                    </select>
+                    <select id="clipboardSharedWith" multiple style="display:none;">
+                        <!-- 由 JS 动态填充 -->
+                    </select>
+                </div>
+                <button class="btn" id="saveClipboardBtn" style="align-self:flex-start; padding:8px 28px;">➕ 保存</button>
+            </div>
+
+            <!-- 列表 -->
+            <div class="clipboard-list">
+                <div class="list-title">📄 我的剪贴板</div>
+                <div id="clipboardList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================== -->
+    <!-- ===== JavaScript ===== -->
+    <!-- ========================================================== -->
+    <script>
+        (function() {
+            'use strict';
+
+            // ---- 配置 ----
+            const API_BASE = window.location.origin; // 同源，或改为你的后端地址
+
+            // ---- DOM 引用 ----
+            const editor = document.getElementById('editor');
+            const preview = document.getElementById('preview');
+            const clearBtn = document.getElementById('clearBtn');
+            const loadExampleBtn = document.getElementById('loadExampleBtn');
+            const downloadMdBtn = document.getElementById('downloadMdBtn');
+            const downloadHtmlBtn = document.getElementById('downloadHtmlBtn');
+            const fileInput = document.getElementById('fileInput');
+            const themeToggleBtn = document.getElementById('themeToggleBtn');
+            const referenceToggle = document.getElementById('referenceToggle');
+            const referenceBody = document.getElementById('referenceBody');
+            const toastContainer = document.getElementById('toastContainer');
+            const charCount = document.getElementById('charCount');
+            const wordCount = document.getElementById('wordCount');
+            const lineCount = document.getElementById('lineCount');
+
+            // 用户
+            const greetingText = document.getElementById('greetingText');
+            const loginBtn = document.getElementById('loginBtn');
+            const logoutBtn = document.getElementById('logoutBtn');
+
+            // 登录模态框
+            const loginModal = document.getElementById('loginModal');
+            const closeLoginModal = document.getElementById('closeLoginModal');
+            const loginUsername = document.getElementById('loginUsername');
+            const loginPassword = document.getElementById('loginPassword');
+            const submitLogin = document.getElementById('submitLogin');
+
+            // 剪贴板
+            const clipboardBtn = document.getElementById('clipboardBtn');
+            const clipboardModal = document.getElementById('clipboardModal');
+            const closeClipboardModal = document.getElementById('closeClipboardModal');
+            const clipboardContent = document.getElementById('clipboardContent');
+            const clipboardVisibility = document.getElementById('clipboardVisibility');
+            const clipboardSharedWith = document.getElementById('clipboardSharedWith');
+            const saveClipboardBtn = document.getElementById('saveClipboardBtn');
+            const clipboardList = document.getElementById('clipboardList');
+            const quotaRole = document.getElementById('quotaRole');
+            const quotaUsed = document.getElementById('quotaUsed');
+            const quotaTotal = document.getElementById('quotaTotal');
+
+            // ---- 状态 ----
+            let currentUser = null;
+            let allUsers = [];
+
+            // ---- 工具函数 ----
+            function escapeHtml(text) {
+                const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+                return String(text).replace(/[&<>"']/g, m => map[m]);
             }
 
-            let html = '';
-            try {
-                html = marked.parse(raw);
-            } catch (err) {
-                console.error('Markdown 解析错误:', err);
-                html = `<div style="color:#ef4444;padding:10px;">⚠️ Markdown 解析失败：${err.message}</div>`;
+            function showToast(message, type) {
+                type = type || 'info';
+                const el = document.createElement('div');
+                el.className = 'toast ' + type;
+                const icons = { success: '✅', error: '❌', info: 'ℹ️' };
+                el.textContent = (icons[type] || '') + ' ' + message;
+                toastContainer.appendChild(el);
+                // 触发动画
+                requestAnimationFrame(() => {
+                    el.classList.add('show');
+                });
+                setTimeout(() => {
+                    el.classList.remove('show');
+                    setTimeout(() => { if (el.parentNode) el.remove(); }, 400);
+                }, 2800);
             }
-            preview.innerHTML = html;
 
-            // KaTeX
-            try {
-                if (typeof renderMathInElement === 'function' && typeof window.katex !== 'undefined') {
-                    renderMathInElement(preview, {
-                        delimiters: [
-                            { left: '$$', right: '$$', display: true },
-                            { left: '$', right: '$', display: false },
-                            { left: '\\(', right: '\\)', display: false },
-                            { left: '\\[', right: '\\]', display: true }
-                        ],
-                        throwOnError: false,
-                        errorCallback: function(msg, err) {
-                            console.warn('KaTeX 公式错误:', msg, err);
-                            return `<span class="katex-error">公式渲染错误</span>`;
-                        }
-                    });
-                } else {
-                    console.warn('KaTeX 未加载，跳过公式渲染');
+            async function apiCall(url, options) {
+                options = options || {};
+                const config = {
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    ...options
+                };
+                if (config.body && typeof config.body === 'object') {
+                    config.body = JSON.stringify(config.body);
                 }
-            } catch (err) {
-                console.error('KaTeX 渲染异常:', err);
-                const errorDiv = document.createElement('div');
-                errorDiv.style.cssText = 'color:#ef4444;padding:8px;background:#fee2e2;border-radius:6px;margin-bottom:12px;';
-                errorDiv.textContent = `⚠️ 公式渲染异常：${err.message || err}`;
-                preview.prepend(errorDiv);
+                try {
+                    const res = await fetch(API_BASE + url, config);
+                    if (!res.ok) {
+                        const data = await res.json().catch(() => ({}));
+                        throw new Error(data.error || `请求失败 (${res.status})`);
+                    }
+                    return await res.json();
+                } catch (e) {
+                    throw e;
+                }
             }
 
-            // Mermaid
-            try {
-                const mermaidNodes = preview.querySelectorAll('.mermaid');
-                if (mermaidNodes.length > 0) {
-                    mermaid.run({
-                        nodes: mermaidNodes,
-                        suppressErrors: true
-                    }).catch(err => {
-                        console.warn('Mermaid 渲染错误:', err);
-                        mermaidNodes.forEach(node => {
-                            if (!node.querySelector('.mermaid-error')) {
-                                node.innerHTML = `<div class="mermaid-error" style="color:#ef4444;">⚠️ 图表渲染失败</div>`;
+            function isLoggedIn() { return !!currentUser; }
+
+            function getRole() { return currentUser ? currentUser.role : null; }
+
+            // ---- 初始化 Mermaid ----
+            mermaid.initialize({
+                startOnLoad: false,
+                theme: 'default',
+                securityLevel: 'loose',
+                fontFamily: 'Inter, sans-serif',
+            });
+
+            // ---- 自定义 marked 渲染器 ----
+            const renderer = new marked.Renderer();
+            renderer.code = function(code, language) {
+                if (language === 'mermaid') {
+                    return `<pre class="mermaid">${code}</pre>`;
+                }
+                try {
+                    let highlighted;
+                    if (language && hljs.getLanguage(language)) {
+                        highlighted = hljs.highlight(code, { language, ignoreIllegals: true }).value;
+                    } else {
+                        highlighted = hljs.highlightAuto(code).value;
+                    }
+                    const langClass = language ? `language-${language}` : '';
+                    return `<pre><code class="hljs ${langClass}">${highlighted}</code></pre>`;
+                } catch (e) {
+                    console.warn('代码高亮失败:', e);
+                    return `<pre><code>${code}</code></pre>`;
+                }
+            };
+            marked.use({ renderer });
+
+            // ---- 统计 ----
+            function getStats(text) {
+                const chars = text.length;
+                const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+                const lines = text.split('\n').length;
+                return { chars, words, lines };
+            }
+
+            // ---- 核心渲染 ----
+            function render() {
+                const raw = editor.value;
+                const stats = getStats(raw);
+                charCount.textContent = stats.chars;
+                wordCount.textContent = stats.words;
+                lineCount.textContent = stats.lines;
+
+                if (!raw.trim()) {
+                    preview.innerHTML = `
+                        <div class="empty-hint">
+                            <span class="big">📄</span>
+                            在左侧输入 Markdown<br />支持 LaTeX 公式 与 Mermaid 图表
+                        </div>
+                    `;
+                    return;
+                }
+
+                let html = '';
+                try {
+                    html = marked.parse(raw);
+                } catch (err) {
+                    console.error('Markdown 解析错误:', err);
+                    html = `<div style="color:#ef4444;padding:10px;">⚠️ Markdown 解析失败：${err.message}</div>`;
+                }
+                preview.innerHTML = html;
+
+                // KaTeX
+                try {
+                    if (typeof renderMathInElement === 'function' && typeof window.katex !== 'undefined') {
+                        renderMathInElement(preview, {
+                            delimiters: [
+                                { left: '$$', right: '$$', display: true },
+                                { left: '$', right: '$', display: false },
+                                { left: '\\(', right: '\\)', display: false },
+                                { left: '\\[', right: '\\]', display: true }
+                            ],
+                            throwOnError: false,
+                            errorCallback: function(msg, err) {
+                                console.warn('KaTeX 公式错误:', msg, err);
+                                return `<span class="katex-error">公式渲染错误</span>`;
                             }
                         });
-                    });
+                    } else {
+                        console.warn('KaTeX 未加载');
+                    }
+                } catch (err) {
+                    console.error('KaTeX 渲染异常:', err);
+                    const errorDiv = document.createElement('div');
+                    errorDiv.style.cssText = 'color:#ef4444;padding:8px;background:#fee2e2;border-radius:6px;margin-bottom:12px;';
+                    errorDiv.textContent = `⚠️ 公式渲染异常：${err.message || err}`;
+                    preview.prepend(errorDiv);
                 }
-            } catch (err) {
-                console.warn('Mermaid 渲染异常:', err);
+
+                // Mermaid
+                try {
+                    const mermaidNodes = preview.querySelectorAll('.mermaid');
+                    if (mermaidNodes.length > 0) {
+                        mermaid.run({
+                            nodes: mermaidNodes,
+                            suppressErrors: true
+                        }).catch(err => {
+                            console.warn('Mermaid 渲染错误:', err);
+                            mermaidNodes.forEach(node => {
+                                if (!node.querySelector('.mermaid-error')) {
+                                    node.innerHTML =
+                                        `<div class="mermaid-error" style="color:#ef4444;">⚠️ 图表渲染失败</div>`;
+                                }
+                            });
+                        });
+                    }
+                } catch (err) {
+                    console.warn('Mermaid 渲染异常:', err);
+                }
             }
-        }
 
-        // ---- 防抖 + 自动保存 ----
-        let debounceTimer = null;
-        function scheduleRender() {
-            if (debounceTimer) clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => {
-                render();
-                try { localStorage.setItem('markdown_editor_content', editor.value); } catch (_) {}
-            }, 150);
-        }
-        editor.addEventListener('input', scheduleRender);
+            // ---- 防抖 + 自动保存 ----
+            let debounceTimer = null;
 
-        // ---- 示例内容 ----
-        function getExampleMarkdown() {
-            return `# 📘 基础语法示例 (普通用法)
+            function scheduleRender() {
+                if (debounceTimer) clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    render();
+                    try { localStorage.setItem('markdown_editor_content', editor.value); } catch (_) {}
+                }, 150);
+            }
+            editor.addEventListener('input', scheduleRender);
 
-这部分展示最常见的 Markdown 语法，适合日常笔记和文档。
+            // ---- 示例内容 ----
+            function getExampleMarkdown() {
+                return `# 📘 基础语法示例 (普通用法)
 
-## 1. 标题与段落
+        这部分展示最常见的 Markdown 语法，适合日常笔记和文档。
 
-使用 \`#\` 号表示标题，数量 1~6 级。
+        ## 1. 标题与段落
 
-### 三级标题
-#### 四级标题
+        使用 \`#\` 号表示标题，数量 1~6 级。
 
-这是普通段落。**可以加粗**，*可以斜体*，***可以粗斜体***，~~可以删除~~，也可以 \`行内代码\`。
+        ### 三级标题
+        #### 四级标题
 
----
+        这是普通段落。**可以加粗**，*可以斜体*，***可以粗斜体***，~~可以删除~~，也可以 \`行内代码\`。
 
-## 2. 列表
+        ---
 
-### 无序列表
-- 苹果 🍎
-- 香蕉 🍌
-- 橙子 🍊
+        ## 2. 列表
 
-### 有序列表
-1. 第一步
-2. 第二步
-3. 第三步
+        ### 无序列表
+        - 苹果 🍎
+        - 香蕉 🍌
+        - 橙子 🍊
 
----
+        ### 有序列表
+        1. 第一步
+        2. 第二步
+        3. 第三步
 
-## 3. 引用与链接
+        ---
 
-> 这是引用块，通常用于标注重点或引用他人内容。
->> 还可以嵌套引用。
+        ## 3. 引用与链接
 
-链接示例：[点击访问 GitHub](https://github.com)
+        > 这是引用块，通常用于标注重点或引用他人内容。
+        >> 还可以嵌套引用。
 
-图片示例：
-![示例图片](https://picsum.photos/400/200?random=1)
+        链接示例：[点击访问 GitHub](https://github.com)
 
----
+        图片示例：
+        ![示例图片](https://picsum.photos/400/200?random=1)
 
-## 4. 基础代码块
+        ---
 
-\`\`\`text
-这是一个纯文本代码块
-用于展示配置或日志
-\`\`\`
+        ## 4. 基础代码块
 
----
+        \`\`\`text
+        这是一个纯文本代码块
+        用于展示配置或日志
+        \`\`\`
 
-# 🚀 进阶语法示例 (进阶用法)
+        ---
 
-这部分展示扩展语法，包括任务列表、表格、数学公式和图表，适用于技术写作和学术笔记。
+        # 🚀 进阶语法示例 (进阶用法)
 
-## 5. 任务列表 (GFM)
+        这部分展示扩展语法，包括任务列表、表格、数学公式和图表，适用于技术写作和学术笔记。
 
-- [x] 支持基础语法
-- [x] 支持数学公式
-- [ ] 支持 Mermaid 图表
-- [ ] 导出 PDF (未来功能)
+        ## 5. 任务列表 (GFM)
 
----
+        - [x] 支持基础语法
+        - [x] 支持数学公式
+        - [ ] 支持 Mermaid 图表
+        - [ ] 导出 PDF (未来功能)
 
-## 6. 表格
+        ---
 
-| 功能模块   | 支持情况 | 备注          |
-|------------|----------|---------------|
-| 基础语法   | ✅ 完整   | 标题/列表/链接 |
-| 数学公式   | ✅ 支持   | KaTeX 渲染    |
-| Mermaid 图表 | ✅ 支持   | 流程图/时序图 |
-| 深色模式   | ✅ 支持   | 一键切换      |
+        ## 6. 表格
 
----
+        | 功能模块   | 支持情况 | 备注          |
+        |------------|----------|---------------|
+        | 基础语法   | ✅ 完整   | 标题/列表/链接 |
+        | 数学公式   | ✅ 支持   | KaTeX 渲染    |
+        | Mermaid 图表 | ✅ 支持   | 流程图/时序图 |
+        | 深色模式   | ✅ 支持   | 一键切换      |
 
-## 7. 数学公式 (LaTeX / KaTeX)
+        ---
 
-行内公式：$E = mc^2$ 是质能方程。
+        ## 7. 数学公式 (LaTeX / KaTeX)
 
-块级公式（求和与积分）：
+        行内公式：$E = mc^2$ 是质能方程。
 
-$$ \\int_0^\\infty e^{-x^2} dx = \\frac{\\sqrt{\\pi}}{2} $$
+        块级公式（求和与积分）：
 
-矩阵示例：
-$$ \\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix} $$
+        $$ \\int_0^\\infty e^{-x^2} dx = \\frac{\\sqrt{\\pi}}{2} $$
 
----
+        矩阵示例：
+        $$ \\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix} $$
 
-## 8. 图表 (Mermaid)
+        ---
 
-### 流程图
-\`\`\`mermaid
-graph TD
-    A[开始] --> B{判断条件}
-    B -->|是| C[执行操作]
-    B -->|否| D[结束]
-    C --> D
-\`\`\`
+        ## 8. 图表 (Mermaid)
 
-### 时序图
-\`\`\`mermaid
-sequenceDiagram
-    用户->>系统: 发送请求
-    系统-->>用户: 返回响应
-    用户->>系统: 确认操作
-\`\`\`
+        ### 流程图
+        \`\`\`mermaid
+        graph TD
+            A[开始] --> B{判断条件}
+            B -->|是| C[执行操作]
+            B -->|否| D[结束]
+            C --> D
+        \`\`\`
 
----
+        ### 时序图
+        \`\`\`mermaid
+        sequenceDiagram
+            用户->>系统: 发送请求
+            系统-->>用户: 返回响应
+            用户->>系统: 确认操作
+        \`\`\`
 
-## 9. 高级代码块 (带语法高亮)
+        ---
 
-\`\`\`js
-const greet = (name) => {
-    console.log(\`Hello, \${name}!\`);
-};
-greet("Markdown 进阶用户");
-\`\`\`
+        ## 9. 高级代码块 (带语法高亮)
 
-\`\`\`python
-def greet(name):
-    print(f"Hello, {name}!")
-greet("Markdown")
-\`\`\`
+        \`\`\`js
+        const greet = (name) => {
+            console.log(\`Hello, \${name}!\`);
+        };
+        greet("Markdown 进阶用户");
+        \`\`\`
 
----
+        \`\`\`python
+        def greet(name):
+            print(f"Hello, {name}!")
+        greet("Markdown")
+        \`\`\`
 
-✨ **提示**：你可以在左侧自由编辑，右侧会实时渲染。点击顶栏的“🌓”可以切换深色模式。
-`;
-        }
+        ---
 
-        // ---- Toast ----
-        let toastTimer = null;
-        function showToast(msg) {
-            toastEl.textContent = msg;
-            toastEl.classList.add('show');
-            if (toastTimer) clearTimeout(toastTimer);
-            toastTimer = setTimeout(() => {
-                toastEl.classList.remove('show');
-            }, 2200);
-        }
+        ✨ **提示**：你可以在左侧自由编辑，右侧会实时渲染。点击顶栏的“🌓”可以切换深色模式。
+        `;
+            }
 
-        // ---- 下载 ----
-        function downloadFile(content, filename, mimeType) {
-            const blob = new Blob([content], { type: `${mimeType};charset=utf-8` });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }
+            // ---- 下载文件 ----
+            function downloadFile(content, filename, mimeType) {
+                const blob = new Blob([content], { type: `${mimeType};charset=utf-8` });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
 
-        // ============================================================
-        // ========== 登录 / 用户状态管理 ==============================
-        // ============================================================
+            // ==========================================================
+            // ===== 用户认证 =====
+            // ==========================================================
 
-        async function fetchMe() {
-            try {
-                const res = await fetch('/api/me', { credentials: 'include' });
-                if (res.ok) {
-                    const data = await res.json();
+            async function checkLoginStatus() {
+                try {
+                    const data = await apiCall('/api/me', {}, true);
                     if (data && data.username) {
                         currentUser = data;
-                        usernameDisplay.textContent = currentUser.username + (currentUser.role === 'owner' ? ' 👑' : currentUser.role === 'admin' ? ' ⚙️' : '');
-                        logoutBtn.style.display = 'inline-block';
-                        loginModal.classList.remove('active');
-                        return true;
+                    } else {
+                        currentUser = null;
                     }
+                } catch (_) {
+                    currentUser = null;
                 }
-            } catch (e) {}
-            currentUser = null;
-            usernameDisplay.textContent = '未登录';
-            logoutBtn.style.display = 'none';
-            return false;
-        }
+                updateUI();
+                // 如果已登录，加载用户列表（用于剪贴板分享）
+                if (isLoggedIn()) {
+                    try {
+                        const users = await apiCall('/api/users/list');
+                        if (Array.isArray(users)) {
+                            allUsers = users;
+                            populateSharedWithSelect();
+                        }
+                    } catch (_) { /* 忽略 */ }
+                }
+            }
 
-        async function login(username, password) {
-            try {
-                const res = await fetch('/api/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
-                    body: JSON.stringify({ username, password })
-                });
-                if (res.ok) {
-                    const data = await res.json();
-                    await fetchMe();
-                    showToast('登录成功');
-                    return true;
+            function updateUI() {
+                if (isLoggedIn()) {
+                    greetingText.textContent = `👤 ${currentUser.username} · ${currentUser.role}`;
+                    loginBtn.style.display = 'none';
+                    logoutBtn.style.display = 'inline-block';
                 } else {
-                    const err = await res.json();
-                    loginError.textContent = err.error || '登录失败';
-                    loginError.style.display = 'block';
-                    return false;
-                }
-            } catch (e) {
-                loginError.textContent = '网络错误';
-                loginError.style.display = 'block';
-                return false;
-            }
-        }
-
-        async function logout() {
-            try {
-                await fetch('/api/logout', { method: 'POST', credentials: 'include' });
-            } catch (e) {}
-            currentUser = null;
-            usernameDisplay.textContent = '未登录';
-            logoutBtn.style.display = 'none';
-            // 关闭可能打开的模态框
-            clipboardModal.classList.remove('active');
-            showToast('已退出');
-        }
-
-        // ---- 登录事件 ----
-        loginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            loginError.style.display = 'none';
-            const ok = await login(loginUsername.value, loginPassword.value);
-            if (ok) {
-                loginUsername.value = '';
-                loginPassword.value = '';
-                // 如果剪贴板模态框打开，刷新列表
-                if (clipboardModal.classList.contains('active')) {
-                    loadClipboards();
+                    greetingText.textContent = '未登录 · 游客';
+                    loginBtn.style.display = 'inline-block';
+                    logoutBtn.style.display = 'none';
                 }
             }
-        });
 
-        // 点击“登录”按钮（若未登录，显示登录框）
-        document.querySelector('.user-info').addEventListener('click', (e) => {
-            if (!currentUser && e.target.tagName !== 'BUTTON') {
-                loginModal.classList.add('active');
-            }
-        });
-        closeLoginModal.addEventListener('click', () => loginModal.classList.remove('active'));
-        loginModal.addEventListener('click', (e) => {
-            if (e.target === loginModal) loginModal.classList.remove('active');
-        });
-
-        logoutBtn.addEventListener('click', logout);
-
-        // ============================================================
-        // ========== 云剪贴板功能 ======================================
-        // ============================================================
-
-        // 获取所有用户列表（用于分享）
-        async function fetchAllUsers() {
-            try {
-                const res = await fetch('/api/users/list', { credentials: 'include' });
-                if (res.ok) {
-                    allUsers = await res.json();
-                    populateSharedWith();
-                } else {
-                    allUsers = [];
+            // 登录
+            submitLogin.addEventListener('click', async function() {
+                const u = loginUsername.value.trim();
+                const p = loginPassword.value;
+                if (!u || !p) {
+                    showToast('请输入账号和密码', 'error');
+                    return;
                 }
-            } catch (e) {
-                allUsers = [];
-            }
-        }
-
-        function populateSharedWith() {
-            const select = clipSharedWith;
-            select.innerHTML = '';
-            allUsers.forEach(u => {
-                if (u !== currentUser?.username) {
-                    const opt = document.createElement('option');
-                    opt.value = u;
-                    opt.textContent = u;
-                    select.appendChild(opt);
+                try {
+                    const data = await apiCall('/api/login', {
+                        method: 'POST',
+                        body: { username: u, password: p }
+                    });
+                    currentUser = data;
+                    loginModal.classList.remove('active');
+                    updateUI();
+                    showToast(`登录成功，欢迎 ${data.username}`, 'success');
+                    loginUsername.value = '';
+                    loginPassword.value = '';
+                    // 加载用户列表
+                    try {
+                        const users = await apiCall('/api/users/list');
+                        if (Array.isArray(users)) {
+                            allUsers = users;
+                            populateSharedWithSelect();
+                        }
+                    } catch (_) { /* 忽略 */ }
+                } catch (err) {
+                    showToast('登录失败: ' + err.message, 'error');
                 }
             });
-        }
 
-        // 加载剪贴板列表
-        async function loadClipboards() {
-            if (!currentUser) {
-                clipList.innerHTML = '<p style="color:var(--text-muted); text-align:center; padding:20px 0;">请先登录</p>';
-                return;
-            }
-            try {
-                const res = await fetch('/api/clipboards', { credentials: 'include' });
-                if (!res.ok) throw new Error('加载失败');
-                const data = await res.json();
-                if (data.length === 0) {
-                    clipList.innerHTML = '<p style="color:var(--text-muted); text-align:center; padding:20px 0;">暂无剪贴板条目</p>';
+            // 登出
+            logoutBtn.addEventListener('click', async function() {
+                try {
+                    await apiCall('/api/logout', { method: 'POST' });
+                    currentUser = null;
+                    updateUI();
+                    showToast('已登出', 'info');
+                } catch (err) {
+                    showToast('登出失败: ' + err.message, 'error');
+                }
+            });
+
+            // 登录模态框控制
+            loginBtn.addEventListener('click', function() {
+                loginModal.classList.add('active');
+                loginUsername.focus();
+            });
+
+            closeLoginModal.addEventListener('click', function() {
+                loginModal.classList.remove('active');
+            });
+
+            loginModal.addEventListener('click', function(e) {
+                if (e.target === loginModal) loginModal.classList.remove('active');
+            });
+
+            // 回车登录
+            loginPassword.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') submitLogin.click();
+            });
+            loginUsername.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') loginPassword.focus();
+            });
+
+            // ==========================================================
+            // ===== 云剪贴板 =====
+            // ==========================================================
+
+            function populateSharedWithSelect() {
+                const sel = clipboardSharedWith;
+                sel.innerHTML = '';
+                // 过滤掉当前用户
+                const others = allUsers.filter(u => u !== (currentUser ? currentUser.username : null));
+                if (others.length === 0) {
+                    const opt = document.createElement('option');
+                    opt.value = '';
+                    opt.textContent = '（暂无其他用户）';
+                    opt.disabled = true;
+                    sel.appendChild(opt);
                 } else {
+                    others.forEach(u => {
+                        const opt = document.createElement('option');
+                        opt.value = u;
+                        opt.textContent = u;
+                        sel.appendChild(opt);
+                    });
+                }
+            }
+
+            // 可见性切换：显示/隐藏多选
+            clipboardVisibility.addEventListener('change', function() {
+                if (this.value === 'shared') {
+                    clipboardSharedWith.style.display = 'block';
+                } else {
+                    clipboardSharedWith.style.display = 'none';
+                }
+            });
+
+            // 加载剪贴板列表
+            async function loadClipboards() {
+                if (!isLoggedIn()) {
+                    clipboardList.innerHTML = `<p style="color:var(--text-muted);">请先登录查看剪贴板</p>`;
+                    return;
+                }
+                try {
+                    const data = await apiCall('/api/clipboards');
+                    if (!Array.isArray(data)) {
+                        clipboardList.innerHTML = `<p style="color:var(--text-muted);">暂无数据</p>`;
+                        return;
+                    }
+                    // 更新配额
+                    const role = getRole();
+                    let quota = 0;
+                    if (role === 'owner') quota = Infinity;
+                    else if (role === 'admin') quota = 10;
+                    else quota = 5;
+                    quotaRole.textContent = role || 'member';
+                    quotaTotal.textContent = quota === Infinity ? '∞' : quota;
+                    quotaUsed.textContent = data.length;
+
+                    if (data.length === 0) {
+                        clipboardList.innerHTML = `<p style="color:var(--text-muted);">暂无剪贴板条目</p>`;
+                        return;
+                    }
+
                     let html = '';
                     data.forEach(item => {
-                        const sharedInfo = item.visibility === 'shared' ? `分享给: ${item.sharedWith.join(', ')}` : '';
+                        const isOwner = item.createdBy === (currentUser ? currentUser.username : '');
+                        const sharedInfo = (item.visibility === 'shared' && item.sharedWith && item.sharedWith
+                            .length > 0) ?
+                            `分享给: ${item.sharedWith.join(', ')}` :
+                            '';
+                        const visLabel = {
+                            'public': '🌐 公开',
+                            'private': '🔒 私有',
+                            'shared': '👥 指定用户'
+                        } [item.visibility] || item.visibility;
+
                         html += `
-                            <div class="clip-item" data-id="${item.id}">
+                            <div class="clipboard-item" data-id="${item.id}">
                                 <div class="content">${escapeHtml(item.content)}</div>
                                 <div class="meta">
-                                    <span>${item.createdBy}</span>
-                                    <span>${item.visibility}</span>
-                                    ${sharedInfo ? `<span class="shared-with">${sharedInfo}</span>` : ''}
+                                    <span>👤 ${escapeHtml(item.createdBy)}</span>
+                                    <span class="tag">${visLabel}</span>
+                                    ${sharedInfo ? `<span>${escapeHtml(sharedInfo)}</span>` : ''}
                                     <span>${new Date(item.createdAt).toLocaleString()}</span>
-                                    <div class="actions">
-                                        <button class="edit-btn" data-id="${item.id}">编辑</button>
-                                        <button class="delete-btn" data-id="${item.id}">删除</button>
-                                    </div>
+                                </div>
+                                <div class="actions">
+                                    <button class="btn-edit" data-id="${item.id}">✏️ 编辑</button>
+                                    <button class="btn-del" data-id="${item.id}">🗑️ 删除</button>
                                 </div>
                             </div>
                         `;
                     });
-                    clipList.innerHTML = html;
-                    // 绑定事件
-                    clipList.querySelectorAll('.edit-btn').forEach(btn => {
-                        btn.addEventListener('click', () => editClipboard(btn.dataset.id));
+                    clipboardList.innerHTML = html;
+
+                    // 绑定编辑和删除事件
+                    clipboardList.querySelectorAll('.btn-edit').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const id = this.dataset.id;
+                            editClipboard(id);
+                        });
                     });
-                    clipList.querySelectorAll('.delete-btn').forEach(btn => {
-                        btn.addEventListener('click', () => deleteClipboard(btn.dataset.id));
+                    clipboardList.querySelectorAll('.btn-del').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const id = this.dataset.id;
+                            deleteClipboard(id);
+                        });
                     });
-                }
-            } catch (err) {
-                showToast('加载剪贴板失败');
-                console.error(err);
-            }
-            // 更新配额
-            await updateQuota();
-        }
 
-        // 更新配额显示
-        async function updateQuota() {
-            if (!currentUser) {
-                quotaDisplay.textContent = '请先登录使用剪贴板';
-                return;
-            }
-            try {
-                // 后端没有专门配额接口，我们通过获取所有条目并计数（创建者）来计算
-                const res = await fetch('/api/clipboards', { credentials: 'include' });
-                if (res.ok) {
-                    const items = await res.json();
-                    const myItems = items.filter(item => item.createdBy === currentUser.username);
-                    const used = myItems.length;
-                    // 根据角色确定上限
-                    let limit = 5;
-                    if (currentUser.role === 'owner') limit = Infinity;
-                    else if (currentUser.role === 'admin') limit = 10;
-                    else limit = 5;
-                    quotaDisplay.textContent = `已用 ${used} 条，上限 ${limit === Infinity ? '∞' : limit}`;
-                    // 控制保存按钮
-                    saveClipBtn.disabled = (used >= limit && limit !== Infinity);
+                } catch (err) {
+                    clipboardList.innerHTML = `<p style="color:#ef4444;">加载失败: ${escapeHtml(err.message)}</p>`;
                 }
-            } catch (e) {}
-        }
+            }
 
-        // 创建剪贴板条目
-        clipForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            if (!currentUser) {
-                showToast('请先登录');
-                return;
-            }
-            const content = clipContent.value.trim();
-            if (!content) {
-                showToast('内容不能为空');
-                return;
-            }
-            const visibility = clipVisibility.value;
-            let sharedWith = [];
-            if (visibility === 'shared') {
-                const selected = Array.from(clipSharedWith.selectedOptions).map(opt => opt.value);
-                sharedWith = selected;
-            }
-            try {
-                const res = await fetch('/api/clipboards', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
-                    body: JSON.stringify({ content, visibility, sharedWith })
-                });
-                if (res.ok) {
-                    showToast('已保存');
-                    clipContent.value = '';
-                    await loadClipboards();
-                } else {
-                    const err = await res.json();
-                    showToast(err.error || '保存失败');
-                }
-            } catch (err) {
-                showToast('请求失败');
-            }
-        });
-
-        // 删除剪贴板条目
-        async function deleteClipboard(id) {
-            if (!confirm('确认删除？')) return;
-            try {
-                const res = await fetch(`/api/clipboards/${id}`, {
-                    method: 'DELETE',
-                    credentials: 'include'
-                });
-                if (res.ok) {
-                    showToast('已删除');
-                    await loadClipboards();
-                } else {
-                    const err = await res.json();
-                    showToast(err.error || '删除失败');
-                }
-            } catch (err) {
-                showToast('请求失败');
-            }
-        }
-
-        // 编辑剪贴板条目（简单实现：弹窗修改内容和可见性）
-        async function editClipboard(id) {
-            // 先获取当前条目内容（从列表中提取）
-            const itemDiv = clipList.querySelector(`.clip-item[data-id="${id}"]`);
-            if (!itemDiv) return;
-            const contentDiv = itemDiv.querySelector('.content');
-            const currentContent = contentDiv.textContent;
-            const newContent = prompt('修改内容:', currentContent);
-            if (newContent === null) return; // 取消
-            if (!newContent.trim()) {
-                showToast('内容不能为空');
-                return;
-            }
-            // 询问可见性
-            const vis = prompt('可见性 (public/private/shared):', 'private');
-            if (vis === null) return;
-            if (!['public', 'private', 'shared'].includes(vis)) {
-                showToast('可见性必须为 public/private/shared');
-                return;
-            }
-            let sharedWith = [];
-            if (vis === 'shared') {
-                const shareInput = prompt('分享给谁？用逗号分隔用户名 (如 user1,user2)');
-                if (shareInput !== null) {
-                    sharedWith = shareInput.split(',').map(s => s.trim()).filter(s => s);
-                } else {
+            // 创建剪贴板
+            async function createClipboard() {
+                if (!isLoggedIn()) {
+                    showToast('请先登录', 'error');
                     return;
                 }
-            }
-            try {
-                const res = await fetch(`/api/clipboards/${id}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
-                    body: JSON.stringify({ content: newContent.trim(), visibility: vis, sharedWith })
-                });
-                if (res.ok) {
-                    showToast('已更新');
-                    await loadClipboards();
-                } else {
-                    const err = await res.json();
-                    showToast(err.error || '更新失败');
+                const content = clipboardContent.value.trim();
+                if (!content) {
+                    showToast('请输入内容', 'error');
+                    return;
                 }
-            } catch (err) {
-                showToast('请求失败');
+                const visibility = clipboardVisibility.value;
+                let sharedWith = [];
+                if (visibility === 'shared') {
+                    const sel = clipboardSharedWith;
+                    sharedWith = Array.from(sel.selectedOptions).map(o => o.value).filter(v => v);
+                }
+                try {
+                    const data = await apiCall('/api/clipboards', {
+                        method: 'POST',
+                        body: { content, visibility, sharedWith }
+                    });
+                    showToast('保存成功 ✅', 'success');
+                    clipboardContent.value = '';
+                    await loadClipboards();
+                } catch (err) {
+                    showToast('保存失败: ' + err.message, 'error');
+                }
             }
-        }
 
-        // 辅助转义
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        // ---- 剪贴板模态框打开/关闭 ----
-        clipboardBtn.addEventListener('click', async () => {
-            if (!currentUser) {
-                // 若未登录，打开登录框
-                loginModal.classList.add('active');
-                return;
+            // 删除剪贴板
+            async function deleteClipboard(id) {
+                if (!confirm('确定删除这条剪贴板吗？')) return;
+                try {
+                    await apiCall(`/api/clipboards/${id}`, { method: 'DELETE' });
+                    showToast('已删除', 'success');
+                    await loadClipboards();
+                } catch (err) {
+                    showToast('删除失败: ' + err.message, 'error');
+                }
             }
-            clipboardModal.classList.add('active');
-            await fetchAllUsers();
-            await loadClipboards();
-        });
 
-        closeClipboardModal.addEventListener('click', () => clipboardModal.classList.remove('active'));
-        clipboardModal.addEventListener('click', (e) => {
-            if (e.target === clipboardModal) clipboardModal.classList.remove('active');
-        });
+            // 编辑剪贴板（简易：弹窗修改）
+            async function editClipboard(id) {
+                if (!isLoggedIn()) return;
+                // 先从列表中找内容
+                const itemEl = document.querySelector(`.clipboard-item[data-id="${id}"]`);
+                if (!itemEl) return;
+                const contentEl = itemEl.querySelector('.content');
+                const currentContent = contentEl ? contentEl.textContent : '';
 
-        // 可见性切换：显示/隐藏分享多选
-        clipVisibility.addEventListener('change', () => {
-            if (clipVisibility.value === 'shared') {
-                sharedWithRow.style.display = 'flex';
-            } else {
-                sharedWithRow.style.display = 'none';
+                const newContent = prompt('编辑内容：', currentContent);
+                if (newContent === null) return;
+                if (!newContent.trim()) {
+                    showToast('内容不能为空', 'error');
+                    return;
+                }
+
+                // 简单起见，只更新内容，保持原有可见性
+                try {
+                    const data = await apiCall(`/api/clipboards/${id}`, {
+                        method: 'PUT',
+                        body: { content: newContent.trim() }
+                    });
+                    showToast('更新成功 ✅', 'success');
+                    await loadClipboards();
+                } catch (err) {
+                    showToast('更新失败: ' + err.message, 'error');
+                }
             }
-        });
 
-        // ============================================================
-        // ========== 其他原有功能 ======================================
-        // ============================================================
+            // 剪贴板模态框控制
+            clipboardBtn.addEventListener('click', function() {
+                if (!isLoggedIn()) {
+                    showToast('请先登录使用剪贴板', 'info');
+                    loginModal.classList.add('active');
+                    return;
+                }
+                clipboardModal.classList.add('active');
+                loadClipboards();
+                // 重置表单
+                clipboardContent.value = '';
+                clipboardVisibility.value = 'private';
+                clipboardSharedWith.style.display = 'none';
+            });
 
-        // 清空
-        clearBtn.addEventListener('click', function() {
-            if (editor.value.trim() && !confirm('确定清空所有内容？')) return;
-            editor.value = '';
-            render();
-            localStorage.removeItem('markdown_editor_content');
-            showToast('已清空');
-        });
+            closeClipboardModal.addEventListener('click', function() {
+                clipboardModal.classList.remove('active');
+            });
 
-        // 示例
-        loadExampleBtn.addEventListener('click', function() {
-            editor.value = getExampleMarkdown();
-            render();
-            localStorage.setItem('markdown_editor_content', editor.value);
-            showToast('✅ 示例加载完成 (基础+进阶)');
-            if (!referenceBody.classList.contains('open')) {
-                referenceToggle.click();
-            }
-        });
+            clipboardModal.addEventListener('click', function(e) {
+                if (e.target === clipboardModal) clipboardModal.classList.remove('active');
+            });
 
-        // 下载 .md
-        downloadMdBtn.addEventListener('click', function() {
-            const content = editor.value;
-            if (!content.trim()) { showToast('⚠️ 内容为空'); return; }
-            downloadFile(content, `markdown-${new Date().toISOString().slice(0,10)}.md`, 'text/markdown');
-            showToast('✅ 下载 .md 成功');
-        });
+            saveClipboardBtn.addEventListener('click', createClipboard);
 
-        // 导出 HTML
-        downloadHtmlBtn.addEventListener('click', function() {
-            const content = editor.value;
-            if (!content.trim()) { showToast('⚠️ 内容为空'); return; }
-            const style = document.querySelector('style').innerHTML;
-            const previewHtml = preview.innerHTML;
-            const theme = document.documentElement.getAttribute('data-theme') || 'light';
+            // ==========================================================
+            // ===== 编辑器工具栏 =====
+            // ==========================================================
 
-            const htmlTemplate = `<!DOCTYPE html>
+            clearBtn.addEventListener('click', function() {
+                if (editor.value.trim() && !confirm('确定清空所有内容？')) return;
+                editor.value = '';
+                render();
+                localStorage.removeItem('markdown_editor_content');
+                showToast('已清空', 'info');
+            });
+
+            loadExampleBtn.addEventListener('click', function() {
+                editor.value = getExampleMarkdown();
+                render();
+                localStorage.setItem('markdown_editor_content', editor.value);
+                showToast('✅ 示例加载完成', 'success');
+                if (!referenceBody.classList.contains('open')) {
+                    referenceToggle.click();
+                }
+            });
+
+            downloadMdBtn.addEventListener('click', function() {
+                const content = editor.value;
+                if (!content.trim()) { showToast('⚠️ 内容为空', 'error'); return; }
+                downloadFile(content, `markdown-${new Date().toISOString().slice(0,10)}.md`, 'text/markdown');
+                showToast('✅ 下载 .md 成功', 'success');
+            });
+
+            downloadHtmlBtn.addEventListener('click', function() {
+                const content = editor.value;
+                if (!content.trim()) { showToast('⚠️ 内容为空', 'error'); return; }
+                const style = document.querySelector('style').innerHTML;
+                const previewHtml = preview.innerHTML;
+                const theme = document.documentElement.getAttribute('data-theme') || 'light';
+
+                const htmlTemplate = `<!DOCTYPE html>
         <html lang="zh-CN" data-theme="${theme}">
         <head>
             <meta charset="UTF-8">
@@ -1509,78 +1944,75 @@ greet("Markdown")
             <\/script>
         </body>
         </html>`;
-            downloadFile(htmlTemplate, `export-${new Date().toISOString().slice(0,10)}.html`, 'text/html');
-            showToast('✅ 导出 HTML 成功');
-        });
+                downloadFile(htmlTemplate, `export-${new Date().toISOString().slice(0,10)}.html`, 'text/html');
+                showToast('✅ 导出 HTML 成功', 'success');
+            });
 
-        // 上传文件
-        fileInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(ev) {
-                editor.value = ev.target.result;
+            fileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = function(ev) {
+                    editor.value = ev.target.result;
+                    render();
+                    localStorage.setItem('markdown_editor_content', editor.value);
+                    showToast(`✅ 加载: ${file.name}`, 'success');
+                    fileInput.value = '';
+                };
+                reader.onerror = function() {
+                    showToast('❌ 读取失败', 'error');
+                    fileInput.value = '';
+                };
+                reader.readAsText(file, 'UTF-8');
+            });
+
+            // ---- 主题切换 ----
+            themeToggleBtn.addEventListener('click', function() {
+                const html = document.documentElement;
+                const current = html.getAttribute('data-theme');
+                const next = current === 'dark' ? 'light' : 'dark';
+                html.setAttribute('data-theme', next);
+                const hljsStyle = document.getElementById('hljs-style');
+                if (next === 'dark') {
+                    hljsStyle.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css';
+                } else {
+                    hljsStyle.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css';
+                }
                 render();
-                localStorage.setItem('markdown_editor_content', editor.value);
-                showToast(`✅ 加载: ${file.name}`);
-                fileInput.value = '';
-            };
-            reader.onerror = function() {
-                showToast('❌ 读取失败');
-                fileInput.value = '';
-            };
-            reader.readAsText(file, 'UTF-8');
-        });
+                showToast(`🌓 切换到 ${next === 'dark' ? '深色' : '浅色'} 模式`, 'info');
+            });
 
-        // 主题切换
-        themeToggleBtn.addEventListener('click', function() {
-            const html = document.documentElement;
-            const current = html.getAttribute('data-theme');
-            const next = current === 'dark' ? 'light' : 'dark';
-            html.setAttribute('data-theme', next);
-            const hljsStyle = document.getElementById('hljs-style');
-            if (next === 'dark') {
-                hljsStyle.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css';
-            } else {
-                hljsStyle.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css';
-            }
-            render();
-            showToast(`🌓 切换到 ${next === 'dark' ? '深色' : '浅色'} 模式`);
-        });
+            // ---- 折叠参考 ----
+            referenceToggle.addEventListener('click', function() {
+                const isOpen = referenceBody.classList.toggle('open');
+                referenceToggle.classList.toggle('open');
+                if (isOpen) {
+                    referenceBody.style.maxHeight = referenceBody.scrollHeight + 40 + 'px';
+                } else {
+                    referenceBody.style.maxHeight = '0';
+                }
+            });
 
-        // 折叠参考
-        referenceToggle.addEventListener('click', function() {
-            const isOpen = referenceBody.classList.toggle('open');
-            referenceToggle.classList.toggle('open');
-            if (isOpen) {
-                referenceBody.style.maxHeight = referenceBody.scrollHeight + 40 + 'px';
-            } else {
-                referenceBody.style.maxHeight = '0';
-            }
-        });
+            // ---- 快捷键 ----
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && e.shiftKey && e.key === 'C') {
+                    e.preventDefault();
+                    clearBtn.click();
+                }
+                if (e.ctrlKey && e.key === 's') {
+                    e.preventDefault();
+                    render();
+                    localStorage.setItem('markdown_editor_content', editor.value);
+                    showToast('💾 已手动保存', 'info');
+                }
+                // ESC 关闭模态框
+                if (e.key === 'Escape') {
+                    if (loginModal.classList.contains('active')) loginModal.classList.remove('active');
+                    if (clipboardModal.classList.contains('active')) clipboardModal.classList.remove('active');
+                }
+            });
 
-        // 快捷键
-        document.addEventListener('keydown', function(e) {
-            if (e.ctrlKey && e.shiftKey && e.key === 'C') {
-                e.preventDefault();
-                clearBtn.click();
-            }
-            if (e.ctrlKey && e.key === 's') {
-                e.preventDefault();
-                render();
-                localStorage.setItem('markdown_editor_content', editor.value);
-                showToast('💾 已手动保存');
-            }
-        });
-
-        // ---- 初始化 ----
-        (async function init() {
-            await fetchMe();
-            // 若未登录，显示登录框
-            if (!currentUser) {
-                loginModal.classList.add('active');
-            }
-
+            // ---- 初始化 ----
             const hasSaved = (() => {
                 try {
                     const saved = localStorage.getItem('markdown_editor_content');
@@ -1612,10 +2044,14 @@ greet("Markdown")
                 }
             });
 
-            console.log('✅ 编辑器已启动，云剪贴板已集成。');
-        })();
+            // 检查登录状态
+            checkLoginStatus();
 
-    })();
-</script>
+            console.log('✅ 编辑器已启动，KaTeX 核心库已加载。');
+            console.log('🔐 登录状态:', currentUser ? '已登录' : '未登录');
+
+        })();
+    </script>
+
 </body>
 </html>
