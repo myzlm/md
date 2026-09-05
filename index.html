@@ -3,65 +3,68 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
- <title>墨韵 · 进阶编辑器</title>
+    <title>墨韵 · 进阶编辑器</title>
 
     <!-- ===== 核心库 ===== -->
     <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js">
     </script>
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" id="hljs-style" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js">
     </script>
-
     <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/katex.min.css" />
     <script src="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/katex.min.js">
     </script>
     <script src="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js">
     </script>
-
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js">
     </script>
 
+    <!-- 墨韵字体 (Ma Shan Zheng) -->
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap" rel="stylesheet" />
+
     <style>
-        /* ===== CSS 变量 ===== */
+        /* ===== CSS 变量（墨韵色调） ===== */
         :root {
-            --bg-primary: #f6f8fa;
-            --bg-secondary: #ffffff;
-            --bg-editor: #ffffff;
-            --bg-preview: #fafcff;
+            --bg-primary: #f5f0eb;
+            --bg-secondary: #fcf8f2;
+            --bg-editor: #fcf8f2;
+            --bg-preview: #faf6ee;
             --bg-card: #ffffff;
-            --bg-codeblock: #0f172a;
-            --text-primary: #1e293b;
-            --text-secondary: #475569;
-            --text-muted: #94a3b8;
-            --border-color: #eef2f6;
-            --shadow: 0 20px 60px rgba(0, 0, 0, 0.06);
-            --hover-bg: #f1f4f9;
-            --accent: #2563eb;
-            --accent-bg: #eef2ff;
-            --scrollbar-thumb: #dce1e8;
-            --modal-overlay: rgba(0, 0, 0, 0.45);
-            --toast-bg: #0f172a;
+            --bg-codeblock: #2c2a2a;
+            --text-primary: #3c3a36;
+            --text-secondary: #5a5550;
+            --text-muted: #8a8580;
+            --border-color: #d6cfc4;
+            --shadow: 0 8px 32px rgba(60, 50, 40, 0.08);
+            --hover-bg: #ede8e0;
+            --accent: #8b3a2f;
+            --accent-bg: #f0e4de;
+            --scrollbar-thumb: #c9c0b4;
+            --modal-overlay: rgba(40, 35, 30, 0.6);
+            --toast-bg: #3c3a36;
+            --ink-gold: #b8860b;
+            --ink-red: #8b3a2f;
         }
 
         [data-theme="dark"] {
-            --bg-primary: #0d1117;
-            --bg-secondary: #161b22;
-            --bg-editor: #0d1117;
-            --bg-preview: #0d1117;
-            --bg-card: #1c2333;
-            --bg-codeblock: #1e293b;
-            --text-primary: #e6edf3;
-            --text-secondary: #b1bac4;
-            --text-muted: #586069;
-            --border-color: #30363d;
-            --shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
-            --hover-bg: #252d3b;
-            --accent: #58a6ff;
-            --accent-bg: #1f2a3f;
-            --scrollbar-thumb: #30363d;
+            --bg-primary: #1e1b18;
+            --bg-secondary: #2a2622;
+            --bg-editor: #2a2622;
+            --bg-preview: #221f1b;
+            --bg-card: #332e29;
+            --bg-codeblock: #1a1714;
+            --text-primary: #e8e0d8;
+            --text-secondary: #c8c0b6;
+            --text-muted: #8a8278;
+            --border-color: #4a443e;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            --hover-bg: #3f3832;
+            --accent: #c8826a;
+            --accent-bg: #3f2e28;
+            --scrollbar-thumb: #4a443e;
             --modal-overlay: rgba(0, 0, 0, 0.7);
-            --toast-bg: #1c2333;
+            --toast-bg: #2a2622;
+            --ink-red: #c8826a;
         }
 
         * {
@@ -71,7 +74,7 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Inter', 'STKaiti', 'KaiTi', serif;
             background: var(--bg-primary);
             color: var(--text-primary);
             padding: 20px;
@@ -88,6 +91,19 @@
             display: flex;
             flex-direction: column;
             border: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        /* 墨韵装饰元素 */
+        .app::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--ink-red), var(--ink-gold), var(--ink-red));
+            opacity: 0.3;
         }
 
         /* ===== 顶栏 ===== */
@@ -109,16 +125,19 @@
         }
 
         .header-left .icon {
-            font-size: 24px;
+            font-size: 28px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
         }
 
         .header-left h1 {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: 700;
-            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            font-family: 'Ma Shan Zheng', 'STKaiti', cursive;
+            background: linear-gradient(135deg, var(--ink-red), var(--ink-gold));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            letter-spacing: 2px;
         }
 
         .header-left .badge {
@@ -126,9 +145,12 @@
             font-weight: 600;
             background: var(--accent-bg);
             color: var(--accent);
-            padding: 2px 12px;
+            padding: 2px 14px;
             border-radius: 20px;
             -webkit-text-fill-color: var(--accent);
+            border: 1px solid var(--border-color);
+            font-family: 'Ma Shan Zheng', cursive;
+            letter-spacing: 1px;
         }
 
         .user-area {
@@ -139,9 +161,11 @@
         }
 
         .user-area .greeting {
-            font-size: 13px;
+            font-size: 14px;
             color: var(--text-secondary);
             font-weight: 500;
+            font-family: 'Ma Shan Zheng', cursive;
+            letter-spacing: 1px;
         }
 
         .toolbar {
@@ -168,6 +192,7 @@
             transition: all 0.2s;
             font-family: inherit;
             white-space: nowrap;
+            backdrop-filter: blur(2px);
         }
 
         .toolbar button:hover,
@@ -178,9 +203,9 @@
         }
 
         .toolbar button.primary {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: white;
+            background: var(--ink-red);
+            border-color: var(--ink-red);
+            color: #fff;
         }
 
         .toolbar button.primary:hover {
@@ -200,8 +225,8 @@
         }
 
         .user-area .btn-login {
-            background: var(--accent);
-            border-color: var(--accent);
+            background: var(--ink-red);
+            border-color: var(--ink-red);
             color: #fff;
         }
 
@@ -210,12 +235,12 @@
         }
 
         .user-area .btn-logout {
-            color: #ef4444;
-            border-color: #fca5a5;
+            color: var(--ink-red);
+            border-color: #dbb6ae;
         }
 
         .user-area .btn-logout:hover {
-            background: #fef2f2;
+            background: #f5e4de;
         }
 
         /* ===== 统计栏 ===== */
@@ -228,6 +253,8 @@
             color: var(--text-muted);
             background: var(--bg-primary);
             flex-wrap: wrap;
+            font-family: 'Ma Shan Zheng', cursive;
+            letter-spacing: 0.5px;
         }
 
         .stats-bar span {
@@ -277,10 +304,12 @@
             padding: 0 8px;
             backdrop-filter: blur(4px);
             border-radius: 4px;
+            font-family: 'Ma Shan Zheng', cursive;
+            letter-spacing: 2px;
         }
 
         [data-theme="dark"] .panel-label {
-            background: rgba(13, 17, 23, 0.7);
+            background: rgba(30, 27, 24, 0.7);
         }
 
         .preview-panel .panel-label {
@@ -329,6 +358,7 @@
             font-weight: 600;
             line-height: 1.3;
             color: var(--text-primary);
+            font-family: 'Ma Shan Zheng', cursive;
         }
 
         .preview-content h1 {
@@ -350,7 +380,7 @@
         }
 
         .preview-content a {
-            color: var(--accent);
+            color: var(--ink-red);
             text-decoration: none;
         }
 
@@ -372,7 +402,7 @@
         .preview-content blockquote {
             margin: 0.8em 0;
             padding: 0.2em 1em 0.2em 1.2em;
-            border-left: 4px solid var(--accent);
+            border-left: 4px solid var(--ink-red);
             background: var(--hover-bg);
             border-radius: 0 6px 6px 0;
             color: var(--text-secondary);
@@ -475,6 +505,7 @@
             width: 100%;
             font-family: inherit;
             text-align: left;
+            font-family: 'Ma Shan Zheng', cursive;
         }
 
         .reference-toggle:hover {
@@ -522,6 +553,8 @@
             text-transform: uppercase;
             color: var(--text-muted);
             margin-bottom: 6px;
+            font-family: 'Ma Shan Zheng', cursive;
+            letter-spacing: 1px;
         }
 
         .ref-card .example {
@@ -584,7 +617,7 @@
 
         .toast {
             background: var(--toast-bg);
-            color: #fff;
+            color: #f5f0eb;
             padding: 10px 28px;
             border-radius: 12px;
             font-size: 14px;
@@ -596,6 +629,8 @@
             pointer-events: auto;
             max-width: 90vw;
             text-align: center;
+            font-family: 'Ma Shan Zheng', cursive;
+            letter-spacing: 1px;
         }
 
         .toast.show {
@@ -604,11 +639,11 @@
         }
 
         .toast.success {
-            border-left: 4px solid #22c55e;
+            border-left: 4px solid #b8860b;
         }
 
         .toast.error {
-            border-left: 4px solid #ef4444;
+            border-left: 4px solid #c0392b;
         }
 
         .toast.info {
@@ -624,7 +659,7 @@
             z-index: 1000;
             justify-content: center;
             align-items: center;
-            backdrop-filter: blur(3px);
+            backdrop-filter: blur(4px);
             padding: 20px;
         }
 
@@ -643,6 +678,7 @@
             box-shadow: 0 30px 80px rgba(0, 0, 0, 0.25);
             border: 1px solid var(--border-color);
             position: relative;
+            font-family: 'Ma Shan Zheng', cursive;
         }
 
         .modal .close-btn {
@@ -668,7 +704,8 @@
             font-weight: 700;
             margin-bottom: 20px;
             color: var(--text-primary);
-            font-family: 'Ma Shan Zheng', cursive, sans-serif;
+            font-family: 'Ma Shan Zheng', cursive;
+            letter-spacing: 2px;
         }
 
         .modal .input-group {
@@ -681,6 +718,7 @@
             font-weight: 600;
             color: var(--text-secondary);
             margin-bottom: 4px;
+            font-family: 'Ma Shan Zheng', cursive;
         }
 
         .modal .input-group input,
@@ -701,7 +739,7 @@
         .modal .input-group select:focus,
         .modal .input-group textarea:focus {
             outline: none;
-            border-color: var(--accent);
+            border-color: var(--ink-red);
             box-shadow: 0 0 0 3px var(--accent-bg);
         }
 
@@ -725,8 +763,9 @@
             font-weight: 600;
             cursor: pointer;
             transition: 0.2s;
-            background: var(--accent);
+            background: var(--ink-red);
             color: #fff;
+            font-family: 'Ma Shan Zheng', cursive;
         }
 
         .modal .modal-actions .btn:hover {
@@ -747,11 +786,12 @@
             margin-top: 14px;
             font-size: 13px;
             color: var(--text-muted);
+            font-family: 'Ma Shan Zheng', cursive;
         }
 
         /* ===== 剪贴板模态框（大） ===== */
         #clipboardModal .modal {
-            max-width: 900px;
+            max-width: 960px;
         }
 
         #clipboardModal .quota-display {
@@ -765,11 +805,12 @@
             justify-content: space-between;
             flex-wrap: wrap;
             gap: 6px;
+            font-family: 'Ma Shan Zheng', cursive;
         }
 
         #clipboardModal .quota-display .highlight {
             font-weight: 700;
-            color: var(--accent);
+            color: var(--ink-red);
         }
 
         #clipboardModal .clipboard-form {
@@ -777,6 +818,8 @@
             flex-direction: column;
             gap: 12px;
             margin-bottom: 20px;
+            border-bottom: 1px dashed var(--border-color);
+            padding-bottom: 16px;
         }
 
         #clipboardModal .clipboard-form .row {
@@ -805,7 +848,7 @@
 
         #clipboardModal .clipboard-form textarea:focus {
             outline: none;
-            border-color: var(--accent);
+            border-color: var(--ink-red);
             box-shadow: 0 0 0 3px var(--accent-bg);
         }
 
@@ -821,24 +864,31 @@
 
         #clipboardModal .clipboard-form select:focus {
             outline: none;
-            border-color: var(--accent);
+            border-color: var(--ink-red);
         }
 
         #clipboardModal .clipboard-form select[multiple] {
             min-height: 80px;
         }
 
-        #clipboardModal .clipboard-list {
-            margin-top: 16px;
-            border-top: 1px solid var(--border-color);
-            padding-top: 16px;
+        /* 两个区域标题 */
+        .section-title {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 16px 0 10px 0;
+            padding-bottom: 4px;
+            border-bottom: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        #clipboardModal .clipboard-list .list-title {
-            font-weight: 600;
-            font-size: 15px;
-            margin-bottom: 12px;
-            color: var(--text-primary);
+        .section-title .sub {
+            font-size: 13px;
+            font-weight: 400;
+            color: var(--text-muted);
         }
 
         /* 卡片列表 */
@@ -854,7 +904,7 @@
         }
 
         #clipboardModal .clipboard-item:hover {
-            border-color: var(--accent);
+            border-color: var(--ink-red);
             box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
         }
 
@@ -884,7 +934,7 @@
 
         #clipboardModal .clipboard-item .meta .tag {
             background: var(--accent-bg);
-            color: var(--accent);
+            color: var(--ink-red);
             padding: 0 10px;
             border-radius: 12px;
             font-size: 11px;
@@ -911,6 +961,7 @@
             color: var(--text-primary);
             cursor: pointer;
             transition: 0.2s;
+            font-family: 'Ma Shan Zheng', cursive;
         }
 
         #clipboardModal .clipboard-item .actions button:hover {
@@ -918,16 +969,16 @@
         }
 
         #clipboardModal .clipboard-item .actions .btn-del {
-            color: #ef4444;
-            border-color: #fca5a5;
+            color: #c0392b;
+            border-color: #e6b8b0;
         }
 
         #clipboardModal .clipboard-item .actions .btn-del:hover {
-            background: #fef2f2;
+            background: #f5e4de;
         }
 
         #clipboardModal .clipboard-item .actions .btn-load {
-            color: var(--accent);
+            color: var(--ink-red);
         }
 
         #clipboardModal .clipboard-item .actions .btn-load:hover {
@@ -935,11 +986,19 @@
         }
 
         #clipboardModal .clipboard-item .actions .btn-preview {
-            color: #8b5cf6;
+            color: #b8860b;
         }
 
         #clipboardModal .clipboard-item .actions .btn-preview:hover {
-            background: #f3e8ff;
+            background: #f5edda;
+        }
+
+        #clipboardModal .clipboard-item .actions .btn-edit-status {
+            color: var(--text-secondary);
+        }
+
+        #clipboardModal .clipboard-item .actions .btn-edit-status:hover {
+            background: var(--hover-bg);
         }
 
         /* ===== 阅读模式预览模态框 ===== */
@@ -960,6 +1019,7 @@
             padding: 40px 20px;
             font-size: 14px;
             line-height: 1.8;
+            font-family: 'Ma Shan Zheng', cursive;
         }
 
         .empty-hint .big {
@@ -1063,8 +1123,8 @@
         <!-- ===== 顶栏 ===== -->
         <header class="header">
             <div class="header-left">
-                <span class="icon">⚡</span>
-                <h1>进阶编辑器</h1>
+                <span class="icon">🖋️</span>
+                <h1>墨韵·文房</h1>
                 <span class="badge">数学 · 图表</span>
             </div>
 
@@ -1078,8 +1138,8 @@
 
                 <!-- 工具栏 -->
                 <div class="toolbar">
-                    <button id="clipboardBtn">📋 剪贴板</button>
-                    <button id="saveToClipboardBtn" title="将当前编辑器内容保存到剪贴板">💾 保存到剪贴板</button>
+                    <button id="clipboardBtn">📜 墨宝</button>
+                    <button id="saveToClipboardBtn" title="将当前编辑器内容保存到墨宝">💾 存墨</button>
                     <button id="loadExampleBtn" class="primary">✨ 示例</button>
                     <button id="clearBtn">🗑️ 清空</button>
                     <button id="downloadMdBtn">📥 下载 .md</button>
@@ -1121,25 +1181,25 @@
         <!-- ===== 语法参考 ===== -->
         <div class="reference">
             <button class="reference-toggle open" id="referenceToggle">
-                <span>📖 Markdown 进阶语法参考</span>
+                <span>📖 墨韵·笔法</span>
                 <span class="arrow">▼</span>
             </button>
             <div class="reference-body open" id="referenceBody">
                 <div class="reference-grid">
                     <div class="ref-card">
-                        <div class="title">🧮 数学公式 (KaTeX)</div>
+                        <div class="title">🧮 数理 (KaTeX)</div>
                         <span class="example">$E = mc^2$</span><br />
                         <span class="example">$$ \int_0^\infty e^{-x} dx $$</span>
                         <div class="desc">行内 <code>$...$</code>，块级 <code>$$...$$</code>。</div>
                     </div>
                     <div class="ref-card">
-                        <div class="title">📊 图表 (Mermaid)</div>
+                        <div class="title">📊 丹青 (Mermaid)</div>
                         <div class="example-block">```mermaid\ngraph TD\nA-->B\n```</div>
                         <div class="desc">流程图、时序图、甘特图等。</div>
                     </div>
                     <div class="ref-card">
-                        <div class="title">📋 任务列表</div>
-                        <span class="example">- [x] 已完成</span><br />
+                        <div class="title">📋 事务清单</div>
+                        <span class="example">- [x] 已完</span><br />
                         <span class="example">- [ ] 待办</span>
                     </div>
                     <div class="ref-card">
@@ -1148,8 +1208,8 @@
                         <span class="example">|-----|-----|</span>
                     </div>
                 </div>
-                <p style="margin-top:18px; font-size:13px; color:var(--text-muted); text-align:center;">
-                    💡 支持 GFM · 自动保存至本地 · 深色模式
+                <p style="margin-top:18px; font-size:13px; color:var(--text-muted); text-align:center; font-family:'Ma Shan Zheng',cursive;">
+                    💡 支持 GFM · 自动保存 · 深色模式
                 </p>
             </div>
         </div>
@@ -1164,7 +1224,7 @@
     <div class="modal-overlay" id="loginModal">
         <div class="modal">
             <button class="close-btn" id="closeLoginModal">×</button>
-            <h2>登录书斋</h2>
+            <h2>🖋️ 登录书斋</h2>
             <form onsubmit="return false">
                 <div class="input-group">
                     <label>账号</label>
@@ -1178,7 +1238,7 @@
                     <button class="btn" id="submitLogin">登 录</button>
                 </div>
             </form>
-            <p class="hint">游客可浏览，登录后可创建剪贴板</p>
+            <p class="hint">游客可浏览，登录后可存墨宝</p>
         </div>
     </div>
 
@@ -1188,12 +1248,12 @@
     <div class="modal-overlay" id="clipboardModal">
         <div class="modal">
             <button class="close-btn" id="closeClipboardModal">×</button>
-            <h2>📋 云剪贴板</h2>
+            <h2>📜 墨宝·云匣</h2>
 
             <!-- 配额显示 -->
             <div class="quota-display" id="quotaDisplay">
                 <span>角色：<strong id="quotaRole">—</strong></span>
-                <span>已用：<strong id="quotaUsed">0</strong> / <strong id="quotaTotal">0</strong></span>
+                <span>已存：<strong id="quotaUsed">0</strong> / <strong id="quotaTotal">0</strong></span>
             </div>
 
             <!-- 创建表单 -->
@@ -1201,22 +1261,31 @@
                 <textarea id="clipboardContent" placeholder="输入要保存的文本..." rows="3"></textarea>
                 <div class="row">
                     <select id="clipboardVisibility">
-                        <option value="private">🔒 私有（仅自己）</option>
-                        <option value="public">🌐 公开（所有人）</option>
-                        <option value="shared">👥 指定用户</option>
+                        <option value="private">🔒 私密 (仅自己)</option>
+                        <option value="public">🌐 公开 (所有人)</option>
+                        <option value="shared">👥 指定知音</option>
                     </select>
                     <select id="clipboardSharedWith" multiple style="display:none;">
                         <!-- 由 JS 动态填充 -->
                     </select>
                 </div>
-                <button class="btn" id="saveClipboardBtn" style="align-self:flex-start; padding:8px 28px;">➕ 保存</button>
+                <button class="btn" id="saveClipboardBtn" style="align-self:flex-start; padding:8px 28px;">➕ 存墨</button>
             </div>
 
-            <!-- 列表 -->
-            <div class="clipboard-list">
-                <div class="list-title">📄 我的剪贴板</div>
-                <div id="clipboardList"></div>
+            <!-- ===== 我的墨宝（我创建的） ===== -->
+            <div class="section-title">
+                <span>📜 我的墨宝</span>
+                <span class="sub">（我创作的）</span>
             </div>
+            <div id="myClipboardList"></div>
+
+            <!-- ===== 文渊阁（所有可见的） ===== -->
+            <div class="section-title" style="margin-top:24px;">
+                <span>📖 文渊阁</span>
+                <span class="sub">（可阅览的）</span>
+            </div>
+            <div id="allClipboardList"></div>
+
         </div>
     </div>
 
@@ -1226,10 +1295,40 @@
     <div class="modal-overlay" id="readModal">
         <div class="modal">
             <button class="close-btn" id="closeReadModal">×</button>
-            <h2>📖 阅读模式</h2>
+            <h2>📖 阅读·墨韵</h2>
             <div class="preview-content" id="readPreviewContent">
-                <!-- 渲染内容将放入此处 -->
+                <!-- 渲染内容 -->
             </div>
+        </div>
+    </div>
+
+    <!-- ========================================================== -->
+    <!-- ===== 编辑状态模态框（小） ===== -->
+    <!-- ========================================================== -->
+    <div class="modal-overlay" id="editStatusModal">
+        <div class="modal">
+            <button class="close-btn" id="closeEditStatusModal">×</button>
+            <h2>✏️ 修改状态</h2>
+            <form onsubmit="return false">
+                <div class="input-group">
+                    <label>可见性</label>
+                    <select id="editVisibility">
+                        <option value="private">🔒 私密</option>
+                        <option value="public">🌐 公开</option>
+                        <option value="shared">👥 指定知音</option>
+                    </select>
+                </div>
+                <div class="input-group" id="editSharedGroup" style="display:none;">
+                    <label>分享给</label>
+                    <select id="editSharedWith" multiple style="min-height:80px;">
+                        <!-- 动态填充 -->
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn" id="saveEditStatusBtn">保存</button>
+                    <button class="btn btn-secondary" id="cancelEditStatusBtn">取消</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -1242,7 +1341,7 @@
 
             // ---- 配置 ----
             // ★★★ 重要：将 API_BASE 改为你的后端实际地址 ★★★
-             const API_BASE = 'https://myzlm.serveousercontent.com'; // 本地开发，请根据实际情况修改
+            const API_BASE = 'https://myzlm.serveousercontent.com'; // 请修改为你的后端域名
 
             // ---- DOM 引用 ----
             const editor = document.getElementById('editor');
@@ -1281,7 +1380,8 @@
             const clipboardVisibility = document.getElementById('clipboardVisibility');
             const clipboardSharedWith = document.getElementById('clipboardSharedWith');
             const saveClipboardBtn = document.getElementById('saveClipboardBtn');
-            const clipboardList = document.getElementById('clipboardList');
+            const myClipboardList = document.getElementById('myClipboardList');
+            const allClipboardList = document.getElementById('allClipboardList');
             const quotaRole = document.getElementById('quotaRole');
             const quotaUsed = document.getElementById('quotaUsed');
             const quotaTotal = document.getElementById('quotaTotal');
@@ -1291,9 +1391,19 @@
             const closeReadModal = document.getElementById('closeReadModal');
             const readPreviewContent = document.getElementById('readPreviewContent');
 
+            // 编辑状态模态框
+            const editStatusModal = document.getElementById('editStatusModal');
+            const closeEditStatusModal = document.getElementById('closeEditStatusModal');
+            const editVisibility = document.getElementById('editVisibility');
+            const editSharedWith = document.getElementById('editSharedWith');
+            const editSharedGroup = document.getElementById('editSharedGroup');
+            const saveEditStatusBtn = document.getElementById('saveEditStatusBtn');
+            const cancelEditStatusBtn = document.getElementById('cancelEditStatusBtn');
+
             // ---- 状态 ----
             let currentUser = null;
             let allUsers = [];
+            let editingItemId = null; // 当前编辑的条目ID
 
             // ---- 工具函数 ----
             function escapeHtml(text) {
@@ -1404,11 +1514,10 @@
                     html = marked.parse(raw);
                 } catch (err) {
                     console.error('Markdown 解析错误:', err);
-                    html = `<div style="color:#ef4444;padding:10px;">⚠️ Markdown 解析失败：${err.message}</div>`;
+                    html = `<div style="color:#c0392b;padding:10px;">⚠️ 解析失败：${err.message}</div>`;
                 }
                 preview.innerHTML = html;
 
-                // KaTeX
                 try {
                     if (typeof renderMathInElement === 'function' && typeof window.katex !== 'undefined') {
                         renderMathInElement(preview, {
@@ -1430,12 +1539,11 @@
                 } catch (err) {
                     console.error('KaTeX 渲染异常:', err);
                     const errorDiv = document.createElement('div');
-                    errorDiv.style.cssText = 'color:#ef4444;padding:8px;background:#fee2e2;border-radius:6px;margin-bottom:12px;';
+                    errorDiv.style.cssText = 'color:#c0392b;padding:8px;background:#f5e4de;border-radius:6px;margin-bottom:12px;';
                     errorDiv.textContent = `⚠️ 公式渲染异常：${err.message || err}`;
                     preview.prepend(errorDiv);
                 }
 
-                // Mermaid
                 try {
                     const mermaidNodes = preview.querySelectorAll('.mermaid');
                     if (mermaidNodes.length > 0) {
@@ -1447,7 +1555,7 @@
                             mermaidNodes.forEach(node => {
                                 if (!node.querySelector('.mermaid-error')) {
                                     node.innerHTML =
-                                        `<div class="mermaid-error" style="color:#ef4444;">⚠️ 图表渲染失败</div>`;
+                                        `<div class="mermaid-error" style="color:#c0392b;">⚠️ 图表渲染失败</div>`;
                                 }
                             });
                         });
@@ -1471,29 +1579,22 @@
 
             // ---- 示例内容 ----
             function getExampleMarkdown() {
-                return `# 📘 基础语法示例 (普通用法)
+                return `# 📘 基础语法示例
 
-        这部分展示最常见的 Markdown 语法，适合日常笔记和文档。
+        墨韵·文房 支持完整的 Markdown 语法，以及数学公式、图表。
 
         ## 1. 标题与段落
 
-        使用 \`#\` 号表示标题，数量 1~6 级。
-
-        ### 三级标题
-        #### 四级标题
-
-        这是普通段落。**可以加粗**，*可以斜体*，***可以粗斜体***，~~可以删除~~，也可以 \`行内代码\`。
+        **加粗**，*斜体*，***粗斜体***，~~删除~~，\`行内代码\`
 
         ---
 
         ## 2. 列表
 
-        ### 无序列表
         - 苹果 🍎
         - 香蕉 🍌
         - 橙子 🍊
 
-        ### 有序列表
         1. 第一步
         2. 第二步
         3. 第三步
@@ -1502,101 +1603,40 @@
 
         ## 3. 引用与链接
 
-        > 这是引用块，通常用于标注重点或引用他人内容。
-        >> 还可以嵌套引用。
+        > 这是引用块，用于标注重点。
 
-        链接示例：[点击访问 GitHub](https://github.com)
-
-        图片示例：
-        ![示例图片](https://picsum.photos/400/200?random=1)
+        链接：[墨韵·文房](https://myzlm.github.io)
 
         ---
 
-        ## 4. 基础代码块
+        ## 4. 数学公式
 
-        \`\`\`text
-        这是一个纯文本代码块
-        用于展示配置或日志
-        \`\`\`
+        行内公式：$E = mc^2$
 
-        ---
-
-        # 🚀 进阶语法示例 (进阶用法)
-
-        这部分展示扩展语法，包括任务列表、表格、数学公式和图表，适用于技术写作和学术笔记。
-
-        ## 5. 任务列表 (GFM)
-
-        - [x] 支持基础语法
-        - [x] 支持数学公式
-        - [ ] 支持 Mermaid 图表
-        - [ ] 导出 PDF (未来功能)
-
-        ---
-
-        ## 6. 表格
-
-        | 功能模块   | 支持情况 | 备注          |
-        |------------|----------|---------------|
-        | 基础语法   | ✅ 完整   | 标题/列表/链接 |
-        | 数学公式   | ✅ 支持   | KaTeX 渲染    |
-        | Mermaid 图表 | ✅ 支持   | 流程图/时序图 |
-        | 深色模式   | ✅ 支持   | 一键切换      |
-
-        ---
-
-        ## 7. 数学公式 (LaTeX / KaTeX)
-
-        行内公式：$E = mc^2$ 是质能方程。
-
-        块级公式（求和与积分）：
-
+        块级公式：
         $$ \\int_0^\\infty e^{-x^2} dx = \\frac{\\sqrt{\\pi}}{2} $$
 
-        矩阵示例：
-        $$ \\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix} $$
-
         ---
 
-        ## 8. 图表 (Mermaid)
+        ## 5. 图表 (Mermaid)
 
-        ### 流程图
         \`\`\`mermaid
         graph TD
-            A[开始] --> B{判断条件}
-            B -->|是| C[执行操作]
+            A[开始] --> B{判断}
+            B -->|是| C[执行]
             B -->|否| D[结束]
             C --> D
         \`\`\`
 
-        ### 时序图
-        \`\`\`mermaid
-        sequenceDiagram
-            用户->>系统: 发送请求
-            系统-->>用户: 返回响应
-            用户->>系统: 确认操作
-        \`\`\`
-
-        ---
-
-        ## 9. 高级代码块 (带语法高亮)
+        ## 6. 代码高亮
 
         \`\`\`js
-        const greet = (name) => {
-            console.log(\`Hello, \${name}!\`);
-        };
-        greet("Markdown 进阶用户");
-        \`\`\`
-
-        \`\`\`python
-        def greet(name):
-            print(f"Hello, {name}!")
-        greet("Markdown")
+        console.log("墨韵·文房");
         \`\`\`
 
         ---
 
-        ✨ **提示**：你可以在左侧自由编辑，右侧会实时渲染。点击顶栏的“🌓”可以切换深色模式。
+        ✨ 在左侧编辑，右侧实时预览。点击「墨宝」可保存片段。
         `;
             }
 
@@ -1635,6 +1675,7 @@
                         if (Array.isArray(users)) {
                             allUsers = users;
                             populateSharedWithSelect();
+                            populateEditSharedWithSelect();
                         }
                     } catch (_) { /* 忽略 */ }
                 }
@@ -1642,7 +1683,7 @@
 
             function updateUI() {
                 if (isLoggedIn()) {
-                    greetingText.textContent = `👤 ${currentUser.username} · ${currentUser.role}`;
+                    greetingText.textContent = `🖋️ ${currentUser.username} · ${currentUser.role}`;
                     loginBtn.style.display = 'none';
                     logoutBtn.style.display = 'inline-block';
                 } else {
@@ -1676,6 +1717,7 @@
                         if (Array.isArray(users)) {
                             allUsers = users;
                             populateSharedWithSelect();
+                            populateEditSharedWithSelect();
                         }
                     } catch (_) { /* 忽略 */ }
                 } catch (err) {
@@ -1740,6 +1782,26 @@
                 }
             }
 
+            function populateEditSharedWithSelect() {
+                const sel = editSharedWith;
+                sel.innerHTML = '';
+                const others = allUsers.filter(u => u !== (currentUser ? currentUser.username : null));
+                if (others.length === 0) {
+                    const opt = document.createElement('option');
+                    opt.value = '';
+                    opt.textContent = '（暂无）';
+                    opt.disabled = true;
+                    sel.appendChild(opt);
+                } else {
+                    others.forEach(u => {
+                        const opt = document.createElement('option');
+                        opt.value = u;
+                        opt.textContent = u;
+                        sel.appendChild(opt);
+                    });
+                }
+            }
+
             clipboardVisibility.addEventListener('change', function() {
                 if (this.value === 'shared') {
                     clipboardSharedWith.style.display = 'block';
@@ -1748,18 +1810,21 @@
                 }
             });
 
-            // 加载剪贴板列表
+            // 加载剪贴板数据，分别填充两个列表
             async function loadClipboards() {
                 if (!isLoggedIn()) {
-                    clipboardList.innerHTML = `<p style="color:var(--text-muted);">请先登录查看剪贴板</p>`;
+                    myClipboardList.innerHTML = `<p style="color:var(--text-muted);">请先登录查看墨宝</p>`;
+                    allClipboardList.innerHTML = `<p style="color:var(--text-muted);">请先登录阅览文渊阁</p>`;
                     return;
                 }
                 try {
                     const data = await apiCall('/api/clipboards');
                     if (!Array.isArray(data)) {
-                        clipboardList.innerHTML = `<p style="color:var(--text-muted);">暂无数据</p>`;
+                        myClipboardList.innerHTML = `<p style="color:var(--text-muted);">暂无数据</p>`;
+                        allClipboardList.innerHTML = `<p style="color:var(--text-muted);">暂无数据</p>`;
                         return;
                     }
+
                     const role = getRole();
                     let quota = 0;
                     if (role === 'owner') quota = Infinity;
@@ -1769,66 +1834,132 @@
                     quotaTotal.textContent = quota === Infinity ? '∞' : quota;
                     quotaUsed.textContent = data.length;
 
-                    if (data.length === 0) {
-                        clipboardList.innerHTML = `<p style="color:var(--text-muted);">暂无剪贴板条目</p>`;
-                        return;
-                    }
+                    const username = currentUser.username;
 
-                    let html = '';
-                    data.forEach(item => {
-                        const sharedInfo = (item.visibility === 'shared' && item.sharedWith && item.sharedWith
-                            .length > 0) ?
-                            `分享给: ${item.sharedWith.join(', ')}` :
-                            '';
-                        const visLabel = {
-                            'public': '🌐 公开',
-                            'private': '🔒 私有',
-                            'shared': '👥 指定用户'
-                        } [item.visibility] || item.visibility;
-                        const contentPreview = escapeHtml(item.content);
+                    // 1. 我的墨宝（我创建的）
+                    const myItems = data.filter(item => item.createdBy === username);
+                    // 2. 文渊阁（所有可见的：公开 + 分享给我的，但不包括我创建的）
+                    const visibleItems = data.filter(item => {
+                        if (item.createdBy === username) return false; // 我的归上面
+                        if (item.visibility === 'public') return true;
+                        if (item.visibility === 'shared' && item.sharedWith && item.sharedWith.includes(username))
+                            return true;
+                        return false;
+                    });
 
-                        html += `
-                            <div class="clipboard-item" data-id="${item.id}">
-                                <div class="content-preview">${contentPreview}</div>
-                                <div class="meta">
-                                    <span>👤 ${escapeHtml(item.createdBy)}</span>
-                                    <span class="tag">${visLabel}</span>
-                                    ${sharedInfo ? `<span class="shared-info">${escapeHtml(sharedInfo)}</span>` : ''}
-                                    <span>${new Date(item.createdAt).toLocaleString()}</span>
-                                </div>
-                                <div class="actions">
-                                    <button class="btn-load" data-id="${item.id}">📂 加载到编辑器</button>
-                                    <button class="btn-preview" data-id="${item.id}">👁️ 预览</button>
-                                    <button class="btn-del" data-id="${item.id}">🗑️ 删除</button>
-                                </div>
-                            </div>
-                        `;
-                    });
-                    clipboardList.innerHTML = html;
-
-                    // 绑定事件
-                    clipboardList.querySelectorAll('.btn-load').forEach(btn => {
-                        btn.addEventListener('click', function() {
-                            const id = this.dataset.id;
-                            loadClipboardToEditor(id);
-                        });
-                    });
-                    clipboardList.querySelectorAll('.btn-preview').forEach(btn => {
-                        btn.addEventListener('click', function() {
-                            const id = this.dataset.id;
-                            previewClipboard(id);
-                        });
-                    });
-                    clipboardList.querySelectorAll('.btn-del').forEach(btn => {
-                        btn.addEventListener('click', function() {
-                            const id = this.dataset.id;
-                            deleteClipboard(id);
-                        });
-                    });
+                    renderMyClipboards(myItems);
+                    renderAllClipboards(visibleItems);
 
                 } catch (err) {
-                    clipboardList.innerHTML = `<p style="color:#ef4444;">加载失败: ${escapeHtml(err.message)}</p>`;
+                    myClipboardList.innerHTML = `<p style="color:#c0392b;">加载失败: ${escapeHtml(err.message)}</p>`;
+                    allClipboardList.innerHTML = `<p style="color:#c0392b;">加载失败: ${escapeHtml(err.message)}</p>`;
                 }
+            }
+
+            // 渲染“我的墨宝”
+            function renderMyClipboards(items) {
+                if (items.length === 0) {
+                    myClipboardList.innerHTML = `<p style="color:var(--text-muted);">暂无墨宝，请创作一篇</p>`;
+                    return;
+                }
+                let html = '';
+                items.forEach(item => {
+                    const sharedInfo = (item.visibility === 'shared' && item.sharedWith && item.sharedWith.length > 0) ?
+                        `分享给: ${item.sharedWith.join(', ')}` :
+                        '';
+                    const visLabel = {
+                        'public': '🌐 公开',
+                        'private': '🔒 私密',
+                        'shared': '👥 指定知音'
+                    } [item.visibility] || item.visibility;
+                    const contentPreview = escapeHtml(item.content);
+
+                    html += `
+                        <div class="clipboard-item" data-id="${item.id}">
+                            <div class="content-preview">${contentPreview}</div>
+                            <div class="meta">
+                                <span>🖋️ ${escapeHtml(item.createdBy)}</span>
+                                <span class="tag">${visLabel}</span>
+                                ${sharedInfo ? `<span class="shared-info">${escapeHtml(sharedInfo)}</span>` : ''}
+                                <span>${new Date(item.createdAt).toLocaleString()}</span>
+                            </div>
+                            <div class="actions">
+                                <button class="btn-load" data-id="${item.id}">📂 载入</button>
+                                <button class="btn-preview" data-id="${item.id}">👁️ 预览</button>
+                                <button class="btn-edit-status" data-id="${item.id}">✏️ 状态</button>
+                                <button class="btn-del" data-id="${item.id}">🗑️ 删除</button>
+                            </div>
+                        </div>
+                    `;
+                });
+                myClipboardList.innerHTML = html;
+                bindClipboardEvents(myClipboardList);
+            }
+
+            // 渲染“文渊阁”
+            function renderAllClipboards(items) {
+                if (items.length === 0) {
+                    allClipboardList.innerHTML = `<p style="color:var(--text-muted);">暂无公开或分享给您的墨宝</p>`;
+                    return;
+                }
+                let html = '';
+                items.forEach(item => {
+                    const sharedInfo = (item.visibility === 'shared' && item.sharedWith && item.sharedWith.length > 0) ?
+                        `分享给: ${item.sharedWith.join(', ')}` :
+                        '';
+                    const visLabel = {
+                        'public': '🌐 公开',
+                        'private': '🔒 私密',
+                        'shared': '👥 指定知音'
+                    } [item.visibility] || item.visibility;
+                    const contentPreview = escapeHtml(item.content);
+
+                    html += `
+                        <div class="clipboard-item" data-id="${item.id}">
+                            <div class="content-preview">${contentPreview}</div>
+                            <div class="meta">
+                                <span>🖋️ ${escapeHtml(item.createdBy)}</span>
+                                <span class="tag">${visLabel}</span>
+                                ${sharedInfo ? `<span class="shared-info">${escapeHtml(sharedInfo)}</span>` : ''}
+                                <span>${new Date(item.createdAt).toLocaleString()}</span>
+                            </div>
+                            <div class="actions">
+                                <button class="btn-load" data-id="${item.id}">📂 载入</button>
+                                <button class="btn-preview" data-id="${item.id}">👁️ 预览</button>
+                            </div>
+                        </div>
+                    `;
+                });
+                allClipboardList.innerHTML = html;
+                bindClipboardEvents(allClipboardList);
+            }
+
+            // 绑定卡片内按钮事件（加载、预览、删除、编辑状态）
+            function bindClipboardEvents(container) {
+                container.querySelectorAll('.btn-load').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const id = this.dataset.id;
+                        loadClipboardToEditor(id);
+                    });
+                });
+                container.querySelectorAll('.btn-preview').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const id = this.dataset.id;
+                        previewClipboard(id);
+                    });
+                });
+                container.querySelectorAll('.btn-del').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const id = this.dataset.id;
+                        deleteClipboard(id);
+                    });
+                });
+                container.querySelectorAll('.btn-edit-status').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const id = this.dataset.id;
+                        openEditStatusModal(id);
+                    });
+                });
             }
 
             // ---- 创建 ----
@@ -1853,17 +1984,17 @@
                         method: 'POST',
                         body: { content, visibility, sharedWith }
                     });
-                    showToast('保存成功 ✅', 'success');
+                    showToast('存墨成功 ✅', 'success');
                     clipboardContent.value = '';
                     await loadClipboards();
                 } catch (err) {
-                    showToast('保存失败: ' + err.message, 'error');
+                    showToast('存墨失败: ' + err.message, 'error');
                 }
             }
 
             // ---- 删除 ----
             async function deleteClipboard(id) {
-                if (!confirm('确定删除这条剪贴板吗？')) return;
+                if (!confirm('确定删除这条墨宝吗？')) return;
                 try {
                     await apiCall(`/api/clipboards/${id}`, { method: 'DELETE' });
                     showToast('已删除', 'success');
@@ -1876,16 +2007,6 @@
             // ---- 加载到编辑器 ----
             async function loadClipboardToEditor(id) {
                 try {
-                    // 从列表中获取内容（或者重新请求单个条目，但直接遍历列表更高效）
-                    const itemEl = document.querySelector(`.clipboard-item[data-id="${id}"]`);
-                    if (itemEl) {
-                        const contentEl = itemEl.querySelector('.content-preview');
-                        if (contentEl) {
-                            // 获取原始内容（未转义的），因为 content-preview 是转义后的，我们需要原始文本。
-                            // 改为从数据中取，但我们没有存储原始数据。所以重新请求 API 获取单个条目。
-                        }
-                    }
-                    // 更可靠：重新请求所有条目，找到对应 id 的 content
                     const data = await apiCall('/api/clipboards');
                     const item = data.find(cb => cb.id === id);
                     if (!item) {
@@ -1895,9 +2016,7 @@
                     editor.value = item.content;
                     render();
                     localStorage.setItem('markdown_editor_content', item.content);
-                    showToast('已加载到编辑器 ✅', 'success');
-                    // 可选：关闭剪贴板模态框
-                    // clipboardModal.classList.remove('active');
+                    showToast('已载入编辑器 ✅', 'success');
                 } catch (err) {
                     showToast('加载失败: ' + err.message, 'error');
                 }
@@ -1912,16 +2031,14 @@
                         showToast('条目不存在', 'error');
                         return;
                     }
-                    // 渲染 Markdown
                     let html = '';
                     try {
                         html = marked.parse(item.content);
                     } catch (err) {
-                        html = `<div style="color:#ef4444;">渲染失败: ${err.message}</div>`;
+                        html = `<div style="color:#c0392b;">渲染失败: ${err.message}</div>`;
                     }
                     readPreviewContent.innerHTML = html;
 
-                    // 对阅读模式中的内容进行 KaTeX 和 Mermaid 渲染
                     try {
                         if (typeof renderMathInElement === 'function' && typeof window.katex !== 'undefined') {
                             renderMathInElement(readPreviewContent, {
@@ -1959,6 +2076,66 @@
                 }
             }
 
+            // ---- 编辑状态 ----
+            async function openEditStatusModal(id) {
+                if (!isLoggedIn()) return;
+                // 获取当前条目信息
+                try {
+                    const data = await apiCall('/api/clipboards');
+                    const item = data.find(cb => cb.id === id);
+                    if (!item) {
+                        showToast('条目不存在', 'error');
+                        return;
+                    }
+                    editingItemId = id;
+                    editVisibility.value = item.visibility || 'private';
+                    // 填充分享多选
+                    const sel = editSharedWith;
+                    // 先清空并填充所有用户（已存在）
+                    populateEditSharedWithSelect();
+                    // 选中当前分享对象
+                    if (item.sharedWith && Array.isArray(item.sharedWith)) {
+                        Array.from(sel.options).forEach(opt => {
+                            if (item.sharedWith.includes(opt.value)) {
+                                opt.selected = true;
+                            }
+                        });
+                    }
+                    // 显示/隐藏分享列表
+                    if (editVisibility.value === 'shared') {
+                        editSharedGroup.style.display = 'block';
+                    } else {
+                        editSharedGroup.style.display = 'none';
+                    }
+                    editStatusModal.classList.add('active');
+                } catch (err) {
+                    showToast('获取信息失败: ' + err.message, 'error');
+                }
+            }
+
+            // 编辑状态保存
+            async function saveEditStatus() {
+                if (!editingItemId) return;
+                const visibility = editVisibility.value;
+                let sharedWith = [];
+                if (visibility === 'shared') {
+                    const sel = editSharedWith;
+                    sharedWith = Array.from(sel.selectedOptions).map(o => o.value).filter(v => v);
+                }
+                try {
+                    await apiCall(`/api/clipboards/${editingItemId}`, {
+                        method: 'PUT',
+                        body: { visibility, sharedWith }
+                    });
+                    showToast('状态更新成功 ✅', 'success');
+                    editStatusModal.classList.remove('active');
+                    editingItemId = null;
+                    await loadClipboards();
+                } catch (err) {
+                    showToast('更新失败: ' + err.message, 'error');
+                }
+            }
+
             // ---- 保存当前编辑器内容到剪贴板 ----
             async function saveCurrentEditorToClipboard() {
                 if (!isLoggedIn()) {
@@ -1970,26 +2147,24 @@
                     showToast('编辑器内容为空', 'error');
                     return;
                 }
-                // 默认私有，快速保存
                 try {
                     await apiCall('/api/clipboards', {
                         method: 'POST',
                         body: { content, visibility: 'private', sharedWith: [] }
                     });
-                    showToast('当前内容已保存到剪贴板 ✅', 'success');
-                    // 如果剪贴板模态框是打开的，刷新列表
+                    showToast('当前内容已存墨 ✅', 'success');
                     if (clipboardModal.classList.contains('active')) {
                         await loadClipboards();
                     }
                 } catch (err) {
-                    showToast('保存失败: ' + err.message, 'error');
+                    showToast('存墨失败: ' + err.message, 'error');
                 }
             }
 
             // ---- 剪贴板模态框控制 ----
             clipboardBtn.addEventListener('click', function() {
                 if (!isLoggedIn()) {
-                    showToast('请先登录使用剪贴板', 'info');
+                    showToast('请先登录使用墨宝', 'info');
                     loginModal.classList.add('active');
                     return;
                 }
@@ -2011,6 +2186,32 @@
             });
 
             saveClipboardBtn.addEventListener('click', createClipboard);
+
+            // ---- 编辑状态模态框控制 ----
+            closeEditStatusModal.addEventListener('click', function() {
+                editStatusModal.classList.remove('active');
+                editingItemId = null;
+            });
+            cancelEditStatusBtn.addEventListener('click', function() {
+                editStatusModal.classList.remove('active');
+                editingItemId = null;
+            });
+            editStatusModal.addEventListener('click', function(e) {
+                if (e.target === editStatusModal) {
+                    editStatusModal.classList.remove('active');
+                    editingItemId = null;
+                }
+            });
+            saveEditStatusBtn.addEventListener('click', saveEditStatus);
+
+            // 编辑时可见性切换
+            editVisibility.addEventListener('change', function() {
+                if (this.value === 'shared') {
+                    editSharedGroup.style.display = 'block';
+                } else {
+                    editSharedGroup.style.display = 'none';
+                }
+            });
 
             // ---- 阅读模态框控制 ----
             closeReadModal.addEventListener('click', function() {
@@ -2045,7 +2246,7 @@
             downloadMdBtn.addEventListener('click', function() {
                 const content = editor.value;
                 if (!content.trim()) { showToast('⚠️ 内容为空', 'error'); return; }
-                downloadFile(content, `markdown-${new Date().toISOString().slice(0,10)}.md`, 'text/markdown');
+                downloadFile(content, `墨韵-${new Date().toISOString().slice(0,10)}.md`, 'text/markdown');
                 showToast('✅ 下载 .md 成功', 'success');
             });
 
@@ -2061,7 +2262,7 @@
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>导出的 Markdown 文档</title>
+            <title>墨韵·文房 导出的文档</title>
             <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/katex.min.css">
             <script src="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/katex.min.js"><\/script>
             <script src="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"><\/script>
@@ -2094,7 +2295,7 @@
             <\/script>
         </body>
         </html>`;
-                downloadFile(htmlTemplate, `export-${new Date().toISOString().slice(0,10)}.html`, 'text/html');
+                downloadFile(htmlTemplate, `墨韵-${new Date().toISOString().slice(0,10)}.html`, 'text/html');
                 showToast('✅ 导出 HTML 成功', 'success');
             });
 
@@ -2129,7 +2330,7 @@
                     hljsStyle.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css';
                 }
                 render();
-                showToast(`🌓 切换到 ${next === 'dark' ? '深色' : '浅色'} 模式`, 'info');
+                showToast(`🌓 切换到 ${next === 'dark' ? '墨夜' : '墨白'} 模式`, 'info');
             });
 
             // ---- 折叠参考 ----
@@ -2159,6 +2360,10 @@
                     if (loginModal.classList.contains('active')) loginModal.classList.remove('active');
                     if (clipboardModal.classList.contains('active')) clipboardModal.classList.remove('active');
                     if (readModal.classList.contains('active')) readModal.classList.remove('active');
+                    if (editStatusModal.classList.contains('active')) {
+                        editStatusModal.classList.remove('active');
+                        editingItemId = null;
+                    }
                 }
             });
 
@@ -2195,7 +2400,7 @@
 
             checkLoginStatus();
 
-            console.log('✅ 编辑器已启动，支持云剪贴板 + 阅读模式');
+            console.log('🖋️ 墨韵·文房 已启动，支持云墨宝 + 阅读模式');
             console.log('🔐 登录状态:', currentUser ? '已登录' : '未登录');
 
         })();
