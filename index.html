@@ -359,12 +359,15 @@
         .preview-panel {
             background: var(--bg-preview);
             overflow-y: auto;
-            padding: 48px 28px 28px 28px;
+            padding: 0;
+            /* 移除内边距，让canvas覆盖整个区域 */
         }
 
         .preview-panel .preview-content {
             max-width: 100%;
             word-wrap: break-word;
+            padding: 48px 28px 28px 28px;
+            /* 恢复内边距给内容 */;
         }
 
         /* ===== 预览样式 ===== */
@@ -508,6 +511,119 @@
             padding: 2px 8px;
             border-radius: 4px;
             font-size: 0.9em;
+        }
+
+        /* ===== 阅读模式覆盖层 ===== */
+        #annotationLayer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .read-mode #annotationLayer {
+            pointer-events: auto;
+        }
+        .read-mode #annotationCanvas {
+            pointer-events: auto;
+        }
+        .read-mode .preview-content {
+            opacity: 0.7;
+            /* 使批注更醒目，可选 */;
+        }
+
+        #annotationCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            pointer-events: none;
+            touch-action: none;
+            /* 防止触摸滚动 */;
+        }
+        .read-mode #annotationCanvas {
+            pointer-events: auto;
+        }
+
+        /* 阅读模式工具栏 */
+        #readModeToolbar {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(255, 255, 255, 0.92);
+            border-radius: 14px;
+            padding: 8px 12px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+            z-index: 20;
+            display: none;
+            gap: 6px;
+            align-items: center;
+            flex-wrap: wrap;
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            pointer-events: auto;
+        }
+        [data-theme="dark"] #readModeToolbar {
+            background: rgba(30, 27, 24, 0.92);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .rm-tool {
+            background: none;
+            border: 1px solid var(--border-color);
+            border-radius: 30px;
+            padding: 4px 10px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.2s;
+            color: var(--text-primary);
+            background: var(--bg-secondary);
+            font-family: 'Ma Shan Zheng', cursive;
+            line-height: 1.4;
+            white-space: nowrap;
+        }
+        .rm-tool:hover {
+            background: var(--hover-bg);
+        }
+        .rm-tool.active {
+            background: var(--accent-bg);
+            border-color: var(--ink-red);
+            color: var(--ink-red);
+        }
+
+        #rmColor {
+            width: 30px;
+            height: 30px;
+            border: 1px solid var(--border-color);
+            border-radius: 30px;
+            padding: 2px;
+            cursor: pointer;
+            background: none;
+        }
+        #rmSize {
+            width: 60px;
+            cursor: pointer;
+            accent-color: var(--ink-red);
+        }
+        .rm-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-family: 'Ma Shan Zheng', cursive;
+        }
+        #rmExit {
+            background: var(--ink-red);
+            color: #fff;
+            border: none;
+            border-radius: 30px;
+            padding: 4px 14px;
+            cursor: pointer;
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+        #rmExit:hover {
+            opacity: 0.85;
         }
 
         /* ===== 底部语法参考 ===== */
@@ -1158,7 +1274,11 @@
             .preview-panel {
                 min-height: 260px;
                 height: 40vh;
-                padding: 48px 16px 16px 16px;
+                padding: 0;
+            }
+
+            .preview-content {
+                padding: 48px 16px 16px 16px !important;
             }
 
             .header {
@@ -1205,6 +1325,20 @@
             .clipboard-item {
                 padding: 14px;
             }
+
+            #readModeToolbar {
+                top: 8px;
+                right: 8px;
+                padding: 6px 8px;
+                gap: 4px;
+            }
+            .rm-tool {
+                font-size: 14px;
+                padding: 2px 8px;
+            }
+            #rmSize {
+                width: 40px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -1221,6 +1355,9 @@
             .user-area button {
                 font-size: 11px;
                 padding: 3px 10px;
+            }
+            #readModeToolbar .rm-label {
+                display: none;
             }
         }
     </style>
@@ -1250,6 +1387,7 @@
                 <div class="toolbar">
                     <button id="clipboardBtn">📜 墨宝</button>
                     <button id="bookBtn">📚 书库</button>
+                    <button id="readModeBtn" title="阅读模式（批注/画图）">📖 阅读模式</button>
                     <button id="saveToClipboardBtn" title="将当前编辑器内容保存到墨宝">💾 存墨</button>
                     <button id="saveChapterBtn" style="display:none;" title="保存到当前书库章节">📖 保存章节</button>
                     <button id="loadExampleBtn" class="primary">✨ 示例</button>
@@ -1279,12 +1417,29 @@
                 <span class="panel-label">✏️ 编辑</span>
                 <textarea id="editor" spellcheck="false"></textarea>
             </section>
-            <section class="preview-panel">
+            <section class="preview-panel" style="position:relative;">
                 <span class="panel-label">👁️ 预览</span>
                 <div class="preview-content" id="preview">
                     <div class="empty-hint">
                         <span class="big">📄</span>
                         在左侧输入 Markdown<br />支持 LaTeX 公式 与 Mermaid 图表
+                    </div>
+                </div>
+
+                <!-- ===== 阅读模式覆盖层 ===== -->
+                <div id="annotationLayer">
+                    <canvas id="annotationCanvas"></canvas>
+                    <!-- 阅读模式工具栏 -->
+                    <div id="readModeToolbar">
+                        <button class="rm-tool" data-tool="pen" title="画笔">🖊️</button>
+                        <button class="rm-tool" data-tool="text" title="文字批注">📝</button>
+                        <button class="rm-tool" data-tool="select" title="选择/移动">👆</button>
+                        <button class="rm-tool" data-tool="delete" title="删除选中">🗑️</button>
+                        <button id="rmClear" title="清空全部批注">🧹</button>
+                        <input type="color" id="rmColor" value="#e74c3c" />
+                        <input type="range" id="rmSize" min="1" max="10" value="2" />
+                        <span class="rm-label">粗细</span>
+                        <button id="rmExit">退出</button>
                     </div>
                 </div>
             </section>
@@ -1405,9 +1560,12 @@
             <div id="bookViewContainer">
                 <!-- 书籍列表视图（默认） -->
                 <div id="bookListView">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
                         <span style="font-family:'Ma Shan Zheng',cursive; font-size:16px; color:var(--text-secondary);">所有可见书籍</span>
-                        <button class="btn" id="createBookBtn" style="padding:4px 20px; border-radius:40px; font-size:14px;">➕ 新书</button>
+                        <div style="display:flex; gap:8px;">
+                            <button class="btn" id="importBooksBtn" style="padding:4px 20px; border-radius:40px; font-size:14px; background:var(--ink-gold); color:#fff;">📥 批量导入</button>
+                            <button class="btn" id="createBookBtn" style="padding:4px 20px; border-radius:40px; font-size:14px;">➕ 新书</button>
+                        </div>
                     </div>
                     <div id="bookList"></div>
                 </div>
@@ -1488,7 +1646,7 @@
     </div>
 
     <!-- ========================================================== -->
-    <!-- ===== 阅读模式模态框（预览） ===== -->
+    <!-- ===== 阅读模式预览模态框 ===== -->
     <!-- ========================================================== -->
     <div class="modal-overlay" id="readModal">
         <div class="modal" style="max-width:860px;">
@@ -1611,6 +1769,7 @@
             const backToBookList = document.getElementById('backToBookList');
             const createBookBtn = document.getElementById('createBookBtn');
             const createChapterBtn = document.getElementById('createChapterBtn');
+            const importBooksBtn = document.getElementById('importBooksBtn');
 
             // 书籍表单
             const bookFormModal = document.getElementById('bookFormModal');
@@ -1641,6 +1800,18 @@
             // 保存章节按钮
             const saveChapterBtn = document.getElementById('saveChapterBtn');
 
+            // ---- 阅读模式相关 DOM ----
+            const readModeBtn = document.getElementById('readModeBtn');
+            const annotationLayer = document.getElementById('annotationLayer');
+            const annotationCanvas = document.getElementById('annotationCanvas');
+            const readModeToolbar = document.getElementById('readModeToolbar');
+            const rmTools = document.querySelectorAll('.rm-tool');
+            const rmColor = document.getElementById('rmColor');
+            const rmSize = document.getElementById('rmSize');
+            const rmClear = document.getElementById('rmClear');
+            const rmExit = document.getElementById('rmExit');
+            const previewPanel = document.querySelector('.preview-panel');
+
             // ---- 状态 ----
             let currentUser = null;
             let allUsers = [];
@@ -1648,9 +1819,21 @@
 
             // 书库状态
             let currentBooks = [];
-            let currentBookId = null; // 当前查看的书籍ID
-            let currentChapterId = null; // 当前加载到编辑器的章节ID
-            let currentBookForForm = null; // 用于编辑的书籍ID
+            let currentBookData = null;
+            let currentBookId = null;
+            let currentChapterId = null;
+
+            // ---- 阅读模式状态 ----
+            let isReadMode = false;
+            let annotations = [];
+            let currentTool = 'pen';
+            let currentColor = '#e74c3c';
+            let currentSize = 2;
+            let isDrawing = false;
+            let lastX, lastY;
+            let selectedIndex = -1;
+            let dragOffsetX, dragOffsetY;
+            let ctx = null;
 
             // ---- 工具函数 ----
             function escapeHtml(text) {
@@ -1810,6 +1993,11 @@
                 } catch (err) {
                     console.warn('Mermaid 渲染异常:', err);
                 }
+
+                // 如果处于阅读模式，重新绘制批注（内容变化后重新叠加）
+                if (isReadMode) {
+                    redrawAnnotations();
+                }
             }
 
             // ---- 防抖 + 自动保存 ----
@@ -1883,7 +2071,7 @@
 
         ---
 
-        ✨ 在左侧编辑，右侧实时预览。点击「墨宝」可保存片段。
+        ✨ 在左侧编辑，右侧实时预览。点击「阅读模式」可进行批注。
         `;
             }
 
@@ -1911,6 +2099,297 @@
                 }
                 return content.substring(0, 20) + (content.length > 20 ? '…' : '');
             }
+
+            // ==========================================================
+            // ===== 阅读模式相关函数 =====
+            // ==========================================================
+
+            function resizeCanvas() {
+                if (!ctx) return;
+                const rect = previewPanel.getBoundingClientRect();
+                const dpr = window.devicePixelRatio || 1;
+                annotationCanvas.width = rect.width * dpr;
+                annotationCanvas.height = rect.height * dpr;
+                annotationCanvas.style.width = rect.width + 'px';
+                annotationCanvas.style.height = rect.height + 'px';
+                ctx.scale(dpr, dpr);
+                redrawAnnotations();
+            }
+
+            function redrawAnnotations() {
+                if (!ctx) return;
+                const rect = previewPanel.getBoundingClientRect();
+                ctx.clearRect(0, 0, annotationCanvas.width, annotationCanvas.height);
+                annotations.forEach((ann, index) => {
+                    if (ann.type === 'path') {
+                        ctx.beginPath();
+                        ctx.strokeStyle = ann.color;
+                        ctx.lineWidth = ann.size;
+                        ctx.lineCap = 'round';
+                        ctx.lineJoin = 'round';
+                        ann.points.forEach((p, i) => {
+                            if (i === 0) ctx.moveTo(p.x, p.y);
+                            else ctx.lineTo(p.x, p.y);
+                        });
+                        ctx.stroke();
+                    } else if (ann.type === 'text') {
+                        ctx.font = `${ann.size * 6}px sans-serif`;
+                        ctx.fillStyle = ann.color;
+                        ctx.fillText(ann.text, ann.x, ann.y);
+                    }
+                    // 选中边框
+                    if (index === selectedIndex && currentTool === 'select') {
+                        const bbox = getAnnotationBounds(ann);
+                        ctx.strokeStyle = '#3498db';
+                        ctx.lineWidth = 2;
+                        ctx.setLineDash([4, 4]);
+                        ctx.strokeRect(bbox.x - 5, bbox.y - 5, bbox.w + 10, bbox.h + 10);
+                        ctx.setLineDash([]);
+                    }
+                });
+            }
+
+            function getAnnotationBounds(ann) {
+                if (ann.type === 'path') {
+                    let minX = Infinity,
+                        minY = Infinity,
+                        maxX = -Infinity,
+                        maxY = -Infinity;
+                    ann.points.forEach(p => {
+                        if (p.x < minX) minX = p.x;
+                        if (p.y < minY) minY = p.y;
+                        if (p.x > maxX) maxX = p.x;
+                        if (p.y > maxY) maxY = p.y;
+                    });
+                    return { x: minX, y: minY, w: maxX - minX, h: maxY - minY };
+                } else if (ann.type === 'text') {
+                    ctx.font = `${ann.size * 6}px sans-serif`;
+                    const metrics = ctx.measureText(ann.text);
+                    return { x: ann.x, y: ann.y - 12, w: metrics.width, h: 18 };
+                }
+                return { x: 0, y: 0, w: 0, h: 0 };
+            }
+
+            function getCanvasCoords(e) {
+                const rect = annotationCanvas.getBoundingClientRect();
+                const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+                const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+                return { x: clientX - rect.left, y: clientY - rect.top };
+            }
+
+            // 鼠标/触摸事件
+            function setupAnnotationEvents() {
+                // 鼠标事件
+                annotationCanvas.addEventListener('mousedown', onPointerDown);
+                annotationCanvas.addEventListener('mousemove', onPointerMove);
+                annotationCanvas.addEventListener('mouseup', onPointerUp);
+                annotationCanvas.addEventListener('mouseleave', onPointerUp);
+                // 触摸事件
+                annotationCanvas.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    const touch = e.touches[0];
+                    const mouseEvent = new MouseEvent('mousedown', {
+                        clientX: touch.clientX,
+                        clientY: touch.clientY
+                    });
+                    annotationCanvas.dispatchEvent(mouseEvent);
+                }, { passive: false });
+                annotationCanvas.addEventListener('touchmove', function(e) {
+                    e.preventDefault();
+                    const touch = e.touches[0];
+                    const mouseEvent = new MouseEvent('mousemove', {
+                        clientX: touch.clientX,
+                        clientY: touch.clientY
+                    });
+                    annotationCanvas.dispatchEvent(mouseEvent);
+                }, { passive: false });
+                annotationCanvas.addEventListener('touchend', function(e) {
+                    e.preventDefault();
+                    const mouseEvent = new MouseEvent('mouseup', {});
+                    annotationCanvas.dispatchEvent(mouseEvent);
+                }, { passive: false });
+            }
+
+            let isPointerDown = false;
+
+            function onPointerDown(e) {
+                if (!isReadMode) return;
+                const pos = getCanvasCoords(e);
+                isPointerDown = true;
+
+                if (currentTool === 'pen') {
+                    isDrawing = true;
+                    lastX = pos.x;
+                    lastY = pos.y;
+                    const newPath = { type: 'path', color: currentColor, size: currentSize, points: [{ x: pos.x, y: pos
+                            .y }] };
+                    annotations.push(newPath);
+                    selectedIndex = annotations.length - 1;
+                    redrawAnnotations();
+                } else if (currentTool === 'text') {
+                    const text = prompt('输入批注文字：', '批注');
+                    if (text && text.trim()) {
+                        annotations.push({ type: 'text', text: text.trim(), x: pos.x, y: pos.y, color: currentColor,
+                            size: currentSize });
+                        redrawAnnotations();
+                    }
+                } else if (currentTool === 'select') {
+                    let found = -1;
+                    for (let i = annotations.length - 1; i >= 0; i--) {
+                        const bbox = getAnnotationBounds(annotations[i]);
+                        if (pos.x >= bbox.x - 5 && pos.x <= bbox.x + bbox.w + 5 &&
+                            pos.y >= bbox.y - 5 && pos.y <= bbox.y + bbox.h + 5) {
+                            found = i;
+                            break;
+                        }
+                    }
+                    if (found !== -1) {
+                        selectedIndex = found;
+                        annotationLayer.style.cursor = 'grabbing';
+                        const bbox = getAnnotationBounds(annotations[found]);
+                        dragOffsetX = pos.x - bbox.x;
+                        dragOffsetY = pos.y - bbox.y;
+                        redrawAnnotations();
+                    } else {
+                        selectedIndex = -1;
+                        redrawAnnotations();
+                    }
+                } else if (currentTool === 'delete') {
+                    for (let i = annotations.length - 1; i >= 0; i--) {
+                        const bbox = getAnnotationBounds(annotations[i]);
+                        if (pos.x >= bbox.x - 5 && pos.x <= bbox.x + bbox.w + 5 &&
+                            pos.y >= bbox.y - 5 && pos.y <= bbox.y + bbox.h + 5) {
+                            annotations.splice(i, 1);
+                            selectedIndex = -1;
+                            redrawAnnotations();
+                            showToast('已删除批注', 'info');
+                            break;
+                        }
+                    }
+                }
+            }
+
+            function onPointerMove(e) {
+                if (!isReadMode || !isPointerDown) return;
+                const pos = getCanvasCoords(e);
+                if (currentTool === 'pen' && isDrawing) {
+                    const lastAnn = annotations[annotations.length - 1];
+                    if (lastAnn && lastAnn.type === 'path') {
+                        lastAnn.points.push({ x: pos.x, y: pos.y });
+                        redrawAnnotations();
+                    }
+                } else if (currentTool === 'select' && selectedIndex !== -1) {
+                    const ann = annotations[selectedIndex];
+                    if (ann.type === 'path') {
+                        const bbox = getAnnotationBounds(ann);
+                        const dx = pos.x - dragOffsetX - bbox.x;
+                        const dy = pos.y - dragOffsetY - bbox.y;
+                        ann.points.forEach(p => { p.x += dx;
+                            p.y += dy; });
+                        redrawAnnotations();
+                        // 更新偏移
+                        const newBbox = getAnnotationBounds(ann);
+                        dragOffsetX = pos.x - newBbox.x;
+                        dragOffsetY = pos.y - newBbox.y;
+                    } else if (ann.type === 'text') {
+                        ann.x = pos.x - dragOffsetX;
+                        ann.y = pos.y - dragOffsetY;
+                        redrawAnnotations();
+                    }
+                }
+            }
+
+            function onPointerUp(e) {
+                if (!isReadMode) return;
+                isPointerDown = false;
+                if (currentTool === 'pen') {
+                    isDrawing = false;
+                }
+                if (currentTool === 'select') {
+                    annotationLayer.style.cursor = 'grab';
+                }
+            }
+
+            function enterReadMode() {
+                isReadMode = true;
+                document.body.classList.add('read-mode');
+                readModeToolbar.style.display = 'flex';
+                annotationLayer.style.pointerEvents = 'auto';
+                annotationCanvas.style.pointerEvents = 'auto';
+                previewPanel.style.position = 'relative';
+                // 确保 canvas 存在
+                if (!ctx) {
+                    ctx = annotationCanvas.getContext('2d');
+                }
+                resizeCanvas();
+                // 默认选择画笔
+                document.querySelector('.rm-tool[data-tool="pen"]')?.click();
+                // 禁用预览内容的滚动事件穿透（可选）
+                previewPanel.style.overflow = 'hidden';
+            }
+
+            function exitReadMode() {
+                isReadMode = false;
+                document.body.classList.remove('read-mode');
+                readModeToolbar.style.display = 'none';
+                annotationLayer.style.pointerEvents = 'none';
+                annotationCanvas.style.pointerEvents = 'none';
+                selectedIndex = -1;
+                previewPanel.style.overflow = 'auto';
+                redrawAnnotations();
+            }
+
+            // ---- 阅读模式事件绑定 ----
+            readModeBtn.addEventListener('click', function() {
+                if (!isReadMode) {
+                    enterReadMode();
+                } else {
+                    exitReadMode();
+                }
+            });
+
+            rmExit.addEventListener('click', exitReadMode);
+
+            rmClear.addEventListener('click', function() {
+                if (confirm('确定清空所有批注吗？')) {
+                    annotations = [];
+                    selectedIndex = -1;
+                    redrawAnnotations();
+                    showToast('已清空所有批注', 'success');
+                }
+            });
+
+            rmTools.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    rmTools.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentTool = this.dataset.tool;
+                    if (currentTool === 'select') {
+                        annotationLayer.style.cursor = 'grab';
+                    } else if (currentTool === 'delete') {
+                        annotationLayer.style.cursor = 'pointer';
+                    } else {
+                        annotationLayer.style.cursor = 'crosshair';
+                    }
+                    selectedIndex = -1;
+                    redrawAnnotations();
+                });
+            });
+
+            rmColor.addEventListener('input', function() {
+                currentColor = this.value;
+            });
+            rmSize.addEventListener('input', function() {
+                currentSize = parseInt(this.value);
+            });
+
+            // 窗口变化时重置 canvas
+            window.addEventListener('resize', function() {
+                if (isReadMode) resizeCanvas();
+            });
+
+            // ---- 初始化阅读模式 ----
+            setupAnnotationEvents();
 
             // ==========================================================
             // ===== 用户认证 =====
@@ -1951,7 +2430,6 @@
                     loginBtn.style.display = 'inline-block';
                     logoutBtn.style.display = 'none';
                 }
-                // 是否显示书库（仅登录）
                 if (isLoggedIn()) {
                     bookBtn.style.display = 'inline-flex';
                 } else {
@@ -2470,7 +2948,6 @@
                 });
                 bookList.innerHTML = html;
 
-                // 事件绑定
                 bookList.querySelectorAll('.book-enter').forEach(btn => {
                     btn.addEventListener('click', function() {
                         const id = this.dataset.id;
@@ -2497,9 +2974,9 @@
             async function enterBook(bookId) {
                 try {
                     const book = await apiCall(`/api/books/${bookId}`);
+                    currentBookData = book;
                     currentBookId = bookId;
                     bookDetailName.textContent = book.name;
-                    // 渲染章节列表
                     const chapters = book.chapters || [];
                     renderChapterList(chapters, book);
                     bookListView.style.display = 'none';
@@ -2517,9 +2994,11 @@
                 }
                 const canEdit = isOwner() && book.createdBy === currentUser.username;
                 let html = '';
-                chapters.forEach(ch => {
+                chapters.forEach((ch, index) => {
+                    const isFirst = index === 0;
+                    const isLast = index === chapters.length - 1;
                     html += `
-                        <div class="clipboard-item chapter-item" data-id="${ch.id}">
+                        <div class="clipboard-item chapter-item" data-id="${ch.id}" data-index="${index}">
                             <div class="chapter-title">${escapeHtml(ch.title)}</div>
                             <div class="meta">
                                 <span>${new Date(ch.createdAt).toLocaleString()}</span>
@@ -2530,6 +3009,8 @@
                                 ${canEdit ? `
                                     <button class="btn-edit-status chapter-edit" data-id="${ch.id}">✏️ 编辑</button>
                                     <button class="btn-del chapter-delete" data-id="${ch.id}">🗑️ 删除</button>
+                                    ${!isFirst ? `<button class="btn-move-up" data-id="${ch.id}">⬆️ 上移</button>` : ''}
+                                    ${!isLast ? `<button class="btn-move-down" data-id="${ch.id}">⬇️ 下移</button>` : ''}
                                 ` : ''}
                             </div>
                         </div>
@@ -2537,7 +3018,6 @@
                 });
                 chapterList.innerHTML = html;
 
-                // 事件绑定
                 chapterList.querySelectorAll('.chapter-load').forEach(btn => {
                     btn.addEventListener('click', function() {
                         const id = this.dataset.id;
@@ -2561,6 +3041,18 @@
                         btn.addEventListener('click', function() {
                             const id = this.dataset.id;
                             deleteChapter(currentBookId, id);
+                        });
+                    });
+                    chapterList.querySelectorAll('.btn-move-up').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const id = this.dataset.id;
+                            moveChapter(currentBookId, id, -1);
+                        });
+                    });
+                    chapterList.querySelectorAll('.btn-move-down').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const id = this.dataset.id;
+                            moveChapter(currentBookId, id, 1);
                         });
                     });
                 }
@@ -2676,6 +3168,29 @@
                 }
             }
 
+            // ---- 移动章节 ----
+            async function moveChapter(bookId, chapterId, direction) {
+                if (!currentBookData) return;
+                const chapters = currentBookData.chapters || [];
+                const idx = chapters.findIndex(c => c.id === chapterId);
+                if (idx === -1) return;
+                const newIdx = idx + direction;
+                if (newIdx < 0 || newIdx >= chapters.length) return;
+                const newChapters = [...chapters];
+                [newChapters[idx], newChapters[newIdx]] = [newChapters[newIdx], newChapters[idx]];
+                const chapterIds = newChapters.map(c => c.id);
+                try {
+                    await apiCall(`/api/books/${bookId}/order`, {
+                        method: 'PUT',
+                        body: { chapterIds }
+                    });
+                    showToast('顺序已更新', 'success');
+                    await enterBook(bookId);
+                } catch (err) {
+                    showToast('更新顺序失败: ' + err.message, 'error');
+                }
+            }
+
             // ---- 加载章节到编辑器 ----
             async function loadChapterToEditor(bookId, chapterId) {
                 try {
@@ -2759,10 +3274,12 @@
                 saveChapterBtn.style.display = 'none';
                 currentChapterId = null;
                 currentBookId = null;
+                currentBookData = null;
             });
 
             closeBookModal.addEventListener('click', function() {
                 bookModal.classList.remove('active');
+                currentBookData = null;
             });
             bookModal.addEventListener('click', function(e) {
                 if (e.target === bookModal) bookModal.classList.remove('active');
@@ -2784,6 +3301,19 @@
                 if (!isOwner()) { showToast('只有所有者可以创建章节', 'error'); return; }
                 if (!currentBookId) return;
                 openChapterForm(currentBookId, null);
+            });
+
+            // ---- 批量导入 ----
+            importBooksBtn.addEventListener('click', async function() {
+                if (!isOwner()) { showToast('只有所有者可以批量导入', 'error'); return; }
+                if (!confirm('将扫描 books 目录并重建书籍列表，是否继续？')) return;
+                try {
+                    const result = await apiCall('/api/admin/import-books', { method: 'POST' });
+                    showToast(`导入成功：${result.books.length} 本书`, 'success');
+                    loadBooks();
+                } catch (err) {
+                    showToast('导入失败: ' + err.message, 'error');
+                }
             });
 
             // ---- 书籍表单控制 ----
@@ -2840,21 +3370,18 @@
                 }
             });
 
-            // ---- 章节表单控制（修复：确保 bookId 保存） ----
+            // ---- 章节表单控制 ----
             function openChapterForm(bookId, chapterId) {
                 const isEdit = !!chapterId;
                 chapterFormTitle.textContent = isEdit ? '✏️ 编辑章节' : '📝 新章节';
-                
                 if (!bookId) {
                     showToast('书籍ID缺失，请重试', 'error');
                     return;
                 }
-                // 保存 bookId 到按钮（无论新建还是编辑）
                 saveChapterFormBtn.dataset.bookId = bookId;
-
                 if (isEdit) {
-                    const book = currentBooks.find(b => b.id === bookId);
-                    if (!book) { showToast('书籍不存在', 'error'); return; }
+                    const book = currentBookData;
+                    if (!book) { showToast('书籍数据未加载', 'error'); return; }
                     const chapter = book.chapters.find(c => c.id === chapterId);
                     if (!chapter) { showToast('章节不存在', 'error'); return; }
                     chapterTitleInput.value = chapter.title;
@@ -3058,6 +3585,8 @@
                     }
                     if (bookFormModal.classList.contains('active')) bookFormModal.classList.remove('active');
                     if (chapterFormModal.classList.contains('active')) chapterFormModal.classList.remove('active');
+                    // 如果处于阅读模式，按 ESC 退出
+                    if (isReadMode) exitReadMode();
                 }
             });
 
@@ -3094,7 +3623,7 @@
 
             checkLoginStatus();
 
-            console.log('🖋️ 墨韵·文房 已启动，支持云墨宝 + 书库');
+            console.log('🖋️ 墨韵·文房 已启动，支持云墨宝 + 书库 + 阅读模式');
             console.log('🔐 登录状态:', currentUser ? '已登录' : '未登录');
 
         })();
