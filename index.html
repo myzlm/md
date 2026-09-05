@@ -19,7 +19,7 @@
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js">
     </script>
 
-    <!-- 墨韵字体 (Ma Shan Zheng) -->
+    <!-- 墨韵字体 -->
     <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap" rel="stylesheet" />
 
     <style>
@@ -96,7 +96,6 @@
             position: relative;
         }
 
-        /* 水墨装饰线 */
         .app::before {
             content: '';
             position: absolute;
@@ -837,7 +836,7 @@
             font-family: 'Ma Shan Zheng', cursive;
         }
 
-        /* ===== 剪贴板模态框（大） ===== */
+        /* ===== 剪贴板模态框 ===== */
         #clipboardModal .modal {
             max-width: 960px;
         }
@@ -946,8 +945,7 @@
             letter-spacing: 0;
         }
 
-        /* 卡片列表 */
-        #clipboardModal .clipboard-item {
+        .clipboard-item {
             display: flex;
             flex-direction: column;
             padding: 16px 20px;
@@ -959,13 +957,13 @@
             box-shadow: var(--card-shadow);
         }
 
-        #clipboardModal .clipboard-item:hover {
+        .clipboard-item:hover {
             border-color: var(--ink-red);
             box-shadow: 0 4px 20px rgba(139, 58, 47, 0.06);
             transform: translateY(-2px);
         }
 
-        #clipboardModal .clipboard-item .item-title {
+        .clipboard-item .item-title {
             font-weight: 700;
             font-size: 17px;
             color: var(--text-primary);
@@ -974,7 +972,7 @@
             letter-spacing: 1px;
         }
 
-        #clipboardModal .clipboard-item .content-preview {
+        .clipboard-item .content-preview {
             font-size: 14px;
             color: var(--text-secondary);
             line-height: 1.6;
@@ -988,7 +986,7 @@
             margin-bottom: 10px;
         }
 
-        #clipboardModal .clipboard-item .meta {
+        .clipboard-item .meta {
             font-size: 12px;
             color: var(--text-muted);
             display: flex;
@@ -998,7 +996,7 @@
             margin-bottom: 12px;
         }
 
-        #clipboardModal .clipboard-item .meta .tag {
+        .clipboard-item .meta .tag {
             background: var(--accent-bg);
             color: var(--ink-red);
             padding: 0 12px;
@@ -1008,18 +1006,18 @@
             line-height: 22px;
         }
 
-        #clipboardModal .clipboard-item .meta .shared-info {
+        .clipboard-item .meta .shared-info {
             color: var(--text-muted);
             font-size: 11px;
         }
 
-        #clipboardModal .clipboard-item .actions {
+        .clipboard-item .actions {
             display: flex;
             gap: 8px;
             flex-wrap: wrap;
         }
 
-        #clipboardModal .clipboard-item .actions button {
+        .clipboard-item .actions button {
             padding: 4px 16px;
             font-size: 12px;
             border: 1px solid var(--border-color);
@@ -1032,41 +1030,80 @@
             letter-spacing: 0.5px;
         }
 
-        #clipboardModal .clipboard-item .actions button:hover {
+        .clipboard-item .actions button:hover {
             background: var(--hover-bg);
             transform: translateY(-1px);
         }
 
-        #clipboardModal .clipboard-item .actions .btn-del {
+        .clipboard-item .actions .btn-del {
             color: #c0392b;
             border-color: #e6b8b0;
         }
 
-        #clipboardModal .clipboard-item .actions .btn-del:hover {
+        .clipboard-item .actions .btn-del:hover {
             background: #f5e4de;
         }
 
-        #clipboardModal .clipboard-item .actions .btn-load {
+        .clipboard-item .actions .btn-load {
             color: var(--ink-red);
         }
 
-        #clipboardModal .clipboard-item .actions .btn-load:hover {
+        .clipboard-item .actions .btn-load:hover {
             background: var(--accent-bg);
         }
 
-        #clipboardModal .clipboard-item .actions .btn-preview {
+        .clipboard-item .actions .btn-preview {
             color: var(--ink-gold);
         }
 
-        #clipboardModal .clipboard-item .actions .btn-preview:hover {
+        .clipboard-item .actions .btn-preview:hover {
             background: #f5edda;
         }
 
-        #clipboardModal .clipboard-item .actions .btn-edit-status {
+        .clipboard-item .actions .btn-edit-status {
             color: var(--text-secondary);
         }
 
-        #clipboardModal .clipboard-item .actions .btn-edit-status:hover {
+        .clipboard-item .actions .btn-edit-status:hover {
+            background: var(--hover-bg);
+        }
+
+        /* ===== 书库（Books）额外样式 ===== */
+        .book-card {
+            cursor: pointer;
+        }
+
+        .book-card .book-name {
+            font-size: 20px;
+            font-weight: 700;
+            font-family: 'Ma Shan Zheng', cursive;
+        }
+
+        .book-card .book-desc {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .chapter-item .chapter-title {
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .back-btn {
+            cursor: pointer;
+            color: var(--ink-red);
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 30px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            transition: 0.2s;
+            display: inline-block;
+            margin-bottom: 12px;
+        }
+
+        .back-btn:hover {
             background: var(--hover-bg);
         }
 
@@ -1150,7 +1187,14 @@
                 grid-template-columns: 1fr;
             }
 
-            #clipboardModal .modal {
+            .modal {
+                padding: 24px 18px;
+                margin: 10px;
+                border-radius: 20px;
+            }
+
+            #clipboardModal .modal,
+            #bookModal .modal {
                 padding: 20px 16px;
             }
 
@@ -1158,14 +1202,8 @@
                 flex-direction: column;
             }
 
-            #clipboardModal .clipboard-item {
+            .clipboard-item {
                 padding: 14px;
-            }
-
-            .modal {
-                padding: 24px 18px;
-                margin: 10px;
-                border-radius: 20px;
             }
         }
 
@@ -1211,7 +1249,9 @@
                 <!-- 工具栏 -->
                 <div class="toolbar">
                     <button id="clipboardBtn">📜 墨宝</button>
+                    <button id="bookBtn">📚 书库</button>
                     <button id="saveToClipboardBtn" title="将当前编辑器内容保存到墨宝">💾 存墨</button>
+                    <button id="saveChapterBtn" style="display:none;" title="保存到当前书库章节">📖 保存章节</button>
                     <button id="loadExampleBtn" class="primary">✨ 示例</button>
                     <button id="clearBtn">🗑️ 清空</button>
                     <button id="downloadMdBtn">📥 下载 .md</button>
@@ -1322,13 +1362,11 @@
             <button class="close-btn" id="closeClipboardModal">×</button>
             <h2>📜 墨宝·云匣</h2>
 
-            <!-- 配额显示 -->
             <div class="quota-display" id="quotaDisplay">
                 <span>角色：<strong id="quotaRole">—</strong></span>
                 <span>已存：<strong id="quotaUsed">0</strong> / <strong id="quotaTotal">0</strong></span>
             </div>
 
-            <!-- 创建表单（无标题输入） -->
             <div class="clipboard-form">
                 <textarea id="clipboardContent" placeholder="输入要保存的文本..." rows="3"></textarea>
                 <div class="row">
@@ -1337,27 +1375,115 @@
                         <option value="public">🌐 公开 (所有人)</option>
                         <option value="shared">👥 指定知音</option>
                     </select>
-                    <select id="clipboardSharedWith" multiple style="display:none;">
-                        <!-- 由 JS 动态填充 -->
-                    </select>
+                    <select id="clipboardSharedWith" multiple style="display:none;"></select>
                 </div>
                 <button class="btn" id="saveClipboardBtn" style="align-self:flex-start; padding:8px 32px; border-radius:40px;">➕ 存墨</button>
             </div>
 
-            <!-- ===== 我的墨宝（我创建的） ===== -->
             <div class="section-title">
                 <span>📜 我的墨宝</span>
                 <span class="sub">（我创作的）</span>
             </div>
             <div id="myClipboardList"></div>
 
-            <!-- ===== 文渊阁（所有可见的） ===== -->
             <div class="section-title" style="margin-top:24px;">
                 <span>📖 文渊阁</span>
                 <span class="sub">（可阅览的）</span>
             </div>
             <div id="allClipboardList"></div>
+        </div>
+    </div>
 
+    <!-- ========================================================== -->
+    <!-- ===== 书库模态框 ===== -->
+    <!-- ========================================================== -->
+    <div class="modal-overlay" id="bookModal">
+        <div class="modal" style="max-width: 960px;">
+            <button class="close-btn" id="closeBookModal">×</button>
+            <h2 id="bookModalTitle">📚 书库</h2>
+
+            <div id="bookViewContainer">
+                <!-- 书籍列表视图（默认） -->
+                <div id="bookListView">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                        <span style="font-family:'Ma Shan Zheng',cursive; font-size:16px; color:var(--text-secondary);">所有可见书籍</span>
+                        <button class="btn" id="createBookBtn" style="padding:4px 20px; border-radius:40px; font-size:14px;">➕ 新书</button>
+                    </div>
+                    <div id="bookList"></div>
+                </div>
+
+                <!-- 书籍详情视图（章节列表） -->
+                <div id="bookDetailView" style="display:none;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
+                        <div>
+                            <span class="back-btn" id="backToBookList">← 返回书库</span>
+                            <span style="font-family:'Ma Shan Zheng',cursive; font-size:20px; margin-left:12px;" id="bookDetailName"></span>
+                        </div>
+                        <button class="btn" id="createChapterBtn" style="padding:4px 20px; border-radius:40px; font-size:14px;">➕ 新章节</button>
+                    </div>
+                    <div id="chapterList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================== -->
+    <!-- ===== 新建/编辑书籍模态框 ===== -->
+    <!-- ========================================================== -->
+    <div class="modal-overlay" id="bookFormModal">
+        <div class="modal">
+            <button class="close-btn" id="closeBookFormModal">×</button>
+            <h2 id="bookFormTitle">📝 新书</h2>
+            <form onsubmit="return false">
+                <div class="input-group">
+                    <label>书名</label>
+                    <input type="text" id="bookNameInput" placeholder="输入书名" />
+                </div>
+                <div class="input-group">
+                    <label>描述</label>
+                    <textarea id="bookDescInput" rows="2" placeholder="简短描述"></textarea>
+                </div>
+                <div class="input-group">
+                    <label>可见性</label>
+                    <select id="bookVisibilityInput">
+                        <option value="private">🔒 私密</option>
+                        <option value="public">🌐 公开</option>
+                        <option value="shared">👥 指定知音</option>
+                    </select>
+                </div>
+                <div class="input-group" id="bookSharedGroup" style="display:none;">
+                    <label>分享给</label>
+                    <select id="bookSharedWith" multiple style="min-height:80px;"></select>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn" id="saveBookBtn">保存</button>
+                    <button class="btn btn-secondary" id="cancelBookFormBtn">取消</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========================================================== -->
+    <!-- ===== 新建/编辑章节模态框 ===== -->
+    <!-- ========================================================== -->
+    <div class="modal-overlay" id="chapterFormModal">
+        <div class="modal">
+            <button class="close-btn" id="closeChapterFormModal">×</button>
+            <h2 id="chapterFormTitle">📝 新章节</h2>
+            <form onsubmit="return false">
+                <div class="input-group">
+                    <label>章节标题</label>
+                    <input type="text" id="chapterTitleInput" placeholder="输入章节标题" />
+                </div>
+                <div class="input-group">
+                    <label>内容（Markdown）</label>
+                    <textarea id="chapterContentInput" rows="6" placeholder="输入章节内容..."></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn" id="saveChapterFormBtn">保存</button>
+                    <button class="btn btn-secondary" id="cancelChapterFormBtn">取消</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -1365,17 +1491,15 @@
     <!-- ===== 阅读模式模态框（预览） ===== -->
     <!-- ========================================================== -->
     <div class="modal-overlay" id="readModal">
-        <div class="modal">
+        <div class="modal" style="max-width:860px;">
             <button class="close-btn" id="closeReadModal">×</button>
             <h2>📖 阅读·墨韵</h2>
-            <div class="preview-content" id="readPreviewContent">
-                <!-- 渲染内容 -->
-            </div>
+            <div class="preview-content" id="readPreviewContent"></div>
         </div>
     </div>
 
     <!-- ========================================================== -->
-    <!-- ===== 编辑状态模态框（可修改标题、内容、可见性、分享） ===== -->
+    <!-- ===== 编辑状态模态框（剪贴板） ===== -->
     <!-- ========================================================== -->
     <div class="modal-overlay" id="editStatusModal">
         <div class="modal">
@@ -1400,9 +1524,7 @@
                 </div>
                 <div class="input-group" id="editSharedGroup" style="display:none;">
                     <label>分享给</label>
-                    <select id="editSharedWith" multiple style="min-height:80px;">
-                        <!-- 动态填充 -->
-                    </select>
+                    <select id="editSharedWith" multiple style="min-height:80px;"></select>
                 </div>
                 <div class="modal-actions">
                     <button class="btn" id="saveEditStatusBtn">保存</button>
@@ -1465,12 +1587,7 @@
             const quotaUsed = document.getElementById('quotaUsed');
             const quotaTotal = document.getElementById('quotaTotal');
 
-            // 阅读模式
-            const readModal = document.getElementById('readModal');
-            const closeReadModal = document.getElementById('closeReadModal');
-            const readPreviewContent = document.getElementById('readPreviewContent');
-
-            // 编辑状态模态框
+            // 剪贴板编辑状态
             const editStatusModal = document.getElementById('editStatusModal');
             const closeEditStatusModal = document.getElementById('closeEditStatusModal');
             const editTitle = document.getElementById('editTitle');
@@ -1481,10 +1598,59 @@
             const saveEditStatusBtn = document.getElementById('saveEditStatusBtn');
             const cancelEditStatusBtn = document.getElementById('cancelEditStatusBtn');
 
+            // 书库
+            const bookBtn = document.getElementById('bookBtn');
+            const bookModal = document.getElementById('bookModal');
+            const closeBookModal = document.getElementById('closeBookModal');
+            const bookModalTitle = document.getElementById('bookModalTitle');
+            const bookListView = document.getElementById('bookListView');
+            const bookDetailView = document.getElementById('bookDetailView');
+            const bookList = document.getElementById('bookList');
+            const chapterList = document.getElementById('chapterList');
+            const bookDetailName = document.getElementById('bookDetailName');
+            const backToBookList = document.getElementById('backToBookList');
+            const createBookBtn = document.getElementById('createBookBtn');
+            const createChapterBtn = document.getElementById('createChapterBtn');
+
+            // 书籍表单
+            const bookFormModal = document.getElementById('bookFormModal');
+            const closeBookFormModal = document.getElementById('closeBookFormModal');
+            const bookFormTitle = document.getElementById('bookFormTitle');
+            const bookNameInput = document.getElementById('bookNameInput');
+            const bookDescInput = document.getElementById('bookDescInput');
+            const bookVisibilityInput = document.getElementById('bookVisibilityInput');
+            const bookSharedWith = document.getElementById('bookSharedWith');
+            const bookSharedGroup = document.getElementById('bookSharedGroup');
+            const saveBookBtn = document.getElementById('saveBookBtn');
+            const cancelBookFormBtn = document.getElementById('cancelBookFormBtn');
+
+            // 章节表单
+            const chapterFormModal = document.getElementById('chapterFormModal');
+            const closeChapterFormModal = document.getElementById('closeChapterFormModal');
+            const chapterFormTitle = document.getElementById('chapterFormTitle');
+            const chapterTitleInput = document.getElementById('chapterTitleInput');
+            const chapterContentInput = document.getElementById('chapterContentInput');
+            const saveChapterFormBtn = document.getElementById('saveChapterFormBtn');
+            const cancelChapterFormBtn = document.getElementById('cancelChapterFormBtn');
+
+            // 阅读模式
+            const readModal = document.getElementById('readModal');
+            const closeReadModal = document.getElementById('closeReadModal');
+            const readPreviewContent = document.getElementById('readPreviewContent');
+
+            // 保存章节按钮
+            const saveChapterBtn = document.getElementById('saveChapterBtn');
+
             // ---- 状态 ----
             let currentUser = null;
             let allUsers = [];
-            let editingItemId = null;
+            let editingClipboardItemId = null;
+
+            // 书库状态
+            let currentBooks = [];
+            let currentBookId = null; // 当前查看的书籍ID
+            let currentChapterId = null; // 当前加载到编辑器的章节ID
+            let currentBookForForm = null; // 用于编辑的书籍ID
 
             // ---- 工具函数 ----
             function escapeHtml(text) {
@@ -1532,6 +1698,7 @@
 
             function isLoggedIn() { return !!currentUser; }
             function getRole() { return currentUser ? currentUser.role : null; }
+            function isOwner() { return getRole() === 'owner'; }
 
             // ---- 初始化 Mermaid ----
             mermaid.initialize({
@@ -1768,6 +1935,7 @@
                             allUsers = users;
                             populateSharedWithSelect();
                             populateEditSharedWithSelect();
+                            populateBookSharedWithSelect();
                         }
                     } catch (_) { /* 忽略 */ }
                 }
@@ -1782,6 +1950,12 @@
                     greetingText.textContent = '未登录 · 游客';
                     loginBtn.style.display = 'inline-block';
                     logoutBtn.style.display = 'none';
+                }
+                // 是否显示书库（仅登录）
+                if (isLoggedIn()) {
+                    bookBtn.style.display = 'inline-flex';
+                } else {
+                    bookBtn.style.display = 'none';
                 }
             }
 
@@ -1810,6 +1984,7 @@
                             allUsers = users;
                             populateSharedWithSelect();
                             populateEditSharedWithSelect();
+                            populateBookSharedWithSelect();
                         }
                     } catch (_) { /* 忽略 */ }
                 } catch (err) {
@@ -1851,7 +2026,7 @@
             });
 
             // ==========================================================
-            // ===== 云剪贴板（墨宝） =====
+            // ===== 剪贴板功能 =====
             // ==========================================================
 
             function populateSharedWithSelect() {
@@ -1894,6 +2069,26 @@
                 }
             }
 
+            function populateBookSharedWithSelect() {
+                const sel = bookSharedWith;
+                sel.innerHTML = '';
+                const others = allUsers.filter(u => u !== (currentUser ? currentUser.username : null));
+                if (others.length === 0) {
+                    const opt = document.createElement('option');
+                    opt.value = '';
+                    opt.textContent = '（暂无）';
+                    opt.disabled = true;
+                    sel.appendChild(opt);
+                } else {
+                    others.forEach(u => {
+                        const opt = document.createElement('option');
+                        opt.value = u;
+                        opt.textContent = u;
+                        sel.appendChild(opt);
+                    });
+                }
+            }
+
             clipboardVisibility.addEventListener('change', function() {
                 if (this.value === 'shared') {
                     clipboardSharedWith.style.display = 'block';
@@ -1902,7 +2097,7 @@
                 }
             });
 
-            // 加载剪贴板数据
+            // 加载剪贴板
             async function loadClipboards() {
                 if (!isLoggedIn()) {
                     myClipboardList.innerHTML = `<p style="color:var(--text-muted);">请先登录查看墨宝</p>`;
@@ -1927,7 +2122,6 @@
                     quotaUsed.textContent = data.length;
 
                     const username = currentUser.username;
-
                     const myItems = data.filter(item => item.createdBy === username);
                     const visibleItems = data.filter(item => {
                         if (item.createdBy === username) return false;
@@ -1937,8 +2131,8 @@
                         return false;
                     });
 
-                    renderMyClipboards(myItems);
-                    renderAllClipboards(visibleItems);
+                    renderClipboardList(myItems, myClipboardList, true);
+                    renderClipboardList(visibleItems, allClipboardList, false);
 
                 } catch (err) {
                     myClipboardList.innerHTML = `<p style="color:#c0392b;">加载失败: ${escapeHtml(err.message)}</p>`;
@@ -1946,10 +2140,9 @@
                 }
             }
 
-            // 渲染“我的墨宝”
-            function renderMyClipboards(items) {
+            function renderClipboardList(items, container, isOwner) {
                 if (items.length === 0) {
-                    myClipboardList.innerHTML = `<p style="color:var(--text-muted);">暂无墨宝，请创作一篇</p>`;
+                    container.innerHTML = `<p style="color:var(--text-muted);">暂无条目</p>`;
                     return;
                 }
                 let html = '';
@@ -1965,47 +2158,16 @@
                     } [item.visibility] || item.visibility;
                     const contentPreview = escapeHtml(item.content);
 
-                    html += `
-                        <div class="clipboard-item" data-id="${item.id}">
-                            <div class="item-title">${escapeHtml(title)}</div>
-                            <div class="content-preview">${contentPreview}</div>
-                            <div class="meta">
-                                <span>🖋️ ${escapeHtml(item.createdBy)}</span>
-                                <span class="tag">${visLabel}</span>
-                                ${sharedInfo ? `<span class="shared-info">${escapeHtml(sharedInfo)}</span>` : ''}
-                                <span>${new Date(item.createdAt).toLocaleString()}</span>
-                            </div>
-                            <div class="actions">
-                                <button class="btn-load" data-id="${item.id}">📂 载入</button>
-                                <button class="btn-preview" data-id="${item.id}">👁️ 预览</button>
-                                <button class="btn-edit-status" data-id="${item.id}">✏️ 编辑</button>
-                                <button class="btn-del" data-id="${item.id}">🗑️ 删除</button>
-                            </div>
-                        </div>
+                    let actionsHtml = `
+                        <button class="btn-load" data-id="${item.id}">📂 载入</button>
+                        <button class="btn-preview" data-id="${item.id}">👁️ 预览</button>
                     `;
-                });
-                myClipboardList.innerHTML = html;
-                bindClipboardEvents(myClipboardList);
-            }
-
-            // 渲染“文渊阁”
-            function renderAllClipboards(items) {
-                if (items.length === 0) {
-                    allClipboardList.innerHTML = `<p style="color:var(--text-muted);">暂无公开或分享给您的墨宝</p>`;
-                    return;
-                }
-                let html = '';
-                items.forEach(item => {
-                    const title = item.title || generateTitle(item.content);
-                    const sharedInfo = (item.visibility === 'shared' && item.sharedWith && item.sharedWith.length > 0) ?
-                        `分享给: ${item.sharedWith.join(', ')}` :
-                        '';
-                    const visLabel = {
-                        'public': '🌐 公开',
-                        'private': '🔒 私密',
-                        'shared': '👥 指定知音'
-                    } [item.visibility] || item.visibility;
-                    const contentPreview = escapeHtml(item.content);
+                    if (isOwner) {
+                        actionsHtml += `
+                            <button class="btn-edit-status" data-id="${item.id}">✏️ 编辑</button>
+                            <button class="btn-del" data-id="${item.id}">🗑️ 删除</button>
+                        `;
+                    }
 
                     html += `
                         <div class="clipboard-item" data-id="${item.id}">
@@ -2017,19 +2179,12 @@
                                 ${sharedInfo ? `<span class="shared-info">${escapeHtml(sharedInfo)}</span>` : ''}
                                 <span>${new Date(item.createdAt).toLocaleString()}</span>
                             </div>
-                            <div class="actions">
-                                <button class="btn-load" data-id="${item.id}">📂 载入</button>
-                                <button class="btn-preview" data-id="${item.id}">👁️ 预览</button>
-                            </div>
+                            <div class="actions">${actionsHtml}</div>
                         </div>
                     `;
                 });
-                allClipboardList.innerHTML = html;
-                bindClipboardEvents(allClipboardList);
-            }
-
-            // 绑定卡片事件
-            function bindClipboardEvents(container) {
+                container.innerHTML = html;
+                // 绑定事件
                 container.querySelectorAll('.btn-load').forEach(btn => {
                     btn.addEventListener('click', function() {
                         const id = this.dataset.id;
@@ -2042,31 +2197,27 @@
                         previewClipboard(id);
                     });
                 });
-                container.querySelectorAll('.btn-del').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const id = this.dataset.id;
-                        deleteClipboard(id);
+                if (isOwner) {
+                    container.querySelectorAll('.btn-del').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const id = this.dataset.id;
+                            deleteClipboard(id);
+                        });
                     });
-                });
-                container.querySelectorAll('.btn-edit-status').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const id = this.dataset.id;
-                        openEditStatusModal(id);
+                    container.querySelectorAll('.btn-edit-status').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const id = this.dataset.id;
+                            openEditClipboardModal(id);
+                        });
                     });
-                });
+                }
             }
 
-            // ---- 创建 ----
+            // ---- 剪贴板操作 ----
             async function createClipboard() {
-                if (!isLoggedIn()) {
-                    showToast('请先登录', 'error');
-                    return;
-                }
+                if (!isLoggedIn()) { showToast('请先登录', 'error'); return; }
                 const content = clipboardContent.value.trim();
-                if (!content) {
-                    showToast('请输入内容', 'error');
-                    return;
-                }
+                if (!content) { showToast('请输入内容', 'error'); return; }
                 const title = generateTitle(content);
                 const visibility = clipboardVisibility.value;
                 let sharedWith = [];
@@ -2087,7 +2238,6 @@
                 }
             }
 
-            // ---- 删除 ----
             async function deleteClipboard(id) {
                 if (!confirm('确定删除这条墨宝吗？')) return;
                 try {
@@ -2099,15 +2249,11 @@
                 }
             }
 
-            // ---- 加载到编辑器 ----
             async function loadClipboardToEditor(id) {
                 try {
                     const data = await apiCall('/api/clipboards');
                     const item = data.find(cb => cb.id === id);
-                    if (!item) {
-                        showToast('条目不存在', 'error');
-                        return;
-                    }
+                    if (!item) { showToast('条目不存在', 'error'); return; }
                     editor.value = item.content;
                     render();
                     localStorage.setItem('markdown_editor_content', item.content);
@@ -2117,23 +2263,14 @@
                 }
             }
 
-            // ---- 预览 ----
             async function previewClipboard(id) {
                 try {
                     const data = await apiCall('/api/clipboards');
                     const item = data.find(cb => cb.id === id);
-                    if (!item) {
-                        showToast('条目不存在', 'error');
-                        return;
-                    }
+                    if (!item) { showToast('条目不存在', 'error'); return; }
                     let html = '';
-                    try {
-                        html = marked.parse(item.content);
-                    } catch (err) {
-                        html = `<div style="color:#c0392b;">渲染失败: ${err.message}</div>`;
-                    }
+                    try { html = marked.parse(item.content); } catch (err) { html = `<div style="color:#c0392b;">渲染失败: ${err.message}</div>`; }
                     readPreviewContent.innerHTML = html;
-
                     try {
                         if (typeof renderMathInElement === 'function' && typeof window.katex !== 'undefined') {
                             renderMathInElement(readPreviewContent, {
@@ -2144,74 +2281,51 @@
                                     { left: '\\[', right: '\\]', display: true }
                                 ],
                                 throwOnError: false,
-                                errorCallback: function(msg) {
-                                    return `<span class="katex-error">公式错误</span>`;
-                                }
+                                errorCallback: function(msg) { return `<span class="katex-error">公式错误</span>`; }
                             });
                         }
-                    } catch (err) {
-                        console.warn('阅读模式 KaTeX 错误:', err);
-                    }
-
+                    } catch (err) { console.warn('阅读模式 KaTeX 错误:', err); }
                     try {
                         const mermaidNodes = readPreviewContent.querySelectorAll('.mermaid');
                         if (mermaidNodes.length > 0) {
-                            mermaid.run({
-                                nodes: mermaidNodes,
-                                suppressErrors: true
-                            }).catch(() => {});
+                            mermaid.run({ nodes: mermaidNodes, suppressErrors: true }).catch(() => {});
                         }
-                    } catch (err) {
-                        console.warn('阅读模式 Mermaid 错误:', err);
-                    }
-
+                    } catch (err) { console.warn('阅读模式 Mermaid 错误:', err); }
                     readModal.classList.add('active');
                 } catch (err) {
                     showToast('预览失败: ' + err.message, 'error');
                 }
             }
 
-            // ---- 编辑状态（含标题、内容、可见性、分享） ----
-            async function openEditStatusModal(id) {
+            async function openEditClipboardModal(id) {
                 if (!isLoggedIn()) return;
                 try {
                     const data = await apiCall('/api/clipboards');
                     const item = data.find(cb => cb.id === id);
-                    if (!item) {
-                        showToast('条目不存在', 'error');
-                        return;
-                    }
-                    editingItemId = id;
+                    if (!item) { showToast('条目不存在', 'error'); return; }
+                    editingClipboardItemId = id;
                     editTitle.value = item.title || generateTitle(item.content);
                     editContent.value = item.content;
                     editVisibility.value = item.visibility || 'private';
                     populateEditSharedWithSelect();
                     if (item.sharedWith && Array.isArray(item.sharedWith)) {
                         Array.from(editSharedWith.options).forEach(opt => {
-                            if (item.sharedWith.includes(opt.value)) {
-                                opt.selected = true;
-                            }
+                            if (item.sharedWith.includes(opt.value)) opt.selected = true;
                         });
                     }
-                    if (editVisibility.value === 'shared') {
-                        editSharedGroup.style.display = 'block';
-                    } else {
-                        editSharedGroup.style.display = 'none';
-                    }
+                    if (editVisibility.value === 'shared') editSharedGroup.style.display = 'block';
+                    else editSharedGroup.style.display = 'none';
                     editStatusModal.classList.add('active');
                 } catch (err) {
                     showToast('获取信息失败: ' + err.message, 'error');
                 }
             }
 
-            async function saveEditStatus() {
-                if (!editingItemId) return;
+            async function saveEditClipboard() {
+                if (!editingClipboardItemId) return;
                 const title = editTitle.value.trim() || generateTitle(editContent.value);
                 const content = editContent.value.trim();
-                if (!content) {
-                    showToast('内容不能为空', 'error');
-                    return;
-                }
+                if (!content) { showToast('内容不能为空', 'error'); return; }
                 const visibility = editVisibility.value;
                 let sharedWith = [];
                 if (visibility === 'shared') {
@@ -2219,52 +2333,23 @@
                     sharedWith = Array.from(sel.selectedOptions).map(o => o.value).filter(v => v);
                 }
                 try {
-                    await apiCall(`/api/clipboards/${editingItemId}`, {
+                    await apiCall(`/api/clipboards/${editingClipboardItemId}`, {
                         method: 'PUT',
                         body: { title, content, visibility, sharedWith }
                     });
                     showToast('更新成功 ✅', 'success');
                     editStatusModal.classList.remove('active');
-                    editingItemId = null;
+                    editingClipboardItemId = null;
                     await loadClipboards();
                 } catch (err) {
                     showToast('更新失败: ' + err.message, 'error');
                 }
             }
 
-            // ---- 保存当前编辑器内容到剪贴板 ----
-            async function saveCurrentEditorToClipboard() {
-                if (!isLoggedIn()) {
-                    showToast('请先登录', 'error');
-                    return;
-                }
-                const content = editor.value.trim();
-                if (!content) {
-                    showToast('编辑器内容为空', 'error');
-                    return;
-                }
-                const title = generateTitle(content);
-                try {
-                    await apiCall('/api/clipboards', {
-                        method: 'POST',
-                        body: { title, content, visibility: 'private', sharedWith: [] }
-                    });
-                    showToast('当前内容已存墨 ✅', 'success');
-                    if (clipboardModal.classList.contains('active')) {
-                        await loadClipboards();
-                    }
-                } catch (err) {
-                    showToast('存墨失败: ' + err.message, 'error');
-                }
-            }
-
             // ---- 剪贴板模态框控制 ----
             clipboardBtn.addEventListener('click', function() {
-                if (!isLoggedIn()) {
-                    showToast('请先登录使用墨宝', 'info');
-                    loginModal.classList.add('active');
-                    return;
-                }
+                if (!isLoggedIn()) { showToast('请先登录使用墨宝', 'info');
+                    loginModal.classList.add('active'); return; }
                 clipboardModal.classList.add('active');
                 loadClipboards();
                 clipboardContent.value = '';
@@ -2272,44 +2357,560 @@
                 clipboardSharedWith.style.display = 'none';
             });
 
-            saveToClipboardBtn.addEventListener('click', saveCurrentEditorToClipboard);
+            saveToClipboardBtn.addEventListener('click', async function() {
+                if (!isLoggedIn()) { showToast('请先登录', 'error'); return; }
+                const content = editor.value.trim();
+                if (!content) { showToast('编辑器内容为空', 'error'); return; }
+                const title = generateTitle(content);
+                try {
+                    await apiCall('/api/clipboards', {
+                        method: 'POST',
+                        body: { title, content, visibility: 'private', sharedWith: [] }
+                    });
+                    showToast('当前内容已存墨 ✅', 'success');
+                    if (clipboardModal.classList.contains('active')) await loadClipboards();
+                } catch (err) {
+                    showToast('存墨失败: ' + err.message, 'error');
+                }
+            });
 
             closeClipboardModal.addEventListener('click', function() {
                 clipboardModal.classList.remove('active');
             });
-
             clipboardModal.addEventListener('click', function(e) {
                 if (e.target === clipboardModal) clipboardModal.classList.remove('active');
             });
-
             saveClipboardBtn.addEventListener('click', createClipboard);
 
-            // ---- 编辑状态模态框控制 ----
+            // ---- 剪贴板编辑模态框控制 ----
             closeEditStatusModal.addEventListener('click', function() {
                 editStatusModal.classList.remove('active');
-                editingItemId = null;
+                editingClipboardItemId = null;
             });
             cancelEditStatusBtn.addEventListener('click', function() {
                 editStatusModal.classList.remove('active');
-                editingItemId = null;
+                editingClipboardItemId = null;
             });
             editStatusModal.addEventListener('click', function(e) {
                 if (e.target === editStatusModal) {
                     editStatusModal.classList.remove('active');
-                    editingItemId = null;
+                    editingClipboardItemId = null;
                 }
             });
-            saveEditStatusBtn.addEventListener('click', saveEditStatus);
+            saveEditStatusBtn.addEventListener('click', saveEditClipboard);
 
             editVisibility.addEventListener('change', function() {
-                if (this.value === 'shared') {
-                    editSharedGroup.style.display = 'block';
+                if (this.value === 'shared') editSharedGroup.style.display = 'block';
+                else editSharedGroup.style.display = 'none';
+            });
+
+            // ==========================================================
+            // ===== 书库功能 =====
+            // ==========================================================
+
+            // 加载书籍列表
+            async function loadBooks() {
+                if (!isLoggedIn()) {
+                    bookList.innerHTML = `<p style="color:var(--text-muted);">请先登录</p>`;
+                    return;
+                }
+                try {
+                    const data = await apiCall('/api/books');
+                    if (!Array.isArray(data)) {
+                        bookList.innerHTML = `<p style="color:var(--text-muted);">暂无书籍</p>`;
+                        return;
+                    }
+                    currentBooks = data;
+                    renderBookList(data);
+                } catch (err) {
+                    bookList.innerHTML = `<p style="color:#c0392b;">加载失败: ${escapeHtml(err.message)}</p>`;
+                }
+            }
+
+            function renderBookList(books) {
+                if (books.length === 0) {
+                    bookList.innerHTML = `<p style="color:var(--text-muted);">暂无书籍</p>`;
+                    return;
+                }
+                let html = '';
+                const username = currentUser.username;
+                const isOwnerUser = isOwner();
+                books.forEach(book => {
+                    const canEdit = isOwnerUser && book.createdBy === username;
+                    const visLabel = {
+                        'public': '🌐 公开',
+                        'private': '🔒 私密',
+                        'shared': '👥 指定知音'
+                    } [book.visibility] || book.visibility;
+                    const sharedInfo = (book.visibility === 'shared' && book.sharedWith && book.sharedWith.length > 0) ?
+                        `分享给: ${book.sharedWith.join(', ')}` :
+                        '';
+                    const chaptersCount = book.chapters ? book.chapters.length : 0;
+
+                    html += `
+                        <div class="clipboard-item book-card" data-id="${book.id}">
+                            <div class="book-name">${escapeHtml(book.name)}</div>
+                            <div class="book-desc">${escapeHtml(book.description || '')}</div>
+                            <div class="meta">
+                                <span>🖋️ ${escapeHtml(book.createdBy)}</span>
+                                <span class="tag">${visLabel}</span>
+                                ${sharedInfo ? `<span class="shared-info">${escapeHtml(sharedInfo)}</span>` : ''}
+                                <span>📄 ${chaptersCount} 章</span>
+                                <span>${new Date(book.createdAt).toLocaleString()}</span>
+                            </div>
+                            <div class="actions">
+                                <button class="btn-load book-enter" data-id="${book.id}">📂 进入</button>
+                                ${canEdit ? `
+                                    <button class="btn-edit-status book-edit" data-id="${book.id}">✏️ 编辑</button>
+                                    <button class="btn-del book-delete" data-id="${book.id}">🗑️ 删除</button>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                });
+                bookList.innerHTML = html;
+
+                // 事件绑定
+                bookList.querySelectorAll('.book-enter').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const id = this.dataset.id;
+                        enterBook(id);
+                    });
+                });
+                if (isOwnerUser) {
+                    bookList.querySelectorAll('.book-edit').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const id = this.dataset.id;
+                            openBookForm(id);
+                        });
+                    });
+                    bookList.querySelectorAll('.book-delete').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const id = this.dataset.id;
+                            deleteBook(id);
+                        });
+                    });
+                }
+            }
+
+            // 进入书籍详情
+            async function enterBook(bookId) {
+                try {
+                    const book = await apiCall(`/api/books/${bookId}`);
+                    currentBookId = bookId;
+                    bookDetailName.textContent = book.name;
+                    // 渲染章节列表
+                    const chapters = book.chapters || [];
+                    renderChapterList(chapters, book);
+                    bookListView.style.display = 'none';
+                    bookDetailView.style.display = 'block';
+                    bookModalTitle.textContent = `📚 ${book.name}`;
+                } catch (err) {
+                    showToast('加载书籍失败: ' + err.message, 'error');
+                }
+            }
+
+            function renderChapterList(chapters, book) {
+                if (chapters.length === 0) {
+                    chapterList.innerHTML = `<p style="color:var(--text-muted);">暂无章节</p>`;
+                    return;
+                }
+                const canEdit = isOwner() && book.createdBy === currentUser.username;
+                let html = '';
+                chapters.forEach(ch => {
+                    html += `
+                        <div class="clipboard-item chapter-item" data-id="${ch.id}">
+                            <div class="chapter-title">${escapeHtml(ch.title)}</div>
+                            <div class="meta">
+                                <span>${new Date(ch.createdAt).toLocaleString()}</span>
+                            </div>
+                            <div class="actions">
+                                <button class="btn-load chapter-load" data-id="${ch.id}">📂 载入</button>
+                                <button class="btn-preview chapter-preview" data-id="${ch.id}">👁️ 预览</button>
+                                ${canEdit ? `
+                                    <button class="btn-edit-status chapter-edit" data-id="${ch.id}">✏️ 编辑</button>
+                                    <button class="btn-del chapter-delete" data-id="${ch.id}">🗑️ 删除</button>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                });
+                chapterList.innerHTML = html;
+
+                // 事件绑定
+                chapterList.querySelectorAll('.chapter-load').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const id = this.dataset.id;
+                        loadChapterToEditor(currentBookId, id);
+                    });
+                });
+                chapterList.querySelectorAll('.chapter-preview').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const id = this.dataset.id;
+                        previewChapter(currentBookId, id);
+                    });
+                });
+                if (canEdit) {
+                    chapterList.querySelectorAll('.chapter-edit').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const id = this.dataset.id;
+                            openChapterForm(currentBookId, id);
+                        });
+                    });
+                    chapterList.querySelectorAll('.chapter-delete').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const id = this.dataset.id;
+                            deleteChapter(currentBookId, id);
+                        });
+                    });
+                }
+            }
+
+            // ---- 书籍 CRUD ----
+            async function createBook() {
+                const name = bookNameInput.value.trim();
+                if (!name) { showToast('请输入书名', 'error'); return; }
+                const description = bookDescInput.value.trim();
+                const visibility = bookVisibilityInput.value;
+                let sharedWith = [];
+                if (visibility === 'shared') {
+                    const sel = bookSharedWith;
+                    sharedWith = Array.from(sel.selectedOptions).map(o => o.value).filter(v => v);
+                }
+                try {
+                    await apiCall('/api/books', {
+                        method: 'POST',
+                        body: { name, description, visibility, sharedWith }
+                    });
+                    showToast('书籍创建成功 ✅', 'success');
+                    bookFormModal.classList.remove('active');
+                    await loadBooks();
+                } catch (err) {
+                    showToast('创建失败: ' + err.message, 'error');
+                }
+            }
+
+            async function updateBook(bookId) {
+                const name = bookNameInput.value.trim();
+                if (!name) { showToast('请输入书名', 'error'); return; }
+                const description = bookDescInput.value.trim();
+                const visibility = bookVisibilityInput.value;
+                let sharedWith = [];
+                if (visibility === 'shared') {
+                    const sel = bookSharedWith;
+                    sharedWith = Array.from(sel.selectedOptions).map(o => o.value).filter(v => v);
+                }
+                try {
+                    await apiCall(`/api/books/${bookId}`, {
+                        method: 'PUT',
+                        body: { name, description, visibility, sharedWith }
+                    });
+                    showToast('书籍更新成功 ✅', 'success');
+                    bookFormModal.classList.remove('active');
+                    await loadBooks();
+                    if (currentBookId === bookId) {
+                        // 如果当前在书籍详情，刷新详情
+                        await enterBook(bookId);
+                    }
+                } catch (err) {
+                    showToast('更新失败: ' + err.message, 'error');
+                }
+            }
+
+            async function deleteBook(bookId) {
+                if (!confirm('确定删除这本书及其所有章节吗？')) return;
+                try {
+                    await apiCall(`/api/books/${bookId}`, { method: 'DELETE' });
+                    showToast('书籍已删除', 'success');
+                    if (currentBookId === bookId) {
+                        // 关闭详情视图
+                        backToBookList.click();
+                    }
+                    await loadBooks();
+                } catch (err) {
+                    showToast('删除失败: ' + err.message, 'error');
+                }
+            }
+
+            // ---- 章节 CRUD ----
+            async function createChapter(bookId) {
+                const title = chapterTitleInput.value.trim();
+                if (!title) { showToast('请输入章节标题', 'error'); return; }
+                const content = chapterContentInput.value;
+                try {
+                    await apiCall(`/api/books/${bookId}/chapters`, {
+                        method: 'POST',
+                        body: { title, content }
+                    });
+                    showToast('章节创建成功 ✅', 'success');
+                    chapterFormModal.classList.remove('active');
+                    await enterBook(bookId);
+                } catch (err) {
+                    showToast('创建失败: ' + err.message, 'error');
+                }
+            }
+
+            async function updateChapter(bookId, chapterId) {
+                const title = chapterTitleInput.value.trim();
+                if (!title) { showToast('请输入章节标题', 'error'); return; }
+                const content = chapterContentInput.value;
+                try {
+                    await apiCall(`/api/books/${bookId}/chapters/${chapterId}`, {
+                        method: 'PUT',
+                        body: { title, content }
+                    });
+                    showToast('章节更新成功 ✅', 'success');
+                    chapterFormModal.classList.remove('active');
+                    await enterBook(bookId);
+                } catch (err) {
+                    showToast('更新失败: ' + err.message, 'error');
+                }
+            }
+
+            async function deleteChapter(bookId, chapterId) {
+                if (!confirm('确定删除此章节吗？')) return;
+                try {
+                    await apiCall(`/api/books/${bookId}/chapters/${chapterId}`, { method: 'DELETE' });
+                    showToast('章节已删除', 'success');
+                    await enterBook(bookId);
+                } catch (err) {
+                    showToast('删除失败: ' + err.message, 'error');
+                }
+            }
+
+            // ---- 加载章节到编辑器 ----
+            async function loadChapterToEditor(bookId, chapterId) {
+                try {
+                    const data = await apiCall(`/api/books/${bookId}/chapters/${chapterId}`);
+                    editor.value = data.content || '';
+                    render();
+                    localStorage.setItem('markdown_editor_content', editor.value);
+                    currentChapterId = chapterId;
+                    currentBookId = bookId;
+                    showToast(`已载入章节: ${data.title}`, 'success');
+                    // 显示保存章节按钮
+                    saveChapterBtn.style.display = 'inline-flex';
+                    // 在书库章节列表中该章节显示 "保存" 按钮？
+                    // 我们可以通过刷新列表，但更好的方式是通过事件重新绑定。
+                    // 简单起见，我们只显示一个全局的保存按钮。
+                } catch (err) {
+                    showToast('加载章节失败: ' + err.message, 'error');
+                }
+            }
+
+            // ---- 预览章节 ----
+            async function previewChapter(bookId, chapterId) {
+                try {
+                    const data = await apiCall(`/api/books/${bookId}/chapters/${chapterId}`);
+                    let html = '';
+                    try { html = marked.parse(data.content || ''); } catch (err) { html = `<div style="color:#c0392b;">渲染失败: ${err.message}</div>`; }
+                    readPreviewContent.innerHTML = html;
+                    // 渲染 KaTeX 和 Mermaid
+                    try {
+                        if (typeof renderMathInElement === 'function' && typeof window.katex !== 'undefined') {
+                            renderMathInElement(readPreviewContent, {
+                                delimiters: [
+                                    { left: '$$', right: '$$', display: true },
+                                    { left: '$', right: '$', display: false },
+                                    { left: '\\(', right: '\\)', display: false },
+                                    { left: '\\[', right: '\\]', display: true }
+                                ],
+                                throwOnError: false,
+                                errorCallback: function(msg) { return `<span class="katex-error">公式错误</span>`; }
+                            });
+                        }
+                    } catch (err) { console.warn('预览 KaTeX 错误:', err); }
+                    try {
+                        const mermaidNodes = readPreviewContent.querySelectorAll('.mermaid');
+                        if (mermaidNodes.length > 0) {
+                            mermaid.run({ nodes: mermaidNodes, suppressErrors: true }).catch(() => {});
+                        }
+                    } catch (err) { console.warn('预览 Mermaid 错误:', err); }
+                    readModal.classList.add('active');
+                } catch (err) {
+                    showToast('预览失败: ' + err.message, 'error');
+                }
+            }
+
+            // ---- 保存当前编辑器内容到当前章节 ----
+            async function saveCurrentChapter() {
+                if (!currentBookId || !currentChapterId) {
+                    showToast('没有加载的章节', 'error');
+                    return;
+                }
+                const content = editor.value.trim();
+                if (!content) { showToast('内容为空', 'error'); return; }
+                try {
+                    await apiCall(`/api/books/${currentBookId}/chapters/${currentChapterId}`, {
+                        method: 'PUT',
+                        body: { content }
+                    });
+                    showToast('章节已保存 ✅', 'success');
+                    // 刷新书库详情（如果打开）
+                    if (bookModal.classList.contains('active') && currentBookId) {
+                        await enterBook(currentBookId);
+                    }
+                } catch (err) {
+                    showToast('保存失败: ' + err.message, 'error');
+                }
+            }
+
+            // ---- 书库模态框控制 ----
+            bookBtn.addEventListener('click', function() {
+                if (!isLoggedIn()) { showToast('请先登录使用书库', 'info');
+                    loginModal.classList.add('active'); return; }
+                bookModal.classList.add('active');
+                // 重置视图
+                bookListView.style.display = 'block';
+                bookDetailView.style.display = 'none';
+                bookModalTitle.textContent = '📚 书库';
+                loadBooks();
+                // 隐藏保存章节按钮（未加载章节）
+                saveChapterBtn.style.display = 'none';
+                currentChapterId = null;
+                currentBookId = null;
+            });
+
+            closeBookModal.addEventListener('click', function() {
+                bookModal.classList.remove('active');
+            });
+            bookModal.addEventListener('click', function(e) {
+                if (e.target === bookModal) bookModal.classList.remove('active');
+            });
+
+            // 返回书籍列表
+            backToBookList.addEventListener('click', function() {
+                bookListView.style.display = 'block';
+                bookDetailView.style.display = 'none';
+                bookModalTitle.textContent = '📚 书库';
+                loadBooks();
+            });
+
+            // 创建书籍
+            createBookBtn.addEventListener('click', function() {
+                if (!isOwner()) { showToast('只有所有者可以创建书籍', 'error'); return; }
+                openBookForm(null);
+            });
+
+            // 创建章节
+            createChapterBtn.addEventListener('click', function() {
+                if (!isOwner()) { showToast('只有所有者可以创建章节', 'error'); return; }
+                if (!currentBookId) return;
+                openChapterForm(currentBookId, null);
+            });
+
+            // ---- 书籍表单控制 ----
+            function openBookForm(bookId) {
+                const isEdit = !!bookId;
+                bookFormTitle.textContent = isEdit ? '✏️ 编辑书籍' : '📝 新书';
+                if (isEdit) {
+                    const book = currentBooks.find(b => b.id === bookId);
+                    if (!book) { showToast('书籍不存在', 'error'); return; }
+                    bookNameInput.value = book.name;
+                    bookDescInput.value = book.description || '';
+                    bookVisibilityInput.value = book.visibility || 'private';
+                    // 选择分享对象
+                    populateBookSharedWithSelect();
+                    if (book.sharedWith && Array.isArray(book.sharedWith)) {
+                        Array.from(bookSharedWith.options).forEach(opt => {
+                            if (book.sharedWith.includes(opt.value)) opt.selected = true;
+                        });
+                    }
+                    if (book.visibility === 'shared') bookSharedGroup.style.display = 'block';
+                    else bookSharedGroup.style.display = 'none';
+                    saveBookBtn.dataset.bookId = bookId;
                 } else {
-                    editSharedGroup.style.display = 'none';
+                    bookNameInput.value = '';
+                    bookDescInput.value = '';
+                    bookVisibilityInput.value = 'private';
+                    bookSharedGroup.style.display = 'none';
+                    populateBookSharedWithSelect();
+                    delete saveBookBtn.dataset.bookId;
+                }
+                bookFormModal.classList.add('active');
+            }
+
+            closeBookFormModal.addEventListener('click', function() {
+                bookFormModal.classList.remove('active');
+            });
+            cancelBookFormBtn.addEventListener('click', function() {
+                bookFormModal.classList.remove('active');
+            });
+            bookFormModal.addEventListener('click', function(e) {
+                if (e.target === bookFormModal) bookFormModal.classList.remove('active');
+            });
+
+            bookVisibilityInput.addEventListener('change', function() {
+                if (this.value === 'shared') bookSharedGroup.style.display = 'block';
+                else bookSharedGroup.style.display = 'none';
+            });
+
+            saveBookBtn.addEventListener('click', function() {
+                const bookId = this.dataset.bookId;
+                if (bookId) {
+                    updateBook(bookId);
+                } else {
+                    createBook();
                 }
             });
 
-            // ---- 阅读模态框控制 ----
+            // ---- 章节表单控制 ----
+            function openChapterForm(bookId, chapterId) {
+                const isEdit = !!chapterId;
+                chapterFormTitle.textContent = isEdit ? '✏️ 编辑章节' : '📝 新章节';
+                if (isEdit) {
+                    // 获取章节详情
+                    const book = currentBooks.find(b => b.id === bookId);
+                    if (!book) { showToast('书籍不存在', 'error'); return; }
+                    const chapter = book.chapters.find(c => c.id === chapterId);
+                    if (!chapter) { showToast('章节不存在', 'error'); return; }
+                    chapterTitleInput.value = chapter.title;
+                    // 内容需要单独请求
+                    apiCall(`/api/books/${bookId}/chapters/${chapterId}`).then(data => {
+                        chapterContentInput.value = data.content || '';
+                    }).catch(err => {
+                        showToast('获取章节内容失败: ' + err.message, 'error');
+                        chapterContentInput.value = '';
+                    });
+                    saveChapterFormBtn.dataset.bookId = bookId;
+                    saveChapterFormBtn.dataset.chapterId = chapterId;
+                } else {
+                    chapterTitleInput.value = '';
+                    chapterContentInput.value = '';
+                    delete saveChapterFormBtn.dataset.bookId;
+                    delete saveChapterFormBtn.dataset.chapterId;
+                }
+                chapterFormModal.classList.add('active');
+            }
+
+            closeChapterFormModal.addEventListener('click', function() {
+                chapterFormModal.classList.remove('active');
+            });
+            cancelChapterFormBtn.addEventListener('click', function() {
+                chapterFormModal.classList.remove('active');
+            });
+            chapterFormModal.addEventListener('click', function(e) {
+                if (e.target === chapterFormModal) chapterFormModal.classList.remove('active');
+            });
+
+            saveChapterFormBtn.addEventListener('click', function() {
+                const bookId = this.dataset.bookId;
+                const chapterId = this.dataset.chapterId;
+                if (bookId && chapterId) {
+                    updateChapter(bookId, chapterId);
+                } else if (bookId) {
+                    createChapter(bookId);
+                } else {
+                    showToast('书籍ID缺失', 'error');
+                }
+            });
+
+            // ---- 保存章节按钮（主工具栏） ----
+            saveChapterBtn.addEventListener('click', saveCurrentChapter);
+
+            // ==========================================================
+            // ===== 阅读模态框控制 =====
+            // ==========================================================
             closeReadModal.addEventListener('click', function() {
                 readModal.classList.remove('active');
             });
@@ -2455,11 +3056,14 @@
                 if (e.key === 'Escape') {
                     if (loginModal.classList.contains('active')) loginModal.classList.remove('active');
                     if (clipboardModal.classList.contains('active')) clipboardModal.classList.remove('active');
+                    if (bookModal.classList.contains('active')) bookModal.classList.remove('active');
                     if (readModal.classList.contains('active')) readModal.classList.remove('active');
                     if (editStatusModal.classList.contains('active')) {
                         editStatusModal.classList.remove('active');
-                        editingItemId = null;
+                        editingClipboardItemId = null;
                     }
+                    if (bookFormModal.classList.contains('active')) bookFormModal.classList.remove('active');
+                    if (chapterFormModal.classList.contains('active')) chapterFormModal.classList.remove('active');
                 }
             });
 
@@ -2496,7 +3100,7 @@
 
             checkLoginStatus();
 
-            console.log('🖋️ 墨韵·文房 已启动，支持云墨宝 + 阅读模式');
+            console.log('🖋️ 墨韵·文房 已启动，支持云墨宝 + 书库');
             console.log('🔐 登录状态:', currentUser ? '已登录' : '未登录');
 
         })();
