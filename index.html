@@ -6,20 +6,15 @@
     <title>墨韵 · 进阶编辑器</title>
 
     <!-- ===== 核心库 ===== -->
-    <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js">
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.8/dist/purify.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" id="hljs-style" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js">
-    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/katex.min.css" />
-    <script src="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/katex.min.js">
-    </script>
-    <script src="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js">
-    </script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
 
-    <!-- 墨韵字体 -->
     <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap" rel="stylesheet" />
 
     <style>
@@ -69,11 +64,7 @@
             --card-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Inter', 'STKaiti', 'KaiTi', serif;
@@ -99,9 +90,7 @@
         .app::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
+            top: 0; left: 0; right: 0;
             height: 6px;
             background: linear-gradient(90deg, var(--ink-red), var(--ink-gold), var(--ink-red));
             opacity: 0.25;
@@ -120,16 +109,8 @@
             background: var(--bg-secondary);
         }
 
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .header-left .icon {
-            font-size: 32px;
-            filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.1));
-        }
+        .header-left { display: flex; align-items: center; gap: 12px; }
+        .header-left .icon { font-size: 32px; filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.1)); }
 
         .header-left h1 {
             font-size: 24px;
@@ -164,13 +145,7 @@
             box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.6);
         }
 
-        .user-area {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
+        .user-area { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
         .user-area .greeting {
             font-size: 14px;
             color: var(--text-secondary);
@@ -179,12 +154,7 @@
             letter-spacing: 1px;
         }
 
-        .toolbar {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            flex-wrap: wrap;
-        }
+        .toolbar { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 
         .toolbar button,
         .toolbar label,
@@ -229,10 +199,7 @@
             box-shadow: 0 4px 12px rgba(139, 58, 47, 0.25);
         }
 
-        .file-input-wrap {
-            position: relative;
-        }
-
+        .file-input-wrap { position: relative; }
         .file-input-wrap input[type="file"] {
             position: absolute;
             inset: 0;
@@ -259,9 +226,7 @@
             border-color: #dbb6ae;
         }
 
-        .user-area .btn-logout:hover {
-            background: #f5e4de;
-        }
+        .user-area .btn-logout:hover { background: #f5e4de; }
 
         /* ===== 统计栏 ===== */
         .stats-bar {
@@ -277,16 +242,8 @@
             letter-spacing: 0.5px;
         }
 
-        .stats-bar span {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .stats-bar .num {
-            font-weight: 600;
-            color: var(--text-secondary);
-        }
+        .stats-bar span { display: flex; align-items: center; gap: 4px; }
+        .stats-bar .num { font-weight: 600; color: var(--text-secondary); }
 
         /* ===== 主体 ===== */
         .main {
@@ -297,8 +254,7 @@
             max-height: 900px;
         }
 
-        .editor-panel,
-        .preview-panel {
+        .editor-panel, .preview-panel {
             flex: 1;
             position: relative;
             overflow: hidden;
@@ -328,14 +284,9 @@
             letter-spacing: 2px;
         }
 
-        [data-theme="dark"] .panel-label {
-            background: rgba(30, 27, 24, 0.7);
-        }
+        [data-theme="dark"] .panel-label { background: rgba(30, 27, 24, 0.7); }
 
-        .preview-panel .panel-label {
-            left: auto;
-            right: 18px;
-        }
+        .preview-panel .panel-label { left: auto; right: 18px; }
 
         .editor-panel textarea {
             width: 100%;
@@ -352,22 +303,18 @@
             tab-size: 2;
         }
 
-        .editor-panel textarea::placeholder {
-            color: var(--text-muted);
-        }
+        .editor-panel textarea::placeholder { color: var(--text-muted); }
 
         .preview-panel {
             background: var(--bg-preview);
             overflow-y: auto;
             padding: 0;
-            /* 移除内边距，让canvas覆盖整个区域 */
         }
 
         .preview-panel .preview-content {
             max-width: 100%;
             word-wrap: break-word;
             padding: 48px 28px 28px 28px;
-            /* 恢复内边距给内容 */;
         }
 
         /* ===== 预览样式 ===== */
@@ -384,44 +331,13 @@
             font-family: 'Ma Shan Zheng', cursive;
         }
 
-        .preview-content h1 {
-            font-size: 2em;
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 0.3em;
-        }
-
-        .preview-content h2 {
-            font-size: 1.6em;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 0.25em;
-        }
-
-        .preview-content p {
-            margin: 0.8em 0;
-            line-height: 1.7;
-            color: var(--text-secondary);
-        }
-
-        .preview-content a {
-            color: var(--ink-red);
-            text-decoration: none;
-            border-bottom: 1px dotted var(--ink-red);
-        }
-
-        .preview-content a:hover {
-            text-decoration: underline;
-        }
-
-        .preview-content ul,
-        .preview-content ol {
-            padding-left: 1.6em;
-            margin: 0.6em 0;
-        }
-
-        .preview-content li {
-            margin: 0.3em 0;
-            color: var(--text-secondary);
-        }
+        .preview-content h1 { font-size: 2em; border-bottom: 2px solid var(--border-color); padding-bottom: 0.3em; }
+        .preview-content h2 { font-size: 1.6em; border-bottom: 1px solid var(--border-color); padding-bottom: 0.25em; }
+        .preview-content p { margin: 0.8em 0; line-height: 1.7; color: var(--text-secondary); }
+        .preview-content a { color: var(--ink-red); text-decoration: none; border-bottom: 1px dotted var(--ink-red); }
+        .preview-content a:hover { text-decoration: underline; }
+        .preview-content ul, .preview-content ol { padding-left: 1.6em; margin: 0.6em 0; }
+        .preview-content li { margin: 0.3em 0; color: var(--text-secondary); }
 
         .preview-content blockquote {
             margin: 0.8em 0;
@@ -458,9 +374,7 @@
             font-size: 13px;
         }
 
-        .preview-content pre code.hljs {
-            background: transparent;
-        }
+        .preview-content pre code.hljs { background: transparent; }
 
         .preview-content table {
             border-collapse: collapse;
@@ -469,8 +383,7 @@
             font-size: 0.95em;
         }
 
-        .preview-content table th,
-        .preview-content table td {
+        .preview-content table th, .preview-content table td {
             border: 1px solid var(--border-color);
             padding: 8px 14px;
             text-align: left;
@@ -483,17 +396,8 @@
             color: var(--text-primary);
         }
 
-        .preview-content hr {
-            border: none;
-            border-top: 2px solid var(--border-color);
-            margin: 1.6em 0;
-        }
-
-        .preview-content img {
-            max-width: 100%;
-            border-radius: 8px;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
-        }
+        .preview-content hr { border: none; border-top: 2px solid var(--border-color); margin: 1.6em 0; }
+        .preview-content img { max-width: 100%; border-radius: 8px; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04); }
 
         .preview-content .mermaid {
             background: var(--bg-card);
@@ -516,41 +420,28 @@
         /* ===== 阅读模式覆盖层 ===== */
         #annotationLayer {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             pointer-events: none;
             z-index: 10;
         }
-        .read-mode #annotationLayer {
-            pointer-events: auto;
-        }
-        .read-mode #annotationCanvas {
-            pointer-events: auto;
-        }
-        .read-mode .preview-content {
-            opacity: 0.7;
-            /* 使批注更醒目，可选 */;
-        }
+
+        .read-mode #annotationLayer { pointer-events: auto; }
+        .read-mode #annotationCanvas { pointer-events: auto; }
+        .read-mode .preview-content { opacity: 0.7; }
 
         #annotationCanvas {
-            width: 100%;
-            height: 100%;
+            width: 100%; height: 100%;
             display: block;
             pointer-events: none;
             touch-action: none;
-            /* 防止触摸滚动 */;
-        }
-        .read-mode #annotationCanvas {
-            pointer-events: auto;
         }
 
-        /* 阅读模式工具栏 */
+        .read-mode #annotationCanvas { pointer-events: auto; }
+
         #readModeToolbar {
             position: absolute;
-            top: 12px;
-            right: 12px;
+            top: 12px; right: 12px;
             background: rgba(255, 255, 255, 0.92);
             border-radius: 14px;
             padding: 8px 12px;
@@ -564,6 +455,7 @@
             border: 1px solid rgba(255, 255, 255, 0.3);
             pointer-events: auto;
         }
+
         [data-theme="dark"] #readModeToolbar {
             background: rgba(30, 27, 24, 0.92);
             border-color: rgba(255, 255, 255, 0.08);
@@ -583,9 +475,8 @@
             line-height: 1.4;
             white-space: nowrap;
         }
-        .rm-tool:hover {
-            background: var(--hover-bg);
-        }
+
+        .rm-tool:hover { background: var(--hover-bg); }
         .rm-tool.active {
             background: var(--accent-bg);
             border-color: var(--ink-red);
@@ -601,16 +492,10 @@
             cursor: pointer;
             background: none;
         }
-        #rmSize {
-            width: 60px;
-            cursor: pointer;
-            accent-color: var(--ink-red);
-        }
-        .rm-label {
-            font-size: 12px;
-            color: var(--text-muted);
-            font-family: 'Ma Shan Zheng', cursive;
-        }
+
+        #rmSize { width: 60px; cursor: pointer; accent-color: var(--ink-red); }
+        .rm-label { font-size: 12px; color: var(--text-muted); font-family: 'Ma Shan Zheng', cursive; }
+
         #rmExit {
             background: var(--ink-red);
             color: #fff;
@@ -622,9 +507,8 @@
             font-size: 14px;
             transition: 0.2s;
         }
-        #rmExit:hover {
-            opacity: 0.85;
-        }
+
+        #rmExit:hover { opacity: 0.85; }
 
         /* ===== 底部语法参考 ===== */
         .reference {
@@ -649,18 +533,10 @@
             transition: 0.2s;
         }
 
-        .reference-toggle:hover {
-            background: var(--hover-bg);
-        }
+        .reference-toggle:hover { background: var(--hover-bg); }
 
-        .reference-toggle .arrow {
-            transition: transform 0.3s;
-            color: var(--text-muted);
-        }
-
-        .reference-toggle.open .arrow {
-            transform: rotate(180deg);
-        }
+        .reference-toggle .arrow { transition: transform 0.3s; color: var(--text-muted); }
+        .reference-toggle.open .arrow { transform: rotate(180deg); }
 
         .reference-body {
             max-height: 0;
@@ -669,10 +545,7 @@
             padding: 0 28px;
         }
 
-        .reference-body.open {
-            max-height: 2000px;
-            padding: 0 28px 28px 28px;
-        }
+        .reference-body.open { max-height: 2000px; padding: 0 28px 28px 28px; }
 
         .reference-grid {
             display: grid;
@@ -710,12 +583,7 @@
             color: var(--text-primary);
         }
 
-        .ref-card .desc {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-top: 4px;
-            line-height: 1.5;
-        }
+        .ref-card .desc { font-size: 13px; color: var(--text-secondary); margin-top: 4px; line-height: 1.5; }
 
         .ref-card .example-block {
             font-family: 'JetBrains Mono', monospace;
@@ -731,14 +599,12 @@
         }
 
         /* ===== 滚动条 ===== */
-        .preview-panel::-webkit-scrollbar,
-        .editor-panel textarea::-webkit-scrollbar {
+        .preview-panel::-webkit-scrollbar, .editor-panel textarea::-webkit-scrollbar {
             width: 5px;
             height: 5px;
         }
 
-        .preview-panel::-webkit-scrollbar-thumb,
-        .editor-panel textarea::-webkit-scrollbar-thumb {
+        .preview-panel::-webkit-scrollbar-thumb, .editor-panel textarea::-webkit-scrollbar-thumb {
             background: var(--scrollbar-thumb);
             border-radius: 10px;
         }
@@ -777,22 +643,10 @@
             border: 1px solid rgba(255, 255, 255, 0.06);
         }
 
-        .toast.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .toast.success {
-            border-left: 4px solid var(--ink-gold);
-        }
-
-        .toast.error {
-            border-left: 4px solid #c0392b;
-        }
-
-        .toast.info {
-            border-left: 4px solid var(--accent);
-        }
+        .toast.show { opacity: 1; transform: translateY(0); }
+        .toast.success { border-left: 4px solid var(--ink-gold); }
+        .toast.error { border-left: 4px solid #c0392b; }
+        .toast.info { border-left: 4px solid var(--accent); }
 
         /* ===== 模态框 ===== */
         .modal-overlay {
@@ -807,9 +661,7 @@
             padding: 20px;
         }
 
-        .modal-overlay.active {
-            display: flex;
-        }
+        .modal-overlay.active { display: flex; }
 
         .modal {
             background: var(--bg-secondary);
@@ -827,8 +679,7 @@
 
         .modal .close-btn {
             position: absolute;
-            top: 16px;
-            right: 20px;
+            top: 16px; right: 20px;
             background: none;
             border: none;
             font-size: 28px;
@@ -838,10 +689,7 @@
             line-height: 1;
         }
 
-        .modal .close-btn:hover {
-            color: var(--text-primary);
-            transform: rotate(90deg) scale(1.1);
-        }
+        .modal .close-btn:hover { color: var(--text-primary); transform: rotate(90deg) scale(1.1); }
 
         .modal h2 {
             font-size: 26px;
@@ -864,9 +712,7 @@
             border-radius: 3px;
         }
 
-        .modal .input-group {
-            margin-bottom: 18px;
-        }
+        .modal .input-group { margin-bottom: 18px; }
 
         .modal .input-group label {
             display: block;
@@ -901,16 +747,9 @@
             box-shadow: 0 0 0 4px var(--accent-bg);
         }
 
-        .modal .input-group textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
+        .modal .input-group textarea { resize: vertical; min-height: 80px; }
 
-        .modal .modal-actions {
-            display: flex;
-            gap: 12px;
-            margin-top: 8px;
-        }
+        .modal .modal-actions { display: flex; gap: 12px; margin-top: 8px; }
 
         .modal .modal-actions .btn {
             flex: 1;
@@ -940,22 +779,11 @@
             box-shadow: none;
         }
 
-        .modal .modal-actions .btn-secondary:hover {
-            background: var(--border-color);
-        }
-
-        .modal .hint {
-            text-align: center;
-            margin-top: 14px;
-            font-size: 13px;
-            color: var(--text-muted);
-            font-family: 'Ma Shan Zheng', cursive;
-        }
+        .modal .modal-actions .btn-secondary:hover { background: var(--border-color); }
+        .modal .hint { text-align: center; margin-top: 14px; font-size: 13px; color: var(--text-muted); font-family: 'Ma Shan Zheng', cursive; }
 
         /* ===== 剪贴板模态框 ===== */
-        #clipboardModal .modal {
-            max-width: 960px;
-        }
+        #clipboardModal .modal { max-width: 960px; }
 
         #clipboardModal .quota-display {
             font-size: 14px;
@@ -973,10 +801,7 @@
             border: 1px solid var(--border-color);
         }
 
-        #clipboardModal .quota-display .highlight {
-            font-weight: 700;
-            color: var(--ink-red);
-        }
+        #clipboardModal .quota-display .highlight { font-weight: 700; color: var(--ink-red); }
 
         #clipboardModal .clipboard-form {
             display: flex;
@@ -987,16 +812,8 @@
             padding-bottom: 20px;
         }
 
-        #clipboardModal .clipboard-form .row {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        #clipboardModal .clipboard-form .row>* {
-            flex: 1;
-            min-width: 140px;
-        }
+        #clipboardModal .clipboard-form .row { display: flex; gap: 12px; flex-wrap: wrap; }
+        #clipboardModal .clipboard-form .row>* { flex: 1; min-width: 140px; }
 
         #clipboardModal .clipboard-form textarea {
             width: 100%;
@@ -1036,9 +853,7 @@
             box-shadow: 0 0 0 4px var(--accent-bg);
         }
 
-        #clipboardModal .clipboard-form select[multiple] {
-            min-height: 80px;
-        }
+        #clipboardModal .clipboard-form select[multiple] { min-height: 80px; }
 
         .section-title {
             font-family: 'Ma Shan Zheng', cursive;
@@ -1054,12 +869,7 @@
             letter-spacing: 2px;
         }
 
-        .section-title .sub {
-            font-size: 13px;
-            font-weight: 400;
-            color: var(--text-muted);
-            letter-spacing: 0;
-        }
+        .section-title .sub { font-size: 13px; font-weight: 400; color: var(--text-muted); letter-spacing: 0; }
 
         .clipboard-item {
             display: flex;
@@ -1122,16 +932,9 @@
             line-height: 22px;
         }
 
-        .clipboard-item .meta .shared-info {
-            color: var(--text-muted);
-            font-size: 11px;
-        }
+        .clipboard-item .meta .shared-info { color: var(--text-muted); font-size: 11px; }
 
-        .clipboard-item .actions {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
+        .clipboard-item .actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
         .clipboard-item .actions button {
             padding: 4px 16px;
@@ -1146,65 +949,20 @@
             letter-spacing: 0.5px;
         }
 
-        .clipboard-item .actions button:hover {
-            background: var(--hover-bg);
-            transform: translateY(-1px);
-        }
+        .clipboard-item .actions button:hover { background: var(--hover-bg); transform: translateY(-1px); }
+        .clipboard-item .actions .btn-del { color: #c0392b; border-color: #e6b8b0; }
+        .clipboard-item .actions .btn-del:hover { background: #f5e4de; }
+        .clipboard-item .actions .btn-load { color: var(--ink-red); }
+        .clipboard-item .actions .btn-load:hover { background: var(--accent-bg); }
+        .clipboard-item .actions .btn-preview { color: var(--ink-gold); }
+        .clipboard-item .actions .btn-preview:hover { background: #f5edda; }
+        .clipboard-item .actions .btn-edit-status { color: var(--text-secondary); }
+        .clipboard-item .actions .btn-edit-status:hover { background: var(--hover-bg); }
 
-        .clipboard-item .actions .btn-del {
-            color: #c0392b;
-            border-color: #e6b8b0;
-        }
-
-        .clipboard-item .actions .btn-del:hover {
-            background: #f5e4de;
-        }
-
-        .clipboard-item .actions .btn-load {
-            color: var(--ink-red);
-        }
-
-        .clipboard-item .actions .btn-load:hover {
-            background: var(--accent-bg);
-        }
-
-        .clipboard-item .actions .btn-preview {
-            color: var(--ink-gold);
-        }
-
-        .clipboard-item .actions .btn-preview:hover {
-            background: #f5edda;
-        }
-
-        .clipboard-item .actions .btn-edit-status {
-            color: var(--text-secondary);
-        }
-
-        .clipboard-item .actions .btn-edit-status:hover {
-            background: var(--hover-bg);
-        }
-
-        /* ===== 书库（Books）额外样式 ===== */
-        .book-card {
-            cursor: pointer;
-        }
-
-        .book-card .book-name {
-            font-size: 20px;
-            font-weight: 700;
-            font-family: 'Ma Shan Zheng', cursive;
-        }
-
-        .book-card .book-desc {
-            color: var(--text-secondary);
-            font-size: 14px;
-            margin-top: 4px;
-        }
-
-        .chapter-item .chapter-title {
-            font-weight: 600;
-            font-size: 15px;
-        }
+        .book-card { cursor: pointer; }
+        .book-card .book-name { font-size: 20px; font-weight: 700; font-family: 'Ma Shan Zheng', cursive; }
+        .book-card .book-desc { color: var(--text-secondary); font-size: 14px; margin-top: 4px; }
+        .chapter-item .chapter-title { font-weight: 600; font-size: 15px; }
 
         .back-btn {
             cursor: pointer;
@@ -1219,21 +977,11 @@
             margin-bottom: 12px;
         }
 
-        .back-btn:hover {
-            background: var(--hover-bg);
-        }
+        .back-btn:hover { background: var(--hover-bg); }
 
-        /* ===== 阅读模式预览模态框 ===== */
-        #readModal .modal {
-            max-width: 860px;
-            max-height: 90vh;
-        }
-        #readModal .preview-content {
-            padding: 10px 0;
-        }
-        #readModal .preview-content h1:first-child {
-            margin-top: 0;
-        }
+        #readModal .modal { max-width: 860px; max-height: 90vh; }
+        #readModal .preview-content { padding: 10px 0; }
+        #readModal .preview-content h1:first-child { margin-top: 0; }
 
         .empty-hint {
             color: var(--text-muted);
@@ -1244,121 +992,38 @@
             font-family: 'Ma Shan Zheng', cursive;
         }
 
-        .empty-hint .big {
-            font-size: 48px;
-            display: block;
-            margin-bottom: 12px;
-            opacity: 0.6;
-        }
+        .empty-hint .big { font-size: 48px; display: block; margin-bottom: 12px; opacity: 0.6; }
 
-        /* ===== 响应式 ===== */
         @media (max-width: 860px) {
-            body {
-                padding: 10px;
-            }
-
-            .main {
-                flex-direction: column;
-                height: auto;
-                min-height: 400px;
-                max-height: none;
-            }
-
+            body { padding: 10px; }
+            .main { flex-direction: column; height: auto; min-height: 400px; max-height: none; }
             .editor-panel {
                 border-right: none;
                 border-bottom: 1px solid var(--border-color);
                 min-height: 260px;
                 height: 40vh;
             }
-
-            .preview-panel {
-                min-height: 260px;
-                height: 40vh;
-                padding: 0;
-            }
-
-            .preview-content {
-                padding: 48px 16px 16px 16px !important;
-            }
-
-            .header {
-                padding: 10px 16px;
-            }
-
-            .header-left h1 {
-                font-size: 18px;
-            }
-
-            .toolbar button,
-            .toolbar label,
-            .user-area button {
-                font-size: 12px;
-                padding: 4px 12px;
-                border-radius: 20px;
-            }
-
-            .stats-bar {
-                padding: 6px 16px;
-                gap: 12px;
-                font-size: 11px;
-            }
-
-            .reference-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .modal {
-                padding: 24px 18px;
-                margin: 10px;
-                border-radius: 20px;
-            }
-
-            #clipboardModal .modal,
-            #bookModal .modal {
-                padding: 20px 16px;
-            }
-
-            #clipboardModal .clipboard-form .row {
-                flex-direction: column;
-            }
-
-            .clipboard-item {
-                padding: 14px;
-            }
-
-            #readModeToolbar {
-                top: 8px;
-                right: 8px;
-                padding: 6px 8px;
-                gap: 4px;
-            }
-            .rm-tool {
-                font-size: 14px;
-                padding: 2px 8px;
-            }
-            #rmSize {
-                width: 40px;
-            }
+            .preview-panel { min-height: 260px; height: 40vh; padding: 0; }
+            .preview-content { padding: 48px 16px 16px 16px !important; }
+            .header { padding: 10px 16px; }
+            .header-left h1 { font-size: 18px; }
+            .toolbar button, .toolbar label, .user-area button { font-size: 12px; padding: 4px 12px; border-radius: 20px; }
+            .stats-bar { padding: 6px 16px; gap: 12px; font-size: 11px; }
+            .reference-grid { grid-template-columns: 1fr; }
+            .modal { padding: 24px 18px; margin: 10px; border-radius: 20px; }
+            #clipboardModal .modal, #bookModal .modal { padding: 20px 16px; }
+            #clipboardModal .clipboard-form .row { flex-direction: column; }
+            .clipboard-item { padding: 14px; }
+            #readModeToolbar { top: 8px; right: 8px; padding: 6px 8px; gap: 4px; }
+            .rm-tool { font-size: 14px; padding: 2px 8px; }
+            #rmSize { width: 40px; }
         }
 
         @media (max-width: 480px) {
-            .header-left .badge {
-                display: none;
-            }
-
-            .user-area .greeting {
-                font-size: 12px;
-            }
-
-            .toolbar button,
-            .toolbar label,
-            .user-area button {
-                font-size: 11px;
-                padding: 3px 10px;
-            }
-            #readModeToolbar .rm-label {
-                display: none;
-            }
+            .header-left .badge { display: none; }
+            .user-area .greeting { font-size: 12px; }
+            .toolbar button, .toolbar label, .user-area button { font-size: 11px; padding: 3px 10px; }
+            #readModeToolbar .rm-label { display: none; }
         }
     </style>
 </head>
@@ -1376,14 +1041,12 @@
             </div>
 
             <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-                <!-- 用户区域 -->
                 <div class="user-area" id="userArea">
                     <span class="greeting" id="greetingText">未登录 · 游客</span>
                     <button class="btn-login" id="loginBtn">登 录</button>
                     <button style="display:none;" id="logoutBtn">登出</button>
                 </div>
 
-                <!-- 工具栏 -->
                 <div class="toolbar">
                     <button id="clipboardBtn">📜 墨宝</button>
                     <button id="bookBtn">📚 书库</button>
@@ -1426,10 +1089,8 @@
                     </div>
                 </div>
 
-                <!-- ===== 阅读模式覆盖层 ===== -->
                 <div id="annotationLayer">
                     <canvas id="annotationCanvas"></canvas>
-                    <!-- 阅读模式工具栏 -->
                     <div id="readModeToolbar">
                         <button class="rm-tool" data-tool="pen" title="画笔">🖊️</button>
                         <button class="rm-tool" data-tool="text" title="文字批注">📝</button>
@@ -1482,12 +1143,9 @@
         </div>
     </div>
 
-    <!-- ===== Toast 容器 ===== -->
     <div class="toast-container" id="toastContainer"></div>
 
-    <!-- ========================================================== -->
     <!-- ===== 登录模态框 ===== -->
-    <!-- ========================================================== -->
     <div class="modal-overlay" id="loginModal">
         <div class="modal">
             <button class="close-btn" id="closeLoginModal">×</button>
@@ -1509,9 +1167,7 @@
         </div>
     </div>
 
-    <!-- ========================================================== -->
     <!-- ===== 剪贴板模态框 ===== -->
-    <!-- ========================================================== -->
     <div class="modal-overlay" id="clipboardModal">
         <div class="modal">
             <button class="close-btn" id="closeClipboardModal">×</button>
@@ -1549,16 +1205,13 @@
         </div>
     </div>
 
-    <!-- ========================================================== -->
     <!-- ===== 书库模态框 ===== -->
-    <!-- ========================================================== -->
     <div class="modal-overlay" id="bookModal">
         <div class="modal" style="max-width: 960px;">
             <button class="close-btn" id="closeBookModal">×</button>
             <h2 id="bookModalTitle">📚 书库</h2>
 
             <div id="bookViewContainer">
-                <!-- 书籍列表视图（默认） -->
                 <div id="bookListView">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
                         <span style="font-family:'Ma Shan Zheng',cursive; font-size:16px; color:var(--text-secondary);">所有可见书籍</span>
@@ -1570,7 +1223,6 @@
                     <div id="bookList"></div>
                 </div>
 
-                <!-- 书籍详情视图（章节列表） -->
                 <div id="bookDetailView" style="display:none;">
                     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
                         <div>
@@ -1585,9 +1237,7 @@
         </div>
     </div>
 
-    <!-- ========================================================== -->
-    <!-- ===== 新建/编辑书籍模态框 ===== -->
-    <!-- ========================================================== -->
+    <!-- ===== 新建/编辑书籍 ===== -->
     <div class="modal-overlay" id="bookFormModal">
         <div class="modal">
             <button class="close-btn" id="closeBookFormModal">×</button>
@@ -1621,9 +1271,7 @@
         </div>
     </div>
 
-    <!-- ========================================================== -->
-    <!-- ===== 新建/编辑章节模态框 ===== -->
-    <!-- ========================================================== -->
+    <!-- ===== 新建/编辑章节 ===== -->
     <div class="modal-overlay" id="chapterFormModal">
         <div class="modal">
             <button class="close-btn" id="closeChapterFormModal">×</button>
@@ -1645,9 +1293,7 @@
         </div>
     </div>
 
-    <!-- ========================================================== -->
-    <!-- ===== 阅读模式预览模态框 ===== -->
-    <!-- ========================================================== -->
+    <!-- ===== 阅读模式预览 ===== -->
     <div class="modal-overlay" id="readModal">
         <div class="modal" style="max-width:860px;">
             <button class="close-btn" id="closeReadModal">×</button>
@@ -1656,9 +1302,7 @@
         </div>
     </div>
 
-    <!-- ========================================================== -->
-    <!-- ===== 编辑状态模态框（剪贴板） ===== -->
-    <!-- ========================================================== -->
+    <!-- ===== 编辑状态（剪贴板） ===== -->
     <div class="modal-overlay" id="editStatusModal">
         <div class="modal">
             <button class="close-btn" id="closeEditStatusModal">×</button>
@@ -1692,15 +1336,15 @@
         </div>
     </div>
 
-    <!-- ========================================================== -->
-    <!-- ===== JavaScript ===== -->
-    <!-- ========================================================== -->
     <script>
         (function() {
             'use strict';
 
             // ---- 配置 ----
-            const API_BASE = 'https://myzlm.serveousercontent.com'; // 请修改为你的后端地址
+            const API_BASE = 'https://myzlm.serveousercontent.com';
+
+            // ---- CSRF Token ----
+            let csrfToken = '';
 
             // ---- DOM 引用 ----
             const editor = document.getElementById('editor');
@@ -1718,19 +1362,16 @@
             const wordCount = document.getElementById('wordCount');
             const lineCount = document.getElementById('lineCount');
 
-            // 用户
             const greetingText = document.getElementById('greetingText');
             const loginBtn = document.getElementById('loginBtn');
             const logoutBtn = document.getElementById('logoutBtn');
 
-            // 登录模态框
             const loginModal = document.getElementById('loginModal');
             const closeLoginModal = document.getElementById('closeLoginModal');
             const loginUsername = document.getElementById('loginUsername');
             const loginPassword = document.getElementById('loginPassword');
             const submitLogin = document.getElementById('submitLogin');
 
-            // 剪贴板
             const clipboardBtn = document.getElementById('clipboardBtn');
             const saveToClipboardBtn = document.getElementById('saveToClipboardBtn');
             const clipboardModal = document.getElementById('clipboardModal');
@@ -1745,7 +1386,6 @@
             const quotaUsed = document.getElementById('quotaUsed');
             const quotaTotal = document.getElementById('quotaTotal');
 
-            // 剪贴板编辑状态
             const editStatusModal = document.getElementById('editStatusModal');
             const closeEditStatusModal = document.getElementById('closeEditStatusModal');
             const editTitle = document.getElementById('editTitle');
@@ -1756,7 +1396,6 @@
             const saveEditStatusBtn = document.getElementById('saveEditStatusBtn');
             const cancelEditStatusBtn = document.getElementById('cancelEditStatusBtn');
 
-            // 书库
             const bookBtn = document.getElementById('bookBtn');
             const bookModal = document.getElementById('bookModal');
             const closeBookModal = document.getElementById('closeBookModal');
@@ -1771,7 +1410,6 @@
             const createChapterBtn = document.getElementById('createChapterBtn');
             const importBooksBtn = document.getElementById('importBooksBtn');
 
-            // 书籍表单
             const bookFormModal = document.getElementById('bookFormModal');
             const closeBookFormModal = document.getElementById('closeBookFormModal');
             const bookFormTitle = document.getElementById('bookFormTitle');
@@ -1783,7 +1421,6 @@
             const saveBookBtn = document.getElementById('saveBookBtn');
             const cancelBookFormBtn = document.getElementById('cancelBookFormBtn');
 
-            // 章节表单
             const chapterFormModal = document.getElementById('chapterFormModal');
             const closeChapterFormModal = document.getElementById('closeChapterFormModal');
             const chapterFormTitle = document.getElementById('chapterFormTitle');
@@ -1792,15 +1429,13 @@
             const saveChapterFormBtn = document.getElementById('saveChapterFormBtn');
             const cancelChapterFormBtn = document.getElementById('cancelChapterFormBtn');
 
-            // 阅读模式
             const readModal = document.getElementById('readModal');
             const closeReadModal = document.getElementById('closeReadModal');
             const readPreviewContent = document.getElementById('readPreviewContent');
 
-            // 保存章节按钮
             const saveChapterBtn = document.getElementById('saveChapterBtn');
 
-            // ---- 阅读模式相关 DOM ----
+            // ---- 阅读模式 ----
             const readModeBtn = document.getElementById('readModeBtn');
             const annotationLayer = document.getElementById('annotationLayer');
             const annotationCanvas = document.getElementById('annotationCanvas');
@@ -1817,13 +1452,11 @@
             let allUsers = [];
             let editingClipboardItemId = null;
 
-            // 书库状态
             let currentBooks = [];
             let currentBookData = null;
             let currentBookId = null;
             let currentChapterId = null;
 
-            // ---- 阅读模式状态 ----
             let isReadMode = false;
             let annotations = [];
             let currentTool = 'pen';
@@ -1838,7 +1471,7 @@
             // ---- 工具函数 ----
             function escapeHtml(text) {
                 const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
-                return String(text).replace(/[&<>"']/g, m => map[m]);
+                return String(text == null ? '' : text).replace(/[&<>"']/g, m => map[m]);
             }
 
             function showToast(message, type) {
@@ -1848,33 +1481,61 @@
                 const icons = { success: '✅', error: '❌', info: 'ℹ️' };
                 el.textContent = (icons[type] || '') + ' ' + message;
                 toastContainer.appendChild(el);
-                requestAnimationFrame(() => {
-                    el.classList.add('show');
-                });
+                requestAnimationFrame(() => { el.classList.add('show'); });
                 setTimeout(() => {
                     el.classList.remove('show');
                     setTimeout(() => { if (el.parentNode) el.remove(); }, 400);
                 }, 2800);
             }
 
-            async function apiCall(url, options) {
+            // ---- CSRF ----
+            async function refreshCsrf() {
+                try {
+                    const r = await fetch(API_BASE + '/api/me', { credentials: 'include' });
+                    if (!r.ok) return;
+                    const d = await r.json();
+                    if (d && d.csrfToken) csrfToken = d.csrfToken;
+                } catch (_) {}
+            }
+
+            async function apiCall(url, options, silent) {
                 options = options || {};
-                const config = {
+                silent = !!silent;
+                const method = (options.method || 'GET').toUpperCase();
+                const isWrite = !['GET', 'HEAD', 'OPTIONS'].includes(method);
+                const headers = Object.assign({}, options.headers || {});
+                headers['Content-Type'] = 'application/json';
+                if (isWrite && csrfToken) headers['X-CSRF-Token'] = csrfToken;
+
+                const config = Object.assign({}, options, {
                     credentials: 'include',
-                    headers: { 'Content-Type': 'application/json' },
-                    ...options
-                };
+                    method: method,
+                    headers: headers
+                });
                 if (config.body && typeof config.body === 'object') {
                     config.body = JSON.stringify(config.body);
                 }
+
                 try {
-                    const res = await fetch(API_BASE + url, config);
+                    let res = await fetch(API_BASE + url, config);
+
+                    if (isWrite && res.status === 403 && !silent) {
+                        const clone = await res.clone().json().catch(() => ({}));
+                        if (clone.error && String(clone.error).includes('CSRF')) {
+                            await refreshCsrf();
+                            config.headers['X-CSRF-Token'] = csrfToken;
+                            res = await fetch(API_BASE + url, config);
+                        }
+                    }
+
                     if (!res.ok) {
+                        if (silent) return null;
                         const data = await res.json().catch(() => ({}));
                         throw new Error(data.error || `请求失败 (${res.status})`);
                     }
                     return await res.json();
                 } catch (e) {
+                    if (silent) return null;
                     throw e;
                 }
             }
@@ -1883,35 +1544,83 @@
             function getRole() { return currentUser ? currentUser.role : null; }
             function isOwner() { return getRole() === 'owner'; }
 
-            // ---- 初始化 Mermaid ----
-            mermaid.initialize({
-                startOnLoad: false,
-                theme: 'default',
-                securityLevel: 'loose',
-                fontFamily: 'Inter, sans-serif',
-            });
-
-            // ---- 自定义 marked 渲染器 ----
-            const renderer = new marked.Renderer();
-            renderer.code = function(code, language) {
-                if (language === 'mermaid') {
-                    return `<pre class="mermaid">${code}</pre>`;
-                }
+            // ---- 安全 Markdown 渲染 ----
+            function safeMarkdown(text) {
+                if (!text) return '';
+                let html = '';
                 try {
-                    let highlighted;
-                    if (language && hljs.getLanguage(language)) {
-                        highlighted = hljs.highlight(code, { language, ignoreIllegals: true }).value;
-                    } else {
-                        highlighted = hljs.highlightAuto(code).value;
-                    }
-                    const langClass = language ? `language-${language}` : '';
-                    return `<pre><code class="hljs ${langClass}">${highlighted}</code></pre>`;
+                    html = marked.parse(text);
                 } catch (e) {
-                    console.warn('代码高亮失败:', e);
-                    return `<pre><code>${code}</code></pre>`;
+                    console.error('Markdown 解析错误:', e);
+                    return `<div style="color:#c0392b;padding:10px;">⚠️ 解析失败：${escapeHtml(e.message)}</div>`;
                 }
-            };
-            marked.use({ renderer });
+                if (typeof DOMPurify !== 'undefined') {
+                    try {
+                        html = DOMPurify.sanitize(html, { USE_PROFILES: { html: true } });
+                    } catch (e) {
+                        console.warn('DOMPurify 清理失败:', e);
+                        return escapeHtml(text).replace(/\n/g, '<br>');
+                    }
+                } else {
+                    return escapeHtml(text).replace(/\n/g, '<br>');
+                }
+                return html;
+            }
+
+            // ---- 初始化 Mermaid ----
+            if (typeof mermaid !== 'undefined') {
+                mermaid.initialize({
+                    startOnLoad: false,
+                    theme: 'default',
+                    securityLevel: 'strict',
+                    fontFamily: 'Inter, sans-serif'
+                });
+            }
+
+            // ---- DOMPurify 外链安全 ----
+            if (typeof DOMPurify !== 'undefined') {
+                DOMPurify.addHook('afterSanitizeAttributes', function(node) {
+                    if (node.tagName === 'A' && node.getAttribute('target') === '_blank') {
+                        node.setAttribute('rel', 'noopener noreferrer');
+                    }
+                });
+            }
+
+            // ---- 自定义 marked 渲染器（全部转义） ----
+            if (typeof marked !== 'undefined') {
+                const renderer = new marked.Renderer();
+                renderer.code = function(token, language) {
+                    let codeText, lang;
+                    if (typeof token === 'string') {
+                        codeText = token;
+                        lang = language;
+                    } else if (token && typeof token === 'object') {
+                        codeText = token.text || '';
+                        lang = token.lang || '';
+                    } else {
+                        codeText = '';
+                        lang = '';
+                    }
+                    const escaped = escapeHtml(codeText);
+                    if (lang === 'mermaid') {
+                        return `<pre class="mermaid">${escaped}</pre>`;
+                    }
+                    try {
+                        let highlighted;
+                        if (lang && hljs.getLanguage(lang)) {
+                            highlighted = hljs.highlight(codeText, { language: lang, ignoreIllegals: true }).value;
+                        } else {
+                            highlighted = hljs.highlightAuto(codeText).value;
+                        }
+                        const langClass = lang ? `language-${lang}` : '';
+                        return `<pre><code class="hljs ${langClass}">${highlighted}</code></pre>`;
+                    } catch (e) {
+                        console.warn('代码高亮失败:', e);
+                        return `<pre><code>${escaped}</code></pre>`;
+                    }
+                };
+                marked.use({ renderer });
+            }
 
             // ---- 统计 ----
             function getStats(text) {
@@ -1921,7 +1630,7 @@
                 return { chars, words, lines };
             }
 
-            // ---- 核心渲染 ----
+            // ---- 渲染 ----
             function render() {
                 const raw = editor.value;
                 const stats = getStats(raw);
@@ -1939,13 +1648,7 @@
                     return;
                 }
 
-                let html = '';
-                try {
-                    html = marked.parse(raw);
-                } catch (err) {
-                    console.error('Markdown 解析错误:', err);
-                    html = `<div style="color:#c0392b;padding:10px;">⚠️ 解析失败：${err.message}</div>`;
-                }
+                const html = safeMarkdown(raw);
                 preview.innerHTML = html;
 
                 try {
@@ -1963,15 +1666,9 @@
                                 return `<span class="katex-error">公式渲染错误</span>`;
                             }
                         });
-                    } else {
-                        console.warn('KaTeX 未加载');
                     }
                 } catch (err) {
                     console.error('KaTeX 渲染异常:', err);
-                    const errorDiv = document.createElement('div');
-                    errorDiv.style.cssText = 'color:#c0392b;padding:8px;background:#f5e4de;border-radius:6px;margin-bottom:12px;';
-                    errorDiv.textContent = `⚠️ 公式渲染异常：${err.message || err}`;
-                    preview.prepend(errorDiv);
                 }
 
                 try {
@@ -1982,27 +1679,16 @@
                             suppressErrors: true
                         }).catch(err => {
                             console.warn('Mermaid 渲染错误:', err);
-                            mermaidNodes.forEach(node => {
-                                if (!node.querySelector('.mermaid-error')) {
-                                    node.innerHTML =
-                                        `<div class="mermaid-error" style="color:#c0392b;">⚠️ 图表渲染失败</div>`;
-                                }
-                            });
                         });
                     }
                 } catch (err) {
                     console.warn('Mermaid 渲染异常:', err);
                 }
 
-                // 如果处于阅读模式，重新绘制批注（内容变化后重新叠加）
-                if (isReadMode) {
-                    redrawAnnotations();
-                }
+                if (isReadMode) redrawAnnotations();
             }
 
-            // ---- 防抖 + 自动保存 ----
             let debounceTimer = null;
-
             function scheduleRender() {
                 if (debounceTimer) clearTimeout(debounceTimer);
                 debounceTimer = setTimeout(() => {
@@ -2012,7 +1698,6 @@
             }
             editor.addEventListener('input', scheduleRender);
 
-            // ---- 示例内容 ----
             function getExampleMarkdown() {
                 return `# 📘 基础语法示例
 
@@ -2075,7 +1760,6 @@
         `;
             }
 
-            // ---- 下载文件 ----
             function downloadFile(content, filename, mimeType) {
                 const blob = new Blob([content], { type: `${mimeType};charset=utf-8` });
                 const url = URL.createObjectURL(blob);
@@ -2088,7 +1772,6 @@
                 URL.revokeObjectURL(url);
             }
 
-            // ---- 自动生成标题 ----
             function generateTitle(content) {
                 const lines = content.split('\n');
                 const firstLine = lines.find(line => line.trim().length > 0);
@@ -2101,7 +1784,7 @@
             }
 
             // ==========================================================
-            // ===== 阅读模式相关函数 =====
+            //  阅读模式
             // ==========================================================
 
             function resizeCanvas() {
@@ -2112,6 +1795,8 @@
                 annotationCanvas.height = rect.height * dpr;
                 annotationCanvas.style.width = rect.width + 'px';
                 annotationCanvas.style.height = rect.height + 'px';
+                // 重置变换，避免 DPR 累乘
+                ctx.setTransform(1, 0, 0, 1, 0, 0);
                 ctx.scale(dpr, dpr);
                 redrawAnnotations();
             }
@@ -2119,7 +1804,10 @@
             function redrawAnnotations() {
                 if (!ctx) return;
                 const rect = previewPanel.getBoundingClientRect();
+                ctx.save();
+                ctx.setTransform(1, 0, 0, 1, 0, 0);
                 ctx.clearRect(0, 0, annotationCanvas.width, annotationCanvas.height);
+                ctx.restore();
                 annotations.forEach((ann, index) => {
                     if (ann.type === 'path') {
                         ctx.beginPath();
@@ -2137,7 +1825,6 @@
                         ctx.fillStyle = ann.color;
                         ctx.fillText(ann.text, ann.x, ann.y);
                     }
-                    // 选中边框
                     if (index === selectedIndex && currentTool === 'select') {
                         const bbox = getAnnotationBounds(ann);
                         ctx.strokeStyle = '#3498db';
@@ -2151,10 +1838,7 @@
 
             function getAnnotationBounds(ann) {
                 if (ann.type === 'path') {
-                    let minX = Infinity,
-                        minY = Infinity,
-                        maxX = -Infinity,
-                        maxY = -Infinity;
+                    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
                     ann.points.forEach(p => {
                         if (p.x < minX) minX = p.x;
                         if (p.y < minY) minY = p.y;
@@ -2177,14 +1861,11 @@
                 return { x: clientX - rect.left, y: clientY - rect.top };
             }
 
-            // 鼠标/触摸事件
             function setupAnnotationEvents() {
-                // 鼠标事件
                 annotationCanvas.addEventListener('mousedown', onPointerDown);
                 annotationCanvas.addEventListener('mousemove', onPointerMove);
                 annotationCanvas.addEventListener('mouseup', onPointerUp);
                 annotationCanvas.addEventListener('mouseleave', onPointerUp);
-                // 触摸事件
                 annotationCanvas.addEventListener('touchstart', function(e) {
                     e.preventDefault();
                     const touch = e.touches[0];
@@ -2221,16 +1902,26 @@
                     isDrawing = true;
                     lastX = pos.x;
                     lastY = pos.y;
-                    const newPath = { type: 'path', color: currentColor, size: currentSize, points: [{ x: pos.x, y: pos
-                            .y }] };
+                    const newPath = {
+                        type: 'path',
+                        color: currentColor,
+                        size: currentSize,
+                        points: [{ x: pos.x, y: pos.y }]
+                    };
                     annotations.push(newPath);
                     selectedIndex = annotations.length - 1;
                     redrawAnnotations();
                 } else if (currentTool === 'text') {
                     const text = prompt('输入批注文字：', '批注');
                     if (text && text.trim()) {
-                        annotations.push({ type: 'text', text: text.trim(), x: pos.x, y: pos.y, color: currentColor,
-                            size: currentSize });
+                        annotations.push({
+                            type: 'text',
+                            text: text.trim().substring(0, 200),
+                            x: pos.x,
+                            y: pos.y,
+                            color: currentColor,
+                            size: currentSize
+                        });
                         redrawAnnotations();
                     }
                 } else if (currentTool === 'select') {
@@ -2284,10 +1975,8 @@
                         const bbox = getAnnotationBounds(ann);
                         const dx = pos.x - dragOffsetX - bbox.x;
                         const dy = pos.y - dragOffsetY - bbox.y;
-                        ann.points.forEach(p => { p.x += dx;
-                            p.y += dy; });
+                        ann.points.forEach(p => { p.x += dx; p.y += dy; });
                         redrawAnnotations();
-                        // 更新偏移
                         const newBbox = getAnnotationBounds(ann);
                         dragOffsetX = pos.x - newBbox.x;
                         dragOffsetY = pos.y - newBbox.y;
@@ -2302,12 +1991,8 @@
             function onPointerUp(e) {
                 if (!isReadMode) return;
                 isPointerDown = false;
-                if (currentTool === 'pen') {
-                    isDrawing = false;
-                }
-                if (currentTool === 'select') {
-                    annotationLayer.style.cursor = 'grab';
-                }
+                if (currentTool === 'pen') isDrawing = false;
+                if (currentTool === 'select') annotationLayer.style.cursor = 'grab';
             }
 
             function enterReadMode() {
@@ -2317,14 +2002,10 @@
                 annotationLayer.style.pointerEvents = 'auto';
                 annotationCanvas.style.pointerEvents = 'auto';
                 previewPanel.style.position = 'relative';
-                // 确保 canvas 存在
-                if (!ctx) {
-                    ctx = annotationCanvas.getContext('2d');
-                }
+                if (!ctx) ctx = annotationCanvas.getContext('2d');
                 resizeCanvas();
-                // 默认选择画笔
-                document.querySelector('.rm-tool[data-tool="pen"]')?.click();
-                // 禁用预览内容的滚动事件穿透（可选）
+                const penBtn = document.querySelector('.rm-tool[data-tool="pen"]');
+                if (penBtn) penBtn.click();
                 previewPanel.style.overflow = 'hidden';
             }
 
@@ -2339,13 +2020,9 @@
                 redrawAnnotations();
             }
 
-            // ---- 阅读模式事件绑定 ----
             readModeBtn.addEventListener('click', function() {
-                if (!isReadMode) {
-                    enterReadMode();
-                } else {
-                    exitReadMode();
-                }
+                if (!isReadMode) enterReadMode();
+                else exitReadMode();
             });
 
             rmExit.addEventListener('click', exitReadMode);
@@ -2364,35 +2041,25 @@
                     rmTools.forEach(b => b.classList.remove('active'));
                     this.classList.add('active');
                     currentTool = this.dataset.tool;
-                    if (currentTool === 'select') {
-                        annotationLayer.style.cursor = 'grab';
-                    } else if (currentTool === 'delete') {
-                        annotationLayer.style.cursor = 'pointer';
-                    } else {
-                        annotationLayer.style.cursor = 'crosshair';
-                    }
+                    if (currentTool === 'select') annotationLayer.style.cursor = 'grab';
+                    else if (currentTool === 'delete') annotationLayer.style.cursor = 'pointer';
+                    else annotationLayer.style.cursor = 'crosshair';
                     selectedIndex = -1;
                     redrawAnnotations();
                 });
             });
 
-            rmColor.addEventListener('input', function() {
-                currentColor = this.value;
-            });
-            rmSize.addEventListener('input', function() {
-                currentSize = parseInt(this.value);
-            });
+            rmColor.addEventListener('input', function() { currentColor = this.value; });
+            rmSize.addEventListener('input', function() { currentSize = parseInt(this.value); });
 
-            // 窗口变化时重置 canvas
             window.addEventListener('resize', function() {
                 if (isReadMode) resizeCanvas();
             });
 
-            // ---- 初始化阅读模式 ----
             setupAnnotationEvents();
 
             // ==========================================================
-            // ===== 用户认证 =====
+            //  用户认证
             // ==========================================================
 
             async function checkLoginStatus() {
@@ -2400,23 +2067,26 @@
                     const data = await apiCall('/api/me', {}, true);
                     if (data && data.username) {
                         currentUser = data;
+                        csrfToken = data.csrfToken || '';
                     } else {
                         currentUser = null;
+                        csrfToken = '';
                     }
                 } catch (_) {
                     currentUser = null;
+                    csrfToken = '';
                 }
                 updateUI();
                 if (isLoggedIn()) {
                     try {
-                        const users = await apiCall('/api/users/list');
+                        const users = await apiCall('/api/users/list', {}, true);
                         if (Array.isArray(users)) {
                             allUsers = users;
                             populateSharedWithSelect();
                             populateEditSharedWithSelect();
                             populateBookSharedWithSelect();
                         }
-                    } catch (_) { /* 忽略 */ }
+                    } catch (_) {}
                 }
             }
 
@@ -2425,19 +2095,15 @@
                     greetingText.textContent = `🖋️ ${currentUser.username} · ${currentUser.role}`;
                     loginBtn.style.display = 'none';
                     logoutBtn.style.display = 'inline-block';
+                    bookBtn.style.display = 'inline-flex';
                 } else {
                     greetingText.textContent = '未登录 · 游客';
                     loginBtn.style.display = 'inline-block';
                     logoutBtn.style.display = 'none';
-                }
-                if (isLoggedIn()) {
-                    bookBtn.style.display = 'inline-flex';
-                } else {
                     bookBtn.style.display = 'none';
                 }
             }
 
-            // 登录
             submitLogin.addEventListener('click', async function() {
                 const u = loginUsername.value.trim();
                 const p = loginPassword.value;
@@ -2451,51 +2117,46 @@
                         body: { username: u, password: p }
                     });
                     currentUser = data;
+                    csrfToken = data.csrfToken || '';
                     loginModal.classList.remove('active');
                     updateUI();
                     showToast(`登录成功，欢迎 ${data.username}`, 'success');
                     loginUsername.value = '';
                     loginPassword.value = '';
                     try {
-                        const users = await apiCall('/api/users/list');
+                        const users = await apiCall('/api/users/list', {}, true);
                         if (Array.isArray(users)) {
                             allUsers = users;
                             populateSharedWithSelect();
                             populateEditSharedWithSelect();
                             populateBookSharedWithSelect();
                         }
-                    } catch (_) { /* 忽略 */ }
+                    } catch (_) {}
                 } catch (err) {
                     showToast('登录失败: ' + err.message, 'error');
                 }
             });
 
-            // 登出
             logoutBtn.addEventListener('click', async function() {
                 try {
-                    await apiCall('/api/logout', { method: 'POST' });
-                    currentUser = null;
-                    updateUI();
-                    showToast('已登出', 'info');
-                } catch (err) {
-                    showToast('登出失败: ' + err.message, 'error');
-                }
+                    await apiCall('/api/logout', { method: 'POST' }, true);
+                } catch (_) {}
+                currentUser = null;
+                csrfToken = '';
+                updateUI();
+                showToast('已登出', 'info');
             });
 
-            // 登录模态框控制
             loginBtn.addEventListener('click', function() {
                 loginModal.classList.add('active');
                 loginUsername.focus();
             });
-
             closeLoginModal.addEventListener('click', function() {
                 loginModal.classList.remove('active');
             });
-
             loginModal.addEventListener('click', function(e) {
                 if (e.target === loginModal) loginModal.classList.remove('active');
             });
-
             loginPassword.addEventListener('keydown', function(e) {
                 if (e.key === 'Enter') submitLogin.click();
             });
@@ -2504,7 +2165,7 @@
             });
 
             // ==========================================================
-            // ===== 剪贴板功能 =====
+            //  剪贴板
             // ==========================================================
 
             function populateSharedWithSelect() {
@@ -2568,14 +2229,10 @@
             }
 
             clipboardVisibility.addEventListener('change', function() {
-                if (this.value === 'shared') {
-                    clipboardSharedWith.style.display = 'block';
-                } else {
-                    clipboardSharedWith.style.display = 'none';
-                }
+                if (this.value === 'shared') clipboardSharedWith.style.display = 'block';
+                else clipboardSharedWith.style.display = 'none';
             });
 
-            // 加载剪贴板
             async function loadClipboards() {
                 if (!isLoggedIn()) {
                     myClipboardList.innerHTML = `<p style="color:var(--text-muted);">请先登录查看墨宝</p>`;
@@ -2604,21 +2261,19 @@
                     const visibleItems = data.filter(item => {
                         if (item.createdBy === username) return false;
                         if (item.visibility === 'public') return true;
-                        if (item.visibility === 'shared' && item.sharedWith && item.sharedWith.includes(username))
-                            return true;
+                        if (item.visibility === 'shared' && item.sharedWith && item.sharedWith.includes(username)) return true;
                         return false;
                     });
 
                     renderClipboardList(myItems, myClipboardList, true);
                     renderClipboardList(visibleItems, allClipboardList, false);
-
                 } catch (err) {
                     myClipboardList.innerHTML = `<p style="color:#c0392b;">加载失败: ${escapeHtml(err.message)}</p>`;
                     allClipboardList.innerHTML = `<p style="color:#c0392b;">加载失败: ${escapeHtml(err.message)}</p>`;
                 }
             }
 
-            function renderClipboardList(items, container, isOwner) {
+            function renderClipboardList(items, container, isOwnerList) {
                 if (items.length === 0) {
                     container.innerHTML = `<p style="color:var(--text-muted);">暂无条目</p>`;
                     return;
@@ -2626,29 +2281,28 @@
                 let html = '';
                 items.forEach(item => {
                     const title = item.title || generateTitle(item.content);
-                    const sharedInfo = (item.visibility === 'shared' && item.sharedWith && item.sharedWith.length > 0) ?
-                        `分享给: ${item.sharedWith.join(', ')}` :
-                        '';
+                    const sharedInfo = (item.visibility === 'shared' && item.sharedWith && item.sharedWith.length > 0)
+                        ? `分享给: ${item.sharedWith.join(', ')}` : '';
                     const visLabel = {
                         'public': '🌐 公开',
                         'private': '🔒 私密',
                         'shared': '👥 指定知音'
-                    } [item.visibility] || item.visibility;
+                    }[item.visibility] || item.visibility;
                     const contentPreview = escapeHtml(item.content);
 
                     let actionsHtml = `
-                        <button class="btn-load" data-id="${item.id}">📂 载入</button>
-                        <button class="btn-preview" data-id="${item.id}">👁️ 预览</button>
+                        <button class="btn-load" data-id="${escapeHtml(item.id)}">📂 载入</button>
+                        <button class="btn-preview" data-id="${escapeHtml(item.id)}">👁️ 预览</button>
                     `;
-                    if (isOwner) {
+                    if (isOwnerList) {
                         actionsHtml += `
-                            <button class="btn-edit-status" data-id="${item.id}">✏️ 编辑</button>
-                            <button class="btn-del" data-id="${item.id}">🗑️ 删除</button>
+                            <button class="btn-edit-status" data-id="${escapeHtml(item.id)}">✏️ 编辑</button>
+                            <button class="btn-del" data-id="${escapeHtml(item.id)}">🗑️ 删除</button>
                         `;
                     }
 
                     html += `
-                        <div class="clipboard-item" data-id="${item.id}">
+                        <div class="clipboard-item" data-id="${escapeHtml(item.id)}">
                             <div class="item-title">${escapeHtml(title)}</div>
                             <div class="content-preview">${contentPreview}</div>
                             <div class="meta">
@@ -2662,36 +2316,23 @@
                     `;
                 });
                 container.innerHTML = html;
-                // 绑定事件
+
                 container.querySelectorAll('.btn-load').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const id = this.dataset.id;
-                        loadClipboardToEditor(id);
-                    });
+                    btn.addEventListener('click', function() { loadClipboardToEditor(this.dataset.id); });
                 });
                 container.querySelectorAll('.btn-preview').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const id = this.dataset.id;
-                        previewClipboard(id);
-                    });
+                    btn.addEventListener('click', function() { previewClipboard(this.dataset.id); });
                 });
-                if (isOwner) {
+                if (isOwnerList) {
                     container.querySelectorAll('.btn-del').forEach(btn => {
-                        btn.addEventListener('click', function() {
-                            const id = this.dataset.id;
-                            deleteClipboard(id);
-                        });
+                        btn.addEventListener('click', function() { deleteClipboard(this.dataset.id); });
                     });
                     container.querySelectorAll('.btn-edit-status').forEach(btn => {
-                        btn.addEventListener('click', function() {
-                            const id = this.dataset.id;
-                            openEditClipboardModal(id);
-                        });
+                        btn.addEventListener('click', function() { openEditClipboardModal(this.dataset.id); });
                     });
                 }
             }
 
-            // ---- 剪贴板操作 ----
             async function createClipboard() {
                 if (!isLoggedIn()) { showToast('请先登录', 'error'); return; }
                 const content = clipboardContent.value.trim();
@@ -2700,8 +2341,7 @@
                 const visibility = clipboardVisibility.value;
                 let sharedWith = [];
                 if (visibility === 'shared') {
-                    const sel = clipboardSharedWith;
-                    sharedWith = Array.from(sel.selectedOptions).map(o => o.value).filter(v => v);
+                    sharedWith = Array.from(clipboardSharedWith.selectedOptions).map(o => o.value).filter(v => v);
                 }
                 try {
                     await apiCall('/api/clipboards', {
@@ -2719,7 +2359,7 @@
             async function deleteClipboard(id) {
                 if (!confirm('确定删除这条墨宝吗？')) return;
                 try {
-                    await apiCall(`/api/clipboards/${id}`, { method: 'DELETE' });
+                    await apiCall(`/api/clipboards/${encodeURIComponent(id)}`, { method: 'DELETE' });
                     showToast('已删除', 'success');
                     await loadClipboards();
                 } catch (err) {
@@ -2730,7 +2370,7 @@
             async function loadClipboardToEditor(id) {
                 try {
                     const data = await apiCall('/api/clipboards');
-                    const item = data.find(cb => cb.id === id);
+                    const item = Array.isArray(data) ? data.find(cb => cb.id === id) : null;
                     if (!item) { showToast('条目不存在', 'error'); return; }
                     editor.value = item.content;
                     render();
@@ -2744,10 +2384,9 @@
             async function previewClipboard(id) {
                 try {
                     const data = await apiCall('/api/clipboards');
-                    const item = data.find(cb => cb.id === id);
+                    const item = Array.isArray(data) ? data.find(cb => cb.id === id) : null;
                     if (!item) { showToast('条目不存在', 'error'); return; }
-                    let html = '';
-                    try { html = marked.parse(item.content); } catch (err) { html = `<div style="color:#c0392b;">渲染失败: ${err.message}</div>`; }
+                    const html = safeMarkdown(item.content);
                     readPreviewContent.innerHTML = html;
                     try {
                         if (typeof renderMathInElement === 'function' && typeof window.katex !== 'undefined') {
@@ -2759,7 +2398,7 @@
                                     { left: '\\[', right: '\\]', display: true }
                                 ],
                                 throwOnError: false,
-                                errorCallback: function(msg) { return `<span class="katex-error">公式错误</span>`; }
+                                errorCallback: function() { return `<span class="katex-error">公式错误</span>`; }
                             });
                         }
                     } catch (err) { console.warn('阅读模式 KaTeX 错误:', err); }
@@ -2779,7 +2418,7 @@
                 if (!isLoggedIn()) return;
                 try {
                     const data = await apiCall('/api/clipboards');
-                    const item = data.find(cb => cb.id === id);
+                    const item = Array.isArray(data) ? data.find(cb => cb.id === id) : null;
                     if (!item) { showToast('条目不存在', 'error'); return; }
                     editingClipboardItemId = id;
                     editTitle.value = item.title || generateTitle(item.content);
@@ -2807,11 +2446,10 @@
                 const visibility = editVisibility.value;
                 let sharedWith = [];
                 if (visibility === 'shared') {
-                    const sel = editSharedWith;
-                    sharedWith = Array.from(sel.selectedOptions).map(o => o.value).filter(v => v);
+                    sharedWith = Array.from(editSharedWith.selectedOptions).map(o => o.value).filter(v => v);
                 }
                 try {
-                    await apiCall(`/api/clipboards/${editingClipboardItemId}`, {
+                    await apiCall(`/api/clipboards/${encodeURIComponent(editingClipboardItemId)}`, {
                         method: 'PUT',
                         body: { title, content, visibility, sharedWith }
                     });
@@ -2824,10 +2462,12 @@
                 }
             }
 
-            // ---- 剪贴板模态框控制 ----
             clipboardBtn.addEventListener('click', function() {
-                if (!isLoggedIn()) { showToast('请先登录使用墨宝', 'info');
-                    loginModal.classList.add('active'); return; }
+                if (!isLoggedIn()) {
+                    showToast('请先登录使用墨宝', 'info');
+                    loginModal.classList.add('active');
+                    return;
+                }
                 clipboardModal.classList.add('active');
                 loadClipboards();
                 clipboardContent.value = '';
@@ -2860,7 +2500,6 @@
             });
             saveClipboardBtn.addEventListener('click', createClipboard);
 
-            // ---- 剪贴板编辑模态框控制 ----
             closeEditStatusModal.addEventListener('click', function() {
                 editStatusModal.classList.remove('active');
                 editingClipboardItemId = null;
@@ -2883,10 +2522,9 @@
             });
 
             // ==========================================================
-            // ===== 书库功能 =====
+            //  书库
             // ==========================================================
 
-            // 加载书籍列表
             async function loadBooks() {
                 if (!isLoggedIn()) {
                     bookList.innerHTML = `<p style="color:var(--text-muted);">请先登录</p>`;
@@ -2919,14 +2557,13 @@
                         'public': '🌐 公开',
                         'private': '🔒 私密',
                         'shared': '👥 指定知音'
-                    } [book.visibility] || book.visibility;
-                    const sharedInfo = (book.visibility === 'shared' && book.sharedWith && book.sharedWith.length > 0) ?
-                        `分享给: ${book.sharedWith.join(', ')}` :
-                        '';
+                    }[book.visibility] || book.visibility;
+                    const sharedInfo = (book.visibility === 'shared' && book.sharedWith && book.sharedWith.length > 0)
+                        ? `分享给: ${book.sharedWith.join(', ')}` : '';
                     const chaptersCount = book.chapters ? book.chapters.length : 0;
 
                     html += `
-                        <div class="clipboard-item book-card" data-id="${book.id}">
+                        <div class="clipboard-item book-card" data-id="${escapeHtml(book.id)}">
                             <div class="book-name">${escapeHtml(book.name)}</div>
                             <div class="book-desc">${escapeHtml(book.description || '')}</div>
                             <div class="meta">
@@ -2937,10 +2574,10 @@
                                 <span>${new Date(book.createdAt).toLocaleString()}</span>
                             </div>
                             <div class="actions">
-                                <button class="btn-load book-enter" data-id="${book.id}">📂 进入</button>
+                                <button class="btn-load book-enter" data-id="${escapeHtml(book.id)}">📂 进入</button>
                                 ${canEdit ? `
-                                    <button class="btn-edit-status book-edit" data-id="${book.id}">✏️ 编辑</button>
-                                    <button class="btn-del book-delete" data-id="${book.id}">🗑️ 删除</button>
+                                    <button class="btn-edit-status book-edit" data-id="${escapeHtml(book.id)}">✏️ 编辑</button>
+                                    <button class="btn-del book-delete" data-id="${escapeHtml(book.id)}">🗑️ 删除</button>
                                 ` : ''}
                             </div>
                         </div>
@@ -2949,31 +2586,21 @@
                 bookList.innerHTML = html;
 
                 bookList.querySelectorAll('.book-enter').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const id = this.dataset.id;
-                        enterBook(id);
-                    });
+                    btn.addEventListener('click', function() { enterBook(this.dataset.id); });
                 });
                 if (isOwnerUser) {
                     bookList.querySelectorAll('.book-edit').forEach(btn => {
-                        btn.addEventListener('click', function() {
-                            const id = this.dataset.id;
-                            openBookForm(id);
-                        });
+                        btn.addEventListener('click', function() { openBookForm(this.dataset.id); });
                     });
                     bookList.querySelectorAll('.book-delete').forEach(btn => {
-                        btn.addEventListener('click', function() {
-                            const id = this.dataset.id;
-                            deleteBook(id);
-                        });
+                        btn.addEventListener('click', function() { deleteBook(this.dataset.id); });
                     });
                 }
             }
 
-            // 进入书籍详情
             async function enterBook(bookId) {
                 try {
-                    const book = await apiCall(`/api/books/${bookId}`);
+                    const book = await apiCall(`/api/books/${encodeURIComponent(bookId)}`);
                     currentBookData = book;
                     currentBookId = bookId;
                     bookDetailName.textContent = book.name;
@@ -2998,19 +2625,19 @@
                     const isFirst = index === 0;
                     const isLast = index === chapters.length - 1;
                     html += `
-                        <div class="clipboard-item chapter-item" data-id="${ch.id}" data-index="${index}">
+                        <div class="clipboard-item chapter-item" data-id="${escapeHtml(ch.id)}" data-index="${index}">
                             <div class="chapter-title">${escapeHtml(ch.title)}</div>
                             <div class="meta">
                                 <span>${new Date(ch.createdAt).toLocaleString()}</span>
                             </div>
                             <div class="actions">
-                                <button class="btn-load chapter-load" data-id="${ch.id}">📂 载入</button>
-                                <button class="btn-preview chapter-preview" data-id="${ch.id}">👁️ 预览</button>
+                                <button class="btn-load chapter-load" data-id="${escapeHtml(ch.id)}">📂 载入</button>
+                                <button class="btn-preview chapter-preview" data-id="${escapeHtml(ch.id)}">👁️ 预览</button>
                                 ${canEdit ? `
-                                    <button class="btn-edit-status chapter-edit" data-id="${ch.id}">✏️ 编辑</button>
-                                    <button class="btn-del chapter-delete" data-id="${ch.id}">🗑️ 删除</button>
-                                    ${!isFirst ? `<button class="btn-move-up" data-id="${ch.id}">⬆️ 上移</button>` : ''}
-                                    ${!isLast ? `<button class="btn-move-down" data-id="${ch.id}">⬇️ 下移</button>` : ''}
+                                    <button class="btn-edit-status chapter-edit" data-id="${escapeHtml(ch.id)}">✏️ 编辑</button>
+                                    <button class="btn-del chapter-delete" data-id="${escapeHtml(ch.id)}">🗑️ 删除</button>
+                                    ${!isFirst ? `<button class="btn-move-up" data-id="${escapeHtml(ch.id)}">⬆️ 上移</button>` : ''}
+                                    ${!isLast ? `<button class="btn-move-down" data-id="${escapeHtml(ch.id)}">⬇️ 下移</button>` : ''}
                                 ` : ''}
                             </div>
                         </div>
@@ -3019,46 +2646,27 @@
                 chapterList.innerHTML = html;
 
                 chapterList.querySelectorAll('.chapter-load').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const id = this.dataset.id;
-                        loadChapterToEditor(currentBookId, id);
-                    });
+                    btn.addEventListener('click', function() { loadChapterToEditor(currentBookId, this.dataset.id); });
                 });
                 chapterList.querySelectorAll('.chapter-preview').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const id = this.dataset.id;
-                        previewChapter(currentBookId, id);
-                    });
+                    btn.addEventListener('click', function() { previewChapter(currentBookId, this.dataset.id); });
                 });
                 if (canEdit) {
                     chapterList.querySelectorAll('.chapter-edit').forEach(btn => {
-                        btn.addEventListener('click', function() {
-                            const id = this.dataset.id;
-                            openChapterForm(currentBookId, id);
-                        });
+                        btn.addEventListener('click', function() { openChapterForm(currentBookId, this.dataset.id); });
                     });
                     chapterList.querySelectorAll('.chapter-delete').forEach(btn => {
-                        btn.addEventListener('click', function() {
-                            const id = this.dataset.id;
-                            deleteChapter(currentBookId, id);
-                        });
+                        btn.addEventListener('click', function() { deleteChapter(currentBookId, this.dataset.id); });
                     });
                     chapterList.querySelectorAll('.btn-move-up').forEach(btn => {
-                        btn.addEventListener('click', function() {
-                            const id = this.dataset.id;
-                            moveChapter(currentBookId, id, -1);
-                        });
+                        btn.addEventListener('click', function() { moveChapter(currentBookId, this.dataset.id, -1); });
                     });
                     chapterList.querySelectorAll('.btn-move-down').forEach(btn => {
-                        btn.addEventListener('click', function() {
-                            const id = this.dataset.id;
-                            moveChapter(currentBookId, id, 1);
-                        });
+                        btn.addEventListener('click', function() { moveChapter(currentBookId, this.dataset.id, 1); });
                     });
                 }
             }
 
-            // ---- 书籍 CRUD ----
             async function createBook() {
                 const name = bookNameInput.value.trim();
                 if (!name) { showToast('请输入书名', 'error'); return; }
@@ -3066,8 +2674,7 @@
                 const visibility = bookVisibilityInput.value;
                 let sharedWith = [];
                 if (visibility === 'shared') {
-                    const sel = bookSharedWith;
-                    sharedWith = Array.from(sel.selectedOptions).map(o => o.value).filter(v => v);
+                    sharedWith = Array.from(bookSharedWith.selectedOptions).map(o => o.value).filter(v => v);
                 }
                 try {
                     await apiCall('/api/books', {
@@ -3089,20 +2696,17 @@
                 const visibility = bookVisibilityInput.value;
                 let sharedWith = [];
                 if (visibility === 'shared') {
-                    const sel = bookSharedWith;
-                    sharedWith = Array.from(sel.selectedOptions).map(o => o.value).filter(v => v);
+                    sharedWith = Array.from(bookSharedWith.selectedOptions).map(o => o.value).filter(v => v);
                 }
                 try {
-                    await apiCall(`/api/books/${bookId}`, {
+                    await apiCall(`/api/books/${encodeURIComponent(bookId)}`, {
                         method: 'PUT',
                         body: { name, description, visibility, sharedWith }
                     });
                     showToast('书籍更新成功 ✅', 'success');
                     bookFormModal.classList.remove('active');
                     await loadBooks();
-                    if (currentBookId === bookId) {
-                        await enterBook(bookId);
-                    }
+                    if (currentBookId === bookId) await enterBook(bookId);
                 } catch (err) {
                     showToast('更新失败: ' + err.message, 'error');
                 }
@@ -3111,24 +2715,21 @@
             async function deleteBook(bookId) {
                 if (!confirm('确定删除这本书及其所有章节吗？')) return;
                 try {
-                    await apiCall(`/api/books/${bookId}`, { method: 'DELETE' });
+                    await apiCall(`/api/books/${encodeURIComponent(bookId)}`, { method: 'DELETE' });
                     showToast('书籍已删除', 'success');
-                    if (currentBookId === bookId) {
-                        backToBookList.click();
-                    }
+                    if (currentBookId === bookId) backToBookList.click();
                     await loadBooks();
                 } catch (err) {
                     showToast('删除失败: ' + err.message, 'error');
                 }
             }
 
-            // ---- 章节 CRUD ----
             async function createChapter(bookId) {
                 const title = chapterTitleInput.value.trim();
                 if (!title) { showToast('请输入章节标题', 'error'); return; }
                 const content = chapterContentInput.value;
                 try {
-                    await apiCall(`/api/books/${bookId}/chapters`, {
+                    await apiCall(`/api/books/${encodeURIComponent(bookId)}/chapters`, {
                         method: 'POST',
                         body: { title, content }
                     });
@@ -3145,7 +2746,7 @@
                 if (!title) { showToast('请输入章节标题', 'error'); return; }
                 const content = chapterContentInput.value;
                 try {
-                    await apiCall(`/api/books/${bookId}/chapters/${chapterId}`, {
+                    await apiCall(`/api/books/${encodeURIComponent(bookId)}/chapters/${encodeURIComponent(chapterId)}`, {
                         method: 'PUT',
                         body: { title, content }
                     });
@@ -3160,7 +2761,7 @@
             async function deleteChapter(bookId, chapterId) {
                 if (!confirm('确定删除此章节吗？')) return;
                 try {
-                    await apiCall(`/api/books/${bookId}/chapters/${chapterId}`, { method: 'DELETE' });
+                    await apiCall(`/api/books/${encodeURIComponent(bookId)}/chapters/${encodeURIComponent(chapterId)}`, { method: 'DELETE' });
                     showToast('章节已删除', 'success');
                     await enterBook(bookId);
                 } catch (err) {
@@ -3168,7 +2769,6 @@
                 }
             }
 
-            // ---- 移动章节 ----
             async function moveChapter(bookId, chapterId, direction) {
                 if (!currentBookData) return;
                 const chapters = currentBookData.chapters || [];
@@ -3180,7 +2780,7 @@
                 [newChapters[idx], newChapters[newIdx]] = [newChapters[newIdx], newChapters[idx]];
                 const chapterIds = newChapters.map(c => c.id);
                 try {
-                    await apiCall(`/api/books/${bookId}/order`, {
+                    await apiCall(`/api/books/${encodeURIComponent(bookId)}/order`, {
                         method: 'PUT',
                         body: { chapterIds }
                     });
@@ -3191,10 +2791,9 @@
                 }
             }
 
-            // ---- 加载章节到编辑器 ----
             async function loadChapterToEditor(bookId, chapterId) {
                 try {
-                    const data = await apiCall(`/api/books/${bookId}/chapters/${chapterId}`);
+                    const data = await apiCall(`/api/books/${encodeURIComponent(bookId)}/chapters/${encodeURIComponent(chapterId)}`);
                     editor.value = data.content || '';
                     render();
                     localStorage.setItem('markdown_editor_content', editor.value);
@@ -3207,12 +2806,10 @@
                 }
             }
 
-            // ---- 预览章节 ----
             async function previewChapter(bookId, chapterId) {
                 try {
-                    const data = await apiCall(`/api/books/${bookId}/chapters/${chapterId}`);
-                    let html = '';
-                    try { html = marked.parse(data.content || ''); } catch (err) { html = `<div style="color:#c0392b;">渲染失败: ${err.message}</div>`; }
+                    const data = await apiCall(`/api/books/${encodeURIComponent(bookId)}/chapters/${encodeURIComponent(chapterId)}`);
+                    const html = safeMarkdown(data.content || '');
                     readPreviewContent.innerHTML = html;
                     try {
                         if (typeof renderMathInElement === 'function' && typeof window.katex !== 'undefined') {
@@ -3224,7 +2821,7 @@
                                     { left: '\\[', right: '\\]', display: true }
                                 ],
                                 throwOnError: false,
-                                errorCallback: function(msg) { return `<span class="katex-error">公式错误</span>`; }
+                                errorCallback: function() { return `<span class="katex-error">公式错误</span>`; }
                             });
                         }
                     } catch (err) { console.warn('预览 KaTeX 错误:', err); }
@@ -3240,16 +2837,15 @@
                 }
             }
 
-            // ---- 保存当前编辑器内容到当前章节 ----
             async function saveCurrentChapter() {
                 if (!currentBookId || !currentChapterId) {
                     showToast('没有加载的章节', 'error');
                     return;
                 }
-                const content = editor.value.trim();
-                if (!content) { showToast('内容为空', 'error'); return; }
+                const content = editor.value;
+                if (!content.trim()) { showToast('内容为空', 'error'); return; }
                 try {
-                    await apiCall(`/api/books/${currentBookId}/chapters/${currentChapterId}`, {
+                    await apiCall(`/api/books/${encodeURIComponent(currentBookId)}/chapters/${encodeURIComponent(currentChapterId)}`, {
                         method: 'PUT',
                         body: { content }
                     });
@@ -3262,10 +2858,12 @@
                 }
             }
 
-            // ---- 书库模态框控制 ----
             bookBtn.addEventListener('click', function() {
-                if (!isLoggedIn()) { showToast('请先登录使用书库', 'info');
-                    loginModal.classList.add('active'); return; }
+                if (!isLoggedIn()) {
+                    showToast('请先登录使用书库', 'info');
+                    loginModal.classList.add('active');
+                    return;
+                }
                 bookModal.classList.add('active');
                 bookListView.style.display = 'block';
                 bookDetailView.style.display = 'none';
@@ -3280,9 +2878,18 @@
             closeBookModal.addEventListener('click', function() {
                 bookModal.classList.remove('active');
                 currentBookData = null;
+                currentChapterId = null;
+                currentBookId = null;
+                saveChapterBtn.style.display = 'none';
             });
             bookModal.addEventListener('click', function(e) {
-                if (e.target === bookModal) bookModal.classList.remove('active');
+                if (e.target === bookModal) {
+                    bookModal.classList.remove('active');
+                    currentBookData = null;
+                    currentChapterId = null;
+                    currentBookId = null;
+                    saveChapterBtn.style.display = 'none';
+                }
             });
 
             backToBookList.addEventListener('click', function() {
@@ -3303,20 +2910,20 @@
                 openChapterForm(currentBookId, null);
             });
 
-            // ---- 批量导入 ----
             importBooksBtn.addEventListener('click', async function() {
                 if (!isOwner()) { showToast('只有所有者可以批量导入', 'error'); return; }
-                if (!confirm('将扫描 books 目录并重建书籍列表，是否继续？')) return;
+                if (!confirm('将从服务器 imports/ 目录扫描并导入书籍，是否继续？')) return;
                 try {
                     const result = await apiCall('/api/admin/import-books', { method: 'POST' });
-                    showToast(`导入成功：${result.books.length} 本书`, 'success');
+                    const added = result && Array.isArray(result.added) ? result.added.length : 0;
+                    const skipped = result && Array.isArray(result.skipped) ? result.skipped.length : 0;
+                    showToast(`导入完成：新增 ${added} 本，跳过 ${skipped} 本`, 'success');
                     loadBooks();
                 } catch (err) {
                     showToast('导入失败: ' + err.message, 'error');
                 }
             });
 
-            // ---- 书籍表单控制 ----
             function openBookForm(bookId) {
                 const isEdit = !!bookId;
                 bookFormTitle.textContent = isEdit ? '✏️ 编辑书籍' : '📝 新书';
@@ -3363,14 +2970,10 @@
 
             saveBookBtn.addEventListener('click', function() {
                 const bookId = this.dataset.bookId;
-                if (bookId) {
-                    updateBook(bookId);
-                } else {
-                    createBook();
-                }
+                if (bookId) updateBook(bookId);
+                else createBook();
             });
 
-            // ---- 章节表单控制 ----
             function openChapterForm(bookId, chapterId) {
                 const isEdit = !!chapterId;
                 chapterFormTitle.textContent = isEdit ? '✏️ 编辑章节' : '📝 新章节';
@@ -3386,10 +2989,8 @@
                     if (!chapter) { showToast('章节不存在', 'error'); return; }
                     chapterTitleInput.value = chapter.title;
                     saveChapterFormBtn.dataset.chapterId = chapterId;
-                    apiCall(`/api/books/${bookId}/chapters/${chapterId}`)
-                        .then(data => {
-                            chapterContentInput.value = data.content || '';
-                        })
+                    apiCall(`/api/books/${encodeURIComponent(bookId)}/chapters/${encodeURIComponent(chapterId)}`)
+                        .then(data => { chapterContentInput.value = data.content || ''; })
                         .catch(err => {
                             showToast('获取章节内容失败: ' + err.message, 'error');
                             chapterContentInput.value = '';
@@ -3419,19 +3020,12 @@
                     showToast('书籍ID缺失，请重新打开章节表单', 'error');
                     return;
                 }
-                if (chapterId) {
-                    updateChapter(bookId, chapterId);
-                } else {
-                    createChapter(bookId);
-                }
+                if (chapterId) updateChapter(bookId, chapterId);
+                else createChapter(bookId);
             });
 
-            // ---- 保存章节按钮（主工具栏） ----
             saveChapterBtn.addEventListener('click', saveCurrentChapter);
 
-            // ==========================================================
-            // ===== 阅读模态框控制 =====
-            // ==========================================================
             closeReadModal.addEventListener('click', function() {
                 readModal.classList.remove('active');
             });
@@ -3440,7 +3034,7 @@
             });
 
             // ==========================================================
-            // ===== 编辑器工具栏 =====
+            //  编辑器工具栏
             // ==========================================================
 
             clearBtn.addEventListener('click', function() {
@@ -3501,13 +3095,10 @@
                             {left: '\\\\(', right: '\\\\)', display: false},
                             {left: '\\\\[', right: '\\\\]', display: true}
                         ],
-                        throwOnError: false,
-                        errorCallback: function(msg, err) {
-                            return '<span class="katex-error">公式错误</span>';
-                        }
+                        throwOnError: false
                     });
                 }
-                mermaid.initialize({ startOnLoad: true, theme: 'default' });
+                mermaid.initialize({ startOnLoad: true, theme: 'default', securityLevel: 'strict' });
                 mermaid.run({ nodes: document.querySelectorAll('.mermaid') });
                 document.querySelectorAll('pre code').forEach(block => hljs.highlightElement(block));
             <\/script>
@@ -3520,114 +3111,4 @@
             fileInput.addEventListener('change', function(e) {
                 const file = e.target.files[0];
                 if (!file) return;
-                const reader = new FileReader();
-                reader.onload = function(ev) {
-                    editor.value = ev.target.result;
-                    render();
-                    localStorage.setItem('markdown_editor_content', editor.value);
-                    showToast(`✅ 加载: ${file.name}`, 'success');
-                    fileInput.value = '';
-                };
-                reader.onerror = function() {
-                    showToast('❌ 读取失败', 'error');
-                    fileInput.value = '';
-                };
-                reader.readAsText(file, 'UTF-8');
-            });
-
-            // ---- 主题切换 ----
-            themeToggleBtn.addEventListener('click', function() {
-                const html = document.documentElement;
-                const current = html.getAttribute('data-theme');
-                const next = current === 'dark' ? 'light' : 'dark';
-                html.setAttribute('data-theme', next);
-                const hljsStyle = document.getElementById('hljs-style');
-                if (next === 'dark') {
-                    hljsStyle.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css';
-                } else {
-                    hljsStyle.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css';
-                }
-                render();
-                showToast(`🌓 切换到 ${next === 'dark' ? '墨夜' : '墨白'} 模式`, 'info');
-            });
-
-            // ---- 折叠参考 ----
-            referenceToggle.addEventListener('click', function() {
-                const isOpen = referenceBody.classList.toggle('open');
-                referenceToggle.classList.toggle('open');
-                if (isOpen) {
-                    referenceBody.style.maxHeight = referenceBody.scrollHeight + 40 + 'px';
-                } else {
-                    referenceBody.style.maxHeight = '0';
-                }
-            });
-
-            // ---- 快捷键 ----
-            document.addEventListener('keydown', function(e) {
-                if (e.ctrlKey && e.shiftKey && e.key === 'C') {
-                    e.preventDefault();
-                    clearBtn.click();
-                }
-                if (e.ctrlKey && e.key === 's') {
-                    e.preventDefault();
-                    render();
-                    localStorage.setItem('markdown_editor_content', editor.value);
-                    showToast('💾 已手动保存', 'info');
-                }
-                if (e.key === 'Escape') {
-                    if (loginModal.classList.contains('active')) loginModal.classList.remove('active');
-                    if (clipboardModal.classList.contains('active')) clipboardModal.classList.remove('active');
-                    if (bookModal.classList.contains('active')) bookModal.classList.remove('active');
-                    if (readModal.classList.contains('active')) readModal.classList.remove('active');
-                    if (editStatusModal.classList.contains('active')) {
-                        editStatusModal.classList.remove('active');
-                        editingClipboardItemId = null;
-                    }
-                    if (bookFormModal.classList.contains('active')) bookFormModal.classList.remove('active');
-                    if (chapterFormModal.classList.contains('active')) chapterFormModal.classList.remove('active');
-                    // 如果处于阅读模式，按 ESC 退出
-                    if (isReadMode) exitReadMode();
-                }
-            });
-
-            // ---- 初始化 ----
-            const hasSaved = (() => {
-                try {
-                    const saved = localStorage.getItem('markdown_editor_content');
-                    if (saved !== null) {
-                        editor.value = saved;
-                        render();
-                        return true;
-                    }
-                } catch (_) {}
-                return false;
-            })();
-
-            if (!hasSaved) {
-                editor.value = getExampleMarkdown();
-                render();
-                localStorage.setItem('markdown_editor_content', editor.value);
-            }
-
-            referenceBody.style.maxHeight = referenceBody.scrollHeight + 40 + 'px';
-
-            let resizeTimer;
-            window.addEventListener('resize', function() {
-                if (referenceBody.classList.contains('open')) {
-                    clearTimeout(resizeTimer);
-                    resizeTimer = setTimeout(() => {
-                        referenceBody.style.maxHeight = referenceBody.scrollHeight + 40 + 'px';
-                    }, 200);
-                }
-            });
-
-            checkLoginStatus();
-
-            console.log('🖋️ 墨韵·文房 已启动，支持云墨宝 + 书库 + 阅读模式');
-            console.log('🔐 登录状态:', currentUser ? '已登录' : '未登录');
-
-        })();
-    </script>
-
-</body>
-</html>
+                const reader = new FileReader
