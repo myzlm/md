@@ -10,9 +10,9 @@
     <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.8/dist/purify.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" id="hljs-style" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/katex.min.css" />
-    <script src="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
-    <script src="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
 
     <!-- 墨韵字体 -->
@@ -505,6 +505,83 @@
             padding: 2px 8px;
             border-radius: 4px;
             font-size: 0.9em;
+        }
+
+        /* ===== 扩展 Markdown 样式 ===== */
+        .preview-content mark {
+            background: rgba(250, 219, 95, 0.45);
+            color: inherit;
+            padding: 0.1em 0.3em;
+            border-radius: 4px;
+        }
+
+        .preview-content sup.footnote-ref a {
+            color: var(--ink-red);
+            text-decoration: none;
+            font-size: 0.75em;
+            padding: 0 2px;
+        }
+
+        .preview-content .footnotes {
+            margin-top: 2em;
+            padding-top: 1em;
+            border-top: 1px dashed var(--border-color);
+            font-size: 0.9em;
+            color: var(--text-secondary);
+        }
+
+        .preview-content .footnotes li {
+            margin: 0.4em 0;
+        }
+
+        .preview-content .callout {
+            margin: 1em 0;
+            padding: 0.8em 1.2em;
+            border-radius: 0 10px 10px 0;
+            border-left: 4px solid var(--border-color);
+            background: var(--hover-bg);
+        }
+
+        .preview-content .callout .callout-title {
+            font-weight: 700;
+            margin-bottom: 0.3em;
+        }
+
+        .preview-content .callout .callout-body p {
+            margin: 0.4em 0;
+        }
+
+        .preview-content .callout-note { border-left-color: #4a90d9; background: rgba(74, 144, 217, 0.08); }
+        .preview-content .callout-note .callout-title { color: #4a90d9; }
+        .preview-content .callout-tip { border-left-color: #2ea36c; background: rgba(46, 163, 108, 0.08); }
+        .preview-content .callout-tip .callout-title { color: #2ea36c; }
+        .preview-content .callout-important { border-left-color: #8e5bd9; background: rgba(142, 91, 217, 0.08); }
+        .preview-content .callout-important .callout-title { color: #8e5bd9; }
+        .preview-content .callout-warning { border-left-color: #d98a2b; background: rgba(217, 138, 43, 0.08); }
+        .preview-content .callout-warning .callout-title { color: #d98a2b; }
+        .preview-content .callout-caution { border-left-color: #c0392b; background: rgba(192, 57, 43, 0.08); }
+        .preview-content .callout-caution .callout-title { color: #c0392b; }
+
+        .preview-content .md-toc {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 14px 22px;
+            margin: 1.2em 0;
+            box-shadow: var(--card-shadow);
+        }
+
+        .preview-content .md-toc ul {
+            margin: 0.2em 0;
+            padding-left: 1.4em;
+        }
+
+        .preview-content .md-toc-title {
+            font-weight: 700;
+            margin-bottom: 0.4em;
+            color: var(--ink-red);
+            font-family: 'Ma Shan Zheng', cursive;
+            letter-spacing: 1px;
         }
 
         /* ===== 阅读模式覆盖层 ===== */
@@ -1429,6 +1506,7 @@
                         <input type="color" id="rmColor" value="#e74c3c" />
                         <input type="range" id="rmSize" min="1" max="10" value="2" />
                         <span class="rm-label">粗细</span>
+                        <span class="rm-label">· 批注随滚动跟随</span>
                         <button id="rmExit">退出</button>
                     </div>
                 </div>
@@ -1463,6 +1541,13 @@
                         <div class="title">📊 表格</div>
                         <span class="example">| 列1 | 列2 |</span><br />
                         <span class="example">|-----|-----|</span>
+                    </div>
+                    <div class="ref-card">
+                        <div class="title">🧩 扩展语法</div>
+                        <span class="example">&gt; [!NOTE] 提示块</span><br />
+                        <span class="example">==高亮==  ^上标^  ~下标~</span><br />
+                        <span class="example">[^1] 脚注 · [TOC] 目录</span>
+                        <div class="desc">支持 GitHub 风格提示块、脚注、高亮与上下标。</div>
                     </div>
                 </div>
                 <p style="margin-top:18px; font-size:13px; color:var(--text-muted); text-align:center; font-family:'Ma Shan Zheng',cursive; letter-spacing:1px;">
@@ -1791,6 +1876,7 @@
             let currentUser = null;
             let allUsers = [];
             let editingClipboardItemId = null;
+            let clipboardCache = []; // 缓存最近一次加载的墨宝列表，避免每次预览/载入都全量拉取
 
             // 书库状态
             let currentBooks = [];
@@ -1801,6 +1887,7 @@
             // ---- 阅读模式状态 ----
             let isReadMode = false;
             let annotations = [];
+            let annW = 0, annH = 0; // 画布逻辑尺寸（阅读模式下覆盖全部内容高度）
             let currentTool = 'pen';
             let currentColor = '#e74c3c';
             let currentSize = 2;
@@ -1855,13 +1942,13 @@
                     headers['Content-Type'] = 'application/json';
                 }
 
+                // options 展开放前面，关键项（method/headers/credentials）在后面确保不被覆盖
                 const config = {
+                    ...options,
                     credentials: 'include',
                     method,
-                    headers,
-                    ...options
+                    headers
                 };
-                config.headers = headers;
 
                 if (config.body && typeof config.body === 'object') {
                     config.body = JSON.stringify(config.body);
@@ -1940,11 +2027,122 @@
                     return `<pre><code>${escaped}</code></pre>`;
                 }
             };
-            marked.use({ renderer });
+            // ---- 扩展语法：GitHub 风格提示块 ----
+            const CALLOUTS = {
+                NOTE: { icon: 'ℹ️', cls: 'note' },
+                TIP: { icon: '💡', cls: 'tip' },
+                IMPORTANT: { icon: '❗', cls: 'important' },
+                WARNING: { icon: '⚠️', cls: 'warning' },
+                CAUTION: { icon: '🚫', cls: 'caution' }
+            };
+            renderer.blockquote = function(quote) {
+                const m = /^\s*<p>\s*\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]\s*([\s\S]*?)<\/p>/.exec(quote);
+                if (m) {
+                    const meta = CALLOUTS[m[1]];
+                    return `<div class="callout callout-${meta.cls}"><div class="callout-title">${meta.icon} ${m[1]}</div><div class="callout-body">${m[2]}</div></div>`;
+                }
+                return `<blockquote>\n${quote}\n</blockquote>\n`;
+            };
+
+            // ---- 扩展语法：高亮 / 上下标 / 脚注引用 ----
+            let footnoteMap = {};
+            marked.use({
+                renderer,
+                extensions: [
+                    {
+                        name: 'mark', level: 'inline',
+                        start(src) { const i = src.indexOf('=='); return i === -1 ? undefined : i; },
+                        tokenizer(src) {
+                            // 排除数学公式中的 == （如 $a==b$）
+                            const m = /^==(?![=\s])([^$\n]+?)(?<!=)==/.exec(src);
+                            if (m) return { type: 'mark', raw: m[0], text: m[1] };
+                        },
+                        renderer(t) { return '<mark>' + escapeHtml(t.text) + '</mark>'; }
+                    },
+                    {
+                        name: 'sup', level: 'inline',
+                        start(src) { const i = src.indexOf('^'); return i === -1 ? undefined : i; },
+                        tokenizer(src) {
+                            // 排除 KaTeX 上标（如 mc^2），内容中禁止 $ 且长度受限
+                            const m = /^\^(?![\s^])([^$\s^]{1,30}?)\^/.exec(src);
+                            if (m) return { type: 'sup', raw: m[0], text: m[1] };
+                        },
+                        renderer(t) { return '<sup>' + escapeHtml(t.text) + '</sup>'; }
+                    },
+                    {
+                        name: 'sub', level: 'inline',
+                        start(src) { const i = src.indexOf('~'); return i === -1 ? undefined : i; },
+                        tokenizer(src) {
+                            // 排除数学公式与删除线 ~~
+                            const m = /^~(?![~\s])([^$\s~]{1,30}?)~/.exec(src);
+                            if (m) return { type: 'sub', raw: m[0], text: m[1] };
+                        },
+                        renderer(t) { return '<sub>' + escapeHtml(t.text) + '</sub>'; }
+                    },
+                    {
+                        name: 'footnoteRef', level: 'inline',
+                        start(src) { const i = src.indexOf('[^'); return i === -1 ? undefined : i; },
+                        tokenizer(src) {
+                            const m = /^\[\^([^\]\s]+)\]/.exec(src);
+                            if (m) return { type: 'footnoteRef', raw: m[0], label: m[1] };
+                        },
+                        renderer(t) {
+                            const n = footnoteMap[t.label];
+                            if (!n) return escapeHtml(t.raw);
+                            return `<sup class="footnote-ref"><a href="#fn-${n}">${n}</a></sup>`;
+                        }
+                    }
+                ]
+            });
+
+            // ---- 预处理：[TOC] 目录 ----
+            function processTOC(text) {
+                if (!/\[(?:TOC|toc)\]|\[\[toc\]\]/.test(text)) return text;
+                const lines = text.split('\n');
+                let inFence = false;
+                const headings = [];
+                for (const line of lines) {
+                    if (/^\s*(```|~~~)/.test(line)) { inFence = !inFence; continue; }
+                    if (inFence) continue;
+                    const m = /^(#{1,6})\s+(.+?)\s*#*\s*$/.exec(line);
+                    if (m) headings.push({ level: m[1].length, text: m[2].replace(/[*_`~]/g, '') });
+                }
+                if (!headings.length) return text;
+                let out = '';
+                let stack = [];
+                headings.forEach(h => {
+                    while (stack.length && stack[stack.length - 1] > h.level) { out += '</li></ul>'; stack.pop(); }
+                    if (stack.length && stack[stack.length - 1] === h.level) out += '</li>';
+                    if (!stack.length || stack[stack.length - 1] < h.level) { out += '<ul>'; stack.push(h.level); }
+                    out += '<li>' + escapeHtml(h.text);
+                });
+                while (stack.length) { out += '</li></ul>'; stack.pop(); }
+                const tocHtml = '<div class="md-toc"><div class="md-toc-title">📑 目录</div>' + out + '</div>';
+                return text.replace(/\[TOC\]|\[\[toc\]\]/i, tocHtml);
+            }
+
+            // ---- 预处理：脚注定义收集 ----
+            function processFootnotes(text) {
+                const defRe = /^\[\^([^\]\s]+)\]:\s*(.+)$/gm;
+                const defs = {};
+                let m;
+                while ((m = defRe.exec(text)) !== null) defs[m[1]] = m[2];
+                const labels = Object.keys(defs);
+                if (!labels.length) { footnoteMap = {}; return text; }
+                footnoteMap = {};
+                labels.forEach((label, i) => { footnoteMap[label] = i + 1; });
+                const body = text.replace(/^\[\^([^\]\s]+)\]:\s*(.+)$/gm, '');
+                const items = labels.map(label =>
+                    `<li id="fn-${footnoteMap[label]}">${marked.parseInline(defs[label])}</li>`
+                ).join('');
+                return body + '\n\n<div class="footnotes"><div class="md-toc-title">📜 脚注</div><ol>' + items + '</ol></div>\n';
+            }
 
             // ---- 安全 Markdown 渲染（统一入口） ----
             function safeRenderMarkdown(text) {
                 if (typeof text !== 'string' || !text) return '';
+                text = processTOC(text);
+                text = processFootnotes(text);
                 let html;
                 try {
                     html = marked.parse(text);
@@ -1959,10 +2157,68 @@
 
             // ---- 统计 ----
             function getStats(text) {
-                const chars = text.length;
-                const words = text.trim() ? text.trim().split(/\s+/).length : 0;
-                const lines = text.split('\n').length;
-                return { chars, words, lines };
+                // 英文按单词计，CJK 字符逐个计入词数
+                const cjk = (text.match(/[\u4e00-\u9fff\u3400-\u4dbf]/g) || []).length;
+                const latinWords = text.replace(/[\u4e00-\u9fff\u3400-\u4dbf]/g, ' ').trim() ?
+                    text.replace(/[\u4e00-\u9fff\u3400-\u4dbf]/g, ' ').trim().split(/\s+/).filter(w => w).length : 0;
+                return {
+                    chars: text.length,
+                    words: cjk + latinWords,
+                    lines: text.split('\n').length
+                };
+            }
+
+            // ---- 共享下拉框填充（剪贴板/编辑/书库三处复用） ----
+            function populateSharedSelect(sel, emptyText) {
+                sel.innerHTML = '';
+                const me = currentUser ? currentUser.username : null;
+                const others = allUsers.filter(u => u !== me);
+                if (others.length === 0) {
+                    const opt = document.createElement('option');
+                    opt.value = '';
+                    opt.textContent = emptyText;
+                    opt.disabled = true;
+                    sel.appendChild(opt);
+                } else {
+                    others.forEach(u => {
+                        const opt = document.createElement('option');
+                        opt.value = u;
+                        opt.textContent = u;
+                        sel.appendChild(opt);
+                    });
+                }
+            }
+
+            function populateAllSharedSelects() {
+                populateSharedSelect(clipboardSharedWith, '（暂无其他用户）');
+                populateSharedSelect(editSharedWith, '（暂无）');
+                populateSharedSelect(bookSharedWith, '（暂无）');
+            }
+
+            // ---- 对渲染容器追加 KaTeX 公式与 Mermaid 图表（三处复用） ----
+            function renderEnhancedContent(container) {
+                try {
+                    if (typeof renderMathInElement === 'function' && typeof window.katex !== 'undefined') {
+                        renderMathInElement(container, {
+                            delimiters: [
+                                { left: '$$', right: '$$', display: true },
+                                { left: '$', right: '$', display: false },
+                                { left: '\\(', right: '\\)', display: false },
+                                { left: '\\[', right: '\\]', display: true }
+                            ],
+                            throwOnError: false,
+                            errorCallback: function(msg) { console.warn('KaTeX 公式错误:', msg); }
+                        });
+                    }
+                } catch (err) { console.warn('KaTeX 渲染异常:', err); }
+                try {
+                    const mermaidNodes = container.querySelectorAll('.mermaid');
+                    if (mermaidNodes.length > 0) {
+                        mermaid.run({ nodes: mermaidNodes, suppressErrors: true }).catch(err => {
+                            console.warn('Mermaid 渲染错误:', err);
+                        });
+                    }
+                } catch (err) { console.warn('Mermaid 渲染异常:', err); }
             }
 
             // ---- 核心渲染 ----
@@ -1984,49 +2240,11 @@
                 }
 
                 preview.innerHTML = safeRenderMarkdown(raw);
-
-                try {
-                    if (typeof renderMathInElement === 'function' && typeof window.katex !== 'undefined') {
-                        renderMathInElement(preview, {
-                            delimiters: [
-                                { left: '$$', right: '$$', display: true },
-                                { left: '$', right: '$', display: false },
-                                { left: '\\(', right: '\\)', display: false },
-                                { left: '\\[', right: '\\]', display: true }
-                            ],
-                            throwOnError: false,
-                            errorCallback: function(msg, err) {
-                                console.warn('KaTeX 公式错误:', msg, err);
-                                return `<span class="katex-error">公式渲染错误</span>`;
-                            }
-                        });
-                    }
-                } catch (err) {
-                    console.error('KaTeX 渲染异常:', err);
-                }
-
-                try {
-                    const mermaidNodes = preview.querySelectorAll('.mermaid');
-                    if (mermaidNodes.length > 0) {
-                        mermaid.run({
-                            nodes: mermaidNodes,
-                            suppressErrors: true
-                        }).catch(err => {
-                            console.warn('Mermaid 渲染错误:', err);
-                            mermaidNodes.forEach(node => {
-                                if (!node.querySelector('.mermaid-error')) {
-                                    node.innerHTML =
-                                        `<div class="mermaid-error" style="color:#c0392b;">⚠️ 图表渲染失败</div>`;
-                                }
-                            });
-                        });
-                    }
-                } catch (err) {
-                    console.warn('Mermaid 渲染异常:', err);
-                }
+                renderEnhancedContent(preview);
 
                 if (isReadMode) {
-                    redrawAnnotations();
+                    // 内容高度可能变化，重新适配画布（含批注重绘）
+                    resizeCanvas();
                 }
             }
 
@@ -2101,7 +2319,22 @@
 
         ---
 
-        ✨ 在左侧编辑，右侧实时预览。点击「阅读模式」可进行批注。
+        ## 7. 扩展语法
+
+        > [!NOTE]
+        > GitHub 风格提示块，支持 NOTE / TIP / IMPORTANT / WARNING / CAUTION。
+
+        ==高亮文本==、^上标^、~下标~、脚注引用[^1]。
+
+        下一行会自动生成全文目录：
+
+        [TOC]
+
+        [^1]: 这是一条脚注，定义在文末自动汇总。
+
+        ---
+
+        ✨ 在左侧编辑，右侧实时预览。点击「阅读模式」可进行批注，滚动时批注跟随内容移动。
         `;
             }
 
@@ -2123,9 +2356,12 @@
                 const lines = content.split('\n');
                 const firstLine = lines.find(line => line.trim().length > 0);
                 if (firstLine) {
-                    const trimmed = firstLine.trim();
-                    if (trimmed.length <= 20) return trimmed;
-                    return trimmed.substring(0, 20) + '…';
+                    // 去掉行首 Markdown 标记（#、-、> 等）再截取
+                    const trimmed = firstLine.trim().replace(/^#{1,6}\s+|^[-*+]\s+|^>\s*/, '');
+                    if (trimmed) {
+                        if (trimmed.length <= 20) return trimmed;
+                        return trimmed.substring(0, 20) + '…';
+                    }
                 }
                 return content.substring(0, 20) + (content.length > 20 ? '…' : '');
             }
@@ -2136,20 +2372,25 @@
 
             function resizeCanvas() {
                 if (!ctx) return;
-                const rect = previewPanel.getBoundingClientRect();
                 const dpr = window.devicePixelRatio || 1;
-                annotationCanvas.width = rect.width * dpr;
-                annotationCanvas.height = rect.height * dpr;
-                annotationCanvas.style.width = rect.width + 'px';
-                annotationCanvas.style.height = rect.height + 'px';
-                ctx.scale(dpr, dpr);
+                // 画布覆盖整个可滚动内容高度，滚动时批注跟随内容移动
+                annW = previewPanel.clientWidth;
+                annH = Math.max(previewPanel.scrollHeight, previewPanel.clientHeight);
+                annotationCanvas.width = annW * dpr;
+                annotationCanvas.height = annH * dpr;
+                annotationCanvas.style.width = annW + 'px';
+                annotationCanvas.style.height = annH + 'px';
+                annotationLayer.style.height = annH + 'px';
+                // 用 setTransform 重置变换矩阵，避免多次 resize 后 scale 累积（dpr²）导致笔迹错位
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
                 redrawAnnotations();
             }
 
             function redrawAnnotations() {
                 if (!ctx) return;
-                const rect = previewPanel.getBoundingClientRect();
-                ctx.clearRect(0, 0, annotationCanvas.width, annotationCanvas.height);
+                const w = annW || previewPanel.clientWidth;
+                const h = annH || previewPanel.clientHeight;
+                ctx.clearRect(0, 0, w, h);
                 annotations.forEach((ann, index) => {
                     if (ann.type === 'path') {
                         ctx.beginPath();
@@ -2345,9 +2586,10 @@
                 if (!ctx) {
                     ctx = annotationCanvas.getContext('2d');
                 }
+                // 保持预览可滚动，画布覆盖全部内容高度，批注随滚动跟随
+                previewPanel.style.overflow = 'auto';
                 resizeCanvas();
                 document.querySelector('.rm-tool[data-tool="pen"]')?.click();
-                previewPanel.style.overflow = 'hidden';
             }
 
             function exitReadMode() {
@@ -2416,7 +2658,7 @@
 
             async function checkLoginStatus() {
                 try {
-                    const data = await apiCall('/api/me', {}, true);
+                    const data = await apiCall('/api/me');
                     if (data && data.username) {
                         currentUser = data;
                         csrfToken = data.csrfToken || '';
@@ -2434,16 +2676,13 @@
                         const users = await apiCall('/api/users/list');
                         if (Array.isArray(users)) {
                             allUsers = users;
-                            populateSharedWithSelect();
-                            populateEditSharedWithSelect();
-                            populateBookSharedWithSelect();
+                            populateAllSharedSelects();
                         }
                     } catch (_) { /* 忽略 */ }
                 }
             }
 
-            function updateUI() {
-                if (isLoggedIn()) {
+            function updateUI() {                if (isLoggedIn()) {
                     greetingText.textContent = `🖋️ ${currentUser.username} · ${currentUser.role}`;
                     loginBtn.style.display = 'none';
                     logoutBtn.style.display = 'inline-block';
@@ -2471,6 +2710,7 @@
                         method: 'POST',
                         body: { username: u, password: p }
                     });
+                    if (!data || !data.username) throw new Error('服务端响应异常，请稍后重试');
                     currentUser = data;
                     csrfToken = data.csrfToken || '';
                     loginModal.classList.remove('active');
@@ -2482,9 +2722,7 @@
                         const users = await apiCall('/api/users/list');
                         if (Array.isArray(users)) {
                             allUsers = users;
-                            populateSharedWithSelect();
-                            populateEditSharedWithSelect();
-                            populateBookSharedWithSelect();
+                            populateAllSharedSelects();
                         }
                     } catch (_) { /* 忽略 */ }
                 } catch (err) {
@@ -2526,66 +2764,6 @@
             // ===== 剪贴板功能 =====
             // ==========================================================
 
-            function populateSharedWithSelect() {
-                const sel = clipboardSharedWith;
-                sel.innerHTML = '';
-                const others = allUsers.filter(u => u !== (currentUser ? currentUser.username : null));
-                if (others.length === 0) {
-                    const opt = document.createElement('option');
-                    opt.value = '';
-                    opt.textContent = '（暂无其他用户）';
-                    opt.disabled = true;
-                    sel.appendChild(opt);
-                } else {
-                    others.forEach(u => {
-                        const opt = document.createElement('option');
-                        opt.value = u;
-                        opt.textContent = u;
-                        sel.appendChild(opt);
-                    });
-                }
-            }
-
-            function populateEditSharedWithSelect() {
-                const sel = editSharedWith;
-                sel.innerHTML = '';
-                const others = allUsers.filter(u => u !== (currentUser ? currentUser.username : null));
-                if (others.length === 0) {
-                    const opt = document.createElement('option');
-                    opt.value = '';
-                    opt.textContent = '（暂无）';
-                    opt.disabled = true;
-                    sel.appendChild(opt);
-                } else {
-                    others.forEach(u => {
-                        const opt = document.createElement('option');
-                        opt.value = u;
-                        opt.textContent = u;
-                        sel.appendChild(opt);
-                    });
-                }
-            }
-
-            function populateBookSharedWithSelect() {
-                const sel = bookSharedWith;
-                sel.innerHTML = '';
-                const others = allUsers.filter(u => u !== (currentUser ? currentUser.username : null));
-                if (others.length === 0) {
-                    const opt = document.createElement('option');
-                    opt.value = '';
-                    opt.textContent = '（暂无）';
-                    opt.disabled = true;
-                    sel.appendChild(opt);
-                } else {
-                    others.forEach(u => {
-                        const opt = document.createElement('option');
-                        opt.value = u;
-                        opt.textContent = u;
-                        sel.appendChild(opt);
-                    });
-                }
-            }
-
             clipboardVisibility.addEventListener('change', function() {
                 if (this.value === 'shared') {
                     clipboardSharedWith.style.display = 'block';
@@ -2607,6 +2785,7 @@
                         allClipboardList.innerHTML = `<p style="color:var(--text-muted);">暂无数据</p>`;
                         return;
                     }
+                    clipboardCache = data;
 
                     const role = getRole();
                     let quota = 0;
@@ -2655,18 +2834,18 @@
                     const contentPreview = escapeHtml(item.content);
 
                     let actionsHtml = `
-                        <button class="btn-load" data-id="${item.id}">📂 载入</button>
-                        <button class="btn-preview" data-id="${item.id}">👁️ 预览</button>
+                        <button class="btn-load" data-id="${escapeHtml(item.id)}">📂 载入</button>
+                        <button class="btn-preview" data-id="${escapeHtml(item.id)}">👁️ 预览</button>
                     `;
                     if (isOwnerList) {
                         actionsHtml += `
-                            <button class="btn-edit-status" data-id="${item.id}">✏️ 编辑</button>
-                            <button class="btn-del" data-id="${item.id}">🗑️ 删除</button>
+                            <button class="btn-edit-status" data-id="${escapeHtml(item.id)}">✏️ 编辑</button>
+                            <button class="btn-del" data-id="${escapeHtml(item.id)}">🗑️ 删除</button>
                         `;
                     }
 
                     html += `
-                        <div class="clipboard-item" data-id="${item.id}">
+                        <div class="clipboard-item" data-id="${escapeHtml(item.id)}">
                             <div class="item-title">${escapeHtml(title)}</div>
                             <div class="content-preview">${contentPreview}</div>
                             <div class="meta">
@@ -2745,8 +2924,7 @@
 
             async function loadClipboardToEditor(id) {
                 try {
-                    const data = await apiCall('/api/clipboards');
-                    const item = data.find(cb => cb.id === id);
+                    const item = clipboardCache.find(cb => cb.id === id);
                     if (!item) { showToast('条目不存在', 'error'); return; }
                     editor.value = item.content;
                     render();
@@ -2759,30 +2937,10 @@
 
             async function previewClipboard(id) {
                 try {
-                    const data = await apiCall('/api/clipboards');
-                    const item = data.find(cb => cb.id === id);
+                    const item = clipboardCache.find(cb => cb.id === id);
                     if (!item) { showToast('条目不存在', 'error'); return; }
                     readPreviewContent.innerHTML = safeRenderMarkdown(item.content);
-                    try {
-                        if (typeof renderMathInElement === 'function' && typeof window.katex !== 'undefined') {
-                            renderMathInElement(readPreviewContent, {
-                                delimiters: [
-                                    { left: '$$', right: '$$', display: true },
-                                    { left: '$', right: '$', display: false },
-                                    { left: '\\(', right: '\\)', display: false },
-                                    { left: '\\[', right: '\\]', display: true }
-                                ],
-                                throwOnError: false,
-                                errorCallback: function(msg) { return `<span class="katex-error">公式错误</span>`; }
-                            });
-                        }
-                    } catch (err) { console.warn('阅读模式 KaTeX 错误:', err); }
-                    try {
-                        const mermaidNodes = readPreviewContent.querySelectorAll('.mermaid');
-                        if (mermaidNodes.length > 0) {
-                            mermaid.run({ nodes: mermaidNodes, suppressErrors: true }).catch(() => {});
-                        }
-                    } catch (err) { console.warn('阅读模式 Mermaid 错误:', err); }
+                    renderEnhancedContent(readPreviewContent);
                     readModal.classList.add('active');
                 } catch (err) {
                     showToast('预览失败: ' + err.message, 'error');
@@ -2792,14 +2950,13 @@
             async function openEditClipboardModal(id) {
                 if (!isLoggedIn()) return;
                 try {
-                    const data = await apiCall('/api/clipboards');
-                    const item = data.find(cb => cb.id === id);
+                    const item = clipboardCache.find(cb => cb.id === id);
                     if (!item) { showToast('条目不存在', 'error'); return; }
                     editingClipboardItemId = id;
                     editTitle.value = item.title || generateTitle(item.content);
                     editContent.value = item.content;
                     editVisibility.value = item.visibility || 'private';
-                    populateEditSharedWithSelect();
+                    populateSharedSelect(editSharedWith, '（暂无）');
                     if (item.sharedWith && Array.isArray(item.sharedWith)) {
                         Array.from(editSharedWith.options).forEach(opt => {
                             if (item.sharedWith.includes(opt.value)) opt.selected = true;
@@ -2937,7 +3094,7 @@
                     const chaptersCount = book.chapters ? book.chapters.length : 0;
 
                     html += `
-                        <div class="clipboard-item book-card" data-id="${book.id}">
+                        <div class="clipboard-item book-card" data-id="${escapeHtml(book.id)}">
                             <div class="book-name">${escapeHtml(book.name)}</div>
                             <div class="book-desc">${escapeHtml(book.description || '')}</div>
                             <div class="meta">
@@ -2948,10 +3105,10 @@
                                 <span>${new Date(book.createdAt).toLocaleString()}</span>
                             </div>
                             <div class="actions">
-                                <button class="btn-load book-enter" data-id="${book.id}">📂 进入</button>
+                                <button class="btn-load book-enter" data-id="${escapeHtml(book.id)}">📂 进入</button>
                                 ${canEdit ? `
-                                    <button class="btn-edit-status book-edit" data-id="${book.id}">✏️ 编辑</button>
-                                    <button class="btn-del book-delete" data-id="${book.id}">🗑️ 删除</button>
+                                    <button class="btn-edit-status book-edit" data-id="${escapeHtml(book.id)}">✏️ 编辑</button>
+                                    <button class="btn-del book-delete" data-id="${escapeHtml(book.id)}">🗑️ 删除</button>
                                 ` : ''}
                             </div>
                         </div>
@@ -3008,19 +3165,19 @@
                     const isFirst = index === 0;
                     const isLast = index === chapters.length - 1;
                     html += `
-                        <div class="clipboard-item chapter-item" data-id="${ch.id}" data-index="${index}">
+                        <div class="clipboard-item chapter-item" data-id="${escapeHtml(ch.id)}" data-index="${index}">
                             <div class="chapter-title">${escapeHtml(ch.title)}</div>
                             <div class="meta">
                                 <span>${new Date(ch.createdAt).toLocaleString()}</span>
                             </div>
                             <div class="actions">
-                                <button class="btn-load chapter-load" data-id="${ch.id}">📂 载入</button>
-                                <button class="btn-preview chapter-preview" data-id="${ch.id}">👁️ 预览</button>
+                                <button class="btn-load chapter-load" data-id="${escapeHtml(ch.id)}">📂 载入</button>
+                                <button class="btn-preview chapter-preview" data-id="${escapeHtml(ch.id)}">👁️ 预览</button>
                                 ${canEdit ? `
-                                    <button class="btn-edit-status chapter-edit" data-id="${ch.id}">✏️ 编辑</button>
-                                    <button class="btn-del chapter-delete" data-id="${ch.id}">🗑️ 删除</button>
-                                    ${!isFirst ? `<button class="btn-move-up" data-id="${ch.id}">⬆️ 上移</button>` : ''}
-                                    ${!isLast ? `<button class="btn-move-down" data-id="${ch.id}">⬇️ 下移</button>` : ''}
+                                    <button class="btn-edit-status chapter-edit" data-id="${escapeHtml(ch.id)}">✏️ 编辑</button>
+                                    <button class="btn-del chapter-delete" data-id="${escapeHtml(ch.id)}">🗑️ 删除</button>
+                                    ${!isFirst ? `<button class="btn-move-up" data-id="${escapeHtml(ch.id)}">⬆️ 上移</button>` : ''}
+                                    ${!isLast ? `<button class="btn-move-down" data-id="${escapeHtml(ch.id)}">⬇️ 下移</button>` : ''}
                                 ` : ''}
                             </div>
                         </div>
@@ -3217,26 +3374,7 @@
                 try {
                     const data = await apiCall(`/api/books/${encodeURIComponent(bookId)}/chapters/${encodeURIComponent(chapterId)}`);
                     readPreviewContent.innerHTML = safeRenderMarkdown(data.content || '');
-                    try {
-                        if (typeof renderMathInElement === 'function' && typeof window.katex !== 'undefined') {
-                            renderMathInElement(readPreviewContent, {
-                                delimiters: [
-                                    { left: '$$', right: '$$', display: true },
-                                    { left: '$', right: '$', display: false },
-                                    { left: '\\(', right: '\\)', display: false },
-                                    { left: '\\[', right: '\\]', display: true }
-                                ],
-                                throwOnError: false,
-                                errorCallback: function(msg) { return `<span class="katex-error">公式错误</span>`; }
-                            });
-                        }
-                    } catch (err) { console.warn('预览 KaTeX 错误:', err); }
-                    try {
-                        const mermaidNodes = readPreviewContent.querySelectorAll('.mermaid');
-                        if (mermaidNodes.length > 0) {
-                            mermaid.run({ nodes: mermaidNodes, suppressErrors: true }).catch(() => {});
-                        }
-                    } catch (err) { console.warn('预览 Mermaid 错误:', err); }
+                    renderEnhancedContent(readPreviewContent);
                     readModal.classList.add('active');
                 } catch (err) {
                     showToast('预览失败: ' + err.message, 'error');
@@ -3327,7 +3465,7 @@
                     bookNameInput.value = book.name;
                     bookDescInput.value = book.description || '';
                     bookVisibilityInput.value = book.visibility || 'private';
-                    populateBookSharedWithSelect();
+                    populateSharedSelect(bookSharedWith, '（暂无）');
                     if (book.sharedWith && Array.isArray(book.sharedWith)) {
                         Array.from(bookSharedWith.options).forEach(opt => {
                             if (book.sharedWith.includes(opt.value)) opt.selected = true;
@@ -3341,7 +3479,7 @@
                     bookDescInput.value = '';
                     bookVisibilityInput.value = 'private';
                     bookSharedGroup.style.display = 'none';
-                    populateBookSharedWithSelect();
+                    populateSharedSelect(bookSharedWith, '（暂无）');
                     delete saveBookBtn.dataset.bookId;
                 }
                 bookFormModal.classList.add('active');
@@ -3481,9 +3619,9 @@
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>墨韵·文房 导出的文档</title>
-            <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/katex.min.css">
-            <script src="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/katex.min.js"><\/script>
-            <script src="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"><\/script>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+            <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"><\/script>
+            <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"><\/script>
             <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"><\/script>
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
             <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"><\/script>
@@ -3509,7 +3647,7 @@
                     });
                 }
                 mermaid.run({ nodes: document.querySelectorAll('.mermaid') });
-                document.querySelectorAll('pre code').forEach(block => hljs.highlightElement(block));
+                // 代码块在导出时已由 hljs 高亮，无需重复高亮
             <\/script>
         </body>
         </html>`;
@@ -3617,10 +3755,10 @@
                 }
             });
 
-            checkLoginStatus();
-
-            console.log('🖋️ 墨韵·文房 已启动，支持云墨宝 + 书库 + 阅读模式');
-            console.log('🔐 登录状态:', currentUser ? '已登录' : '未登录');
+            checkLoginStatus().then(() => {
+                console.log('🖋️ 墨韵·文房 已启动，支持云墨宝 + 书库 + 阅读模式');
+                console.log('🔐 登录状态:', currentUser ? '已登录' : '未登录');
+            });
 
         })();
     </script>
